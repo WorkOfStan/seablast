@@ -3,7 +3,6 @@
 // The Composer auto-loader (official way to load Composer contents) to load external stuff automatically
 require_once __DIR__ . '/vendor/autoload.php';
 
-
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastView;
@@ -20,7 +19,6 @@ session_start() || error_log('session_start failed');
 Debugger::enable(false, __DIR__ . '/log'); // TODO ale log aplikace!
 //Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, __DIR__ . '/log');
 //Debugger::$email = email of admin;
-
 
 $controller = new SeablastController();
 $model = new SeablastModel($controller);
