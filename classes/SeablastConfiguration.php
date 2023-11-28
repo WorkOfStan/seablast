@@ -10,7 +10,7 @@ class SeablastConfiguration
 
     /** @var SeablastFlag */
     public $flag;
-    /** @var string[string[]] */
+    /** @var array<string[]> */
     private $optionsArrayString;
     /** @var bool[] */
     private $optionsBool;
@@ -28,6 +28,12 @@ class SeablastConfiguration
     }
 
     // array<string>
+    /**
+     *
+     * @param string $property
+     * @param array<string[]> $value
+     * @return \self
+     */
     public function setArrayString(string $property, array $value) : self
     {
         Assert::string($property);
@@ -53,7 +59,7 @@ class SeablastConfiguration
         $this->optionsInt[$property] = $value;
         return $this;
     }
-    
+
     public function setString(string $property, string $value) : self
     {
         Assert::string($property);

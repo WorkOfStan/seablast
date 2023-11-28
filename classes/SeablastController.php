@@ -30,14 +30,15 @@ class SeablastController
     /**
      * Apply the current configuration to the Seablast environment
      * The settings not used here can still be used in Models
+     * @return void
      */
     private function applyConfiguration(): void
     {
         // identify UNDER CONSTRUCTION
-        if (!$this->configuration->flag->status(SeablastConstant::WEB_RUNNING)
+        if (!$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
             // && not in_array($_SERVER['REMOTE_ADDR'], $debug-IP-array) .. ale ne SERVER napřímo
         ) {
-            //TODO include from app, pokud tam je
+            //TODO include from app, pokud tam je, otherwise use this default:
             include __DIR__ . '/../under-construction.html';
             exit;
         }
@@ -61,8 +62,57 @@ class SeablastController
         //foreach ($arrayOfSettings as $setting => $value) {
         //    case
         //}
-        
-        error_reporting(E_ALL & ~E_NOTICE);
+
+        foreach ($configurationOrder as $setting) {
+            if (isset($this->configuration[$setting])) {
+                switch ($setting) {
+                    case SeablastConstant::SB_ERROR_REPORTING:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case SeablastConstant::SB_INI_SET_SESSION_COOKIE_LIFETIME:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::SB_SETLOCALE_CATEGORY:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::SB_SETLOCALE_LOCALES:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::SB_ENCODING:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::BACKYARD_LOGGING_LEVEL:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::BACKYARD_MAIL_FOR_ADMIN_ENABLED:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::BACKYARD_ADMIN_MAIL_ADDRESS:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    case             SeablastConstant::DEBUG_IP_LIST:
+                        error_reporting($this->configuration[$setting]);
+                        break;
+                    }
+            }
+        }
+
+        //error_reporting(E_ALL & ~E_NOTICE);
 // TODO fix 3 lines below: '#Parameter \#2 \$newvalue of function ini_set expects string, true given.#'
 ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
 if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
@@ -96,7 +146,10 @@ require_once __DIR__ . '/config.php';
     */
     }
 
-
+    /**
+     *
+     * @return void
+     */
     private function route(): void
     {
         $this->makeSureUrlIsParametric();
@@ -105,6 +158,8 @@ require_once __DIR__ . '/config.php';
 
     /**
      * process a configuration file
+     * @param string $configurationFilename
+     * @return void
      */
     private function updateConfiguration(string $configurationFilename): void
     {

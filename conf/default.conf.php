@@ -11,5 +11,9 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->deactivate('mon');
     $SBConfig
         ->setInt('a', 23)
-        ->setInt('b', 45);
+        ->setInt('b', 45)
+        ->setInt(SeablastConstant::SB_ERROR_REPORTING, E_ALL & ~E_NOTICE)
+        ->setString('test-string', 'default-value') // debug
+        ->setArrayString('test-array-string', ['a', 'y', 'omega'])
+        ;
 };
