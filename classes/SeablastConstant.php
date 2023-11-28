@@ -8,6 +8,7 @@ namespace Seablast\Seablast;
  */
 class SeablastConstant
 {
+
     /**
      * @var string Running or under construction
      */
@@ -45,7 +46,8 @@ class SeablastConstant
      */
     public const SB_INI_SET_SESSION_USE_STRICT_MODE = 'SB_INI_SET_SESSION_USE_STRICT_MODE';
     /**
-     * @var string ini_set('display_errors', '0'); // errors only in the log; override it in your config.local.php if you need to
+     * @var string ini_set('display_errors', '0'); // errors only in the log
+     * override it in your config.local.php if you need to
      */
     public const SB_INI_SET_DISPLAY_ERRORS = 'SB_INI_SET_DISPLAY_ERRORS';
     /**
@@ -68,5 +70,4 @@ class SeablastConstant
      * @var string string[]
      */
     public const DEBUG_IP_LIST = 'DEBUG_IP_LIST';
-
 }

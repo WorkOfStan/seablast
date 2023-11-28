@@ -2,7 +2,9 @@
 
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
-// TODO Description: use AppConstants ... A ty budou nastaveny kde? ... Slouží jako nápověda - každá hodnota je akceptovaná
+
+// TODO Description: use AppConstants ... A ty budou nastaveny kde?
+// ... Slouží jako nápověda - každá hodnota je akceptovaná
 
 return static function (SeablastConfiguration $SBConfig): void {
     $SBConfig->flag
@@ -15,5 +17,5 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setInt(SeablastConstant::SB_ERROR_REPORTING, E_ALL & ~E_NOTICE)
         ->setString('test-string', 'default-value') // debug
         ->setArrayString('test-array-string', ['a', 'y', 'omega'])
-        ;
+    ;
 };

@@ -14,7 +14,7 @@ session_start() || error_log('session_start failed');
 //$developmentEnvironment = (
 //    in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) || in_array($_SERVER['REMOTE_ADDR'], $debug-IP-Array)
 //);
-
+//
 //force debug mode //TODO parametrizovat
 Debugger::enable(false, __DIR__ . '/log'); // TODO ale log aplikace!
 //Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, __DIR__ . '/log');

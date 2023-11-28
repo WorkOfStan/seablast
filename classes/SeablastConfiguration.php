@@ -10,12 +10,16 @@ class SeablastConfiguration
 
     /** @var SeablastFlag */
     public $flag;
+
     /** @var array<string[]> */
     private $optionsArrayString;
+
     /** @var bool[] */
     private $optionsBool;
+
     /** @var int[] */
     private $optionsInt;
+
     /** @var string[] */
     private $optionsString;
 
@@ -27,24 +31,29 @@ class SeablastConfiguration
         $this->optionsString = [];
     }
 
-    // array<string>
     /**
      *
      * @param string $property
-     * @param array<string[]> $value
-     * @return \self
+     * @param string[] $value
+     * @return $this
      */
-    public function setArrayString(string $property, array $value) : self
+    public function setArrayString(string $property, array $value): self
     {
         Assert::string($property);
-        foreach($value as $row) {
+        foreach ($value as $row) {
             Assert::string($row);
         }
         $this->optionsArrayString[$property] = $value;
         return $this;
     }
 
-    public function setBool(string $property, bool $value) : self
+    /**
+     *
+     * @param string $property
+     * @param bool $value
+     * @return $this
+     */
+    public function setBool(string $property, bool $value): self
     {
         Assert::string($property);
         Assert::boolean($value);
@@ -52,7 +61,13 @@ class SeablastConfiguration
         return $this;
     }
 
-    public function setInt(string $property, int $value) : self
+    /**
+     *
+     * @param string $property
+     * @param int $value
+     * @return $this
+     */
+    public function setInt(string $property, int $value): self
     {
         Assert::string($property);
         Assert::integer($value);
@@ -60,7 +75,13 @@ class SeablastConfiguration
         return $this;
     }
 
-    public function setString(string $property, string $value) : self
+    /**
+     *
+     * @param string $property
+     * @param string $value
+     * @return $this
+     */
+    public function setString(string $property, string $value): self
     {
         Assert::string($property);
         Assert::string($value);
@@ -68,9 +89,13 @@ class SeablastConfiguration
         return $this;
     }
 
-    public function dump() : void {
+    /**
+     *
+     * @return void
+     */
+    public function dump(): void
+    {
         var_dump($this->optionsBool);
         var_dump($this->optionsInt, $this->optionsString);
     }
-
 }

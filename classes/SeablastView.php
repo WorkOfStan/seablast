@@ -2,7 +2,7 @@
 
 namespace Seablast\Seablast;
 
-use Webmozart\Assert\Assert;
+//use Webmozart\Assert\Assert;
 
 class SeablastView
 {
