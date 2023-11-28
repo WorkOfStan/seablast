@@ -2,6 +2,7 @@
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\SeablastConfigurationException;
 use Webmozart\Assert\Assert;
 
 class SeablastConfiguration
@@ -29,6 +30,86 @@ class SeablastConfiguration
         $this->optionsBool = [];
         $this->optionsInt = [];
         $this->optionsString = [];
+    }
+
+    public function exists(string $property): bool
+    {
+        Assert::string($property);
+//        return
+//            !is_null($this->getArrayString($property)) ||
+//            !is_null($this->getBool($property)) ||
+//            !is_null($this->getInt($property)) ||
+//            !is_null($this->getString($property));
+
+        try {
+            $result1 = $this->getArrayString($property);
+            $result2 = $this->getBool($property);
+            $result3 = $this->getInt($property);
+            $result4 = $this->getString($property);
+        } catch (SeablastConfigurationException $ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return array<string>
+     */
+    public function getArrayString(string $property): array
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsArrayString)) {
+            throw new SeablastConfigurationException('No array string for the property ' . $property);
+//            return null;
+        }
+        return $this->optionsArrayString[$property];
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return bool
+     */
+    public function getBool(string $property): bool
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsBool)) {
+            //    return null;
+            throw new SeablastConfigurationException('No bool value for the property ' . $property);
+        }
+        return $this->optionsBool[$property];
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return int
+     */
+    public function getInt(string $property): int
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsInt)) {
+            throw new SeablastConfigurationException('No int value for the property ' . $property);
+//            return null;
+        }
+        return $this->optionsInt[$property];
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return string
+     */
+    public function getString(string $property): string
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsString)) {
+            throw new SeablastConfigurationException('No string value for the property ' . $property);
+//            return null;
+        }
+        return $this->optionsString[$property];
     }
 
     /**

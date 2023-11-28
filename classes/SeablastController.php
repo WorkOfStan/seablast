@@ -2,6 +2,9 @@
 
 namespace Seablast\Seablast;
 
+use Tracy\Debugger;
+use Tracy\ILogger;
+
 //use Webmozart\Assert\Assert;
 
 class SeablastController
@@ -17,8 +20,8 @@ class SeablastController
         $this->configuration = new SeablastConfiguration();
         $fileConfigurationPriority = [
             __DIR__ . '/../conf/default.conf.php',
-            __DIR__ . '/../../../conf/app.conf.php',
-            __DIR__ . '/../../../conf/app.conf.local.php',
+            APP_DIR . '/conf/app.conf.php',
+            APP_DIR . '/conf/app.conf.local.php',
         ];
         foreach ($fileConfigurationPriority as $confFilename) {
             $this->updateConfiguration($confFilename);
@@ -35,6 +38,7 @@ class SeablastController
      */
     private function applyConfiguration(): void
     {
+        Debugger::barDump($this->configuration, 'configuration');
         // identify UNDER CONSTRUCTION
         if (!$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
         // && not in_array($_SERVER['REMOTE_ADDR'], $debug-IP-array) .. ale ne SERVER napřímo
@@ -47,9 +51,9 @@ class SeablastController
             SeablastConstant::SB_ERROR_REPORTING,
             SeablastConstant::SB_INI_SET_SESSION_COOKIE_LIFETIME,
             SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME,
-            SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
+            //SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH, // required if _LIFETIME
             SeablastConstant::SB_SETLOCALE_CATEGORY,
-            SeablastConstant::SB_SETLOCALE_LOCALES,
+            //SeablastConstant::SB_SETLOCALE_LOCALES, // required if _CATEGORY
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
@@ -64,50 +68,66 @@ class SeablastController
         //    case
         //}
 
-        foreach ($configurationOrder as $setting) {
-            if (isset($this->configuration[$setting])) {
-                switch ($setting) {
+        foreach ($configurationOrder as $property) {
+            if ($this->configuration->exists($property)) {
+                switch ($property) {
                     case SeablastConstant::SB_ERROR_REPORTING:
-                        error_reporting($this->configuration[$setting]);
+                        error_reporting($this->configuration->getInt($property));
                         break;
                     case SeablastConstant::SB_INI_SET_SESSION_COOKIE_LIFETIME:
-                        error_reporting($this->configuration[$setting]);
+                        ini_set('session.gc_divisor', '100');
+                        ini_set('session.gc_maxlifetime', 2 * $this->configuration->getInt($property));
+                        ini_set('session.cookie_lifetime', $this->configuration->getInt($property));
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
-                        error_reporting($this->configuration[$setting]);
-                        break;
-                    case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH:
-                        error_reporting($this->configuration[$setting]);
+                        if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
+                            throw new Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
+                                . ' required if following is set: ' . $property);
+                        }
+                        ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
+                        if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
+                            ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
+                        }
+                        ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
+                        session_set_cookie_params(
+                            $this->configuration->getInt($property),
+                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)
+                        );
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
-                        error_reporting($this->configuration[$setting]);
-                        break;
-                    case SeablastConstant::SB_SETLOCALE_LOCALES:
-                        error_reporting($this->configuration[$setting]);
+                        if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
+                            throw new Exception(SeablastConstant::SB_SETLOCALE_LOCALES
+                                . ' required if following is set: ' . $property);
+                        }
+                        setlocale(
+                            $this->configuration->getInt($property),
+                            $this->configuration->getString(SeablastConstant::SB_SETLOCALE_LOCALES)
+                        );
                         break;
                     case SeablastConstant::SB_ENCODING:
-                        error_reporting($this->configuration[$setting]);
+                        mb_internal_encoding($this->configuration->getString($property));
+                        mb_http_output($this->configuration->getString($property));
                         break;
                     case SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::SB_PHINX_ENVIRONMENT:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::BACKYARD_LOGGING_LEVEL:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::BACKYARD_MAIL_FOR_ADMIN_ENABLED:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::BACKYARD_ADMIN_MAIL_ADDRESS:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                     case SeablastConstant::DEBUG_IP_LIST:
-                        error_reporting($this->configuration[$setting]);
+
                         break;
                 }
             }
@@ -116,34 +136,34 @@ class SeablastController
         // TODO rewrite the values below as default configuration
         //error_reporting(E_ALL & ~E_NOTICE);
         // TODO fix 3 lines below: '#Parameter \#2 \$newvalue of function ini_set expects string, true given.#'
-        ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
-        if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
-            ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
-        }
-        ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
-        ini_set('session.gc_divisor', '100');
-        ini_set('session.gc_maxlifetime', '200000');
-        ini_set('session.cokie_lifetime', '2000000');
-        session_set_cookie_params(10800, '/');
-        setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
-        mb_internal_encoding('UTF-8');
-        mb_http_output('UTF-8');
+//        ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
+//        if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
+//            ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
+//        }
+//        ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
+//        ini_set('session.gc_divisor', '100');
+//        ini_set('session.gc_maxlifetime', '200000');
+//        ini_set('session.cokie_lifetime', '2000000');
+//        session_set_cookie_params(10800, '/');
+//        setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
+//        mb_internal_encoding('UTF-8');
+//        mb_http_output('UTF-8');
         //require_once __DIR__ . '/config.php';
     }
 
     private function makeSureUrlIsParametric()
     {
         /*
-    // Redirector -> friendly url / parametric url
-    if !flag redirector_off
-        If Select  * where url
-            mSUIP //rekurze
+          // Redirector -> friendly url / parametric url
+          if !flag redirector_off
+          If Select  * where url
+          mSUIP //rekurze
 
-    // Friendly url -> parametric url
-    If !flag frienflyURL_off
-        If Select * where url
-        mSUIP
-    return parametric;
+          // Friendly url -> parametric url
+          If !flag frienflyURL_off
+          If Select * where url
+          mSUIP
+          return parametric;
          */
     }
 
@@ -164,7 +184,10 @@ class SeablastController
      */
     private function updateConfiguration(string $configurationFilename): void
     {
+        Debugger::log('Trying config file: ' . $configurationFilename, ILogger::DEBUG);
         if (!file_exists($configurationFilename)) {
+            // TODO make sure that with production settings, no INFO is written
+            Debugger::log('Not existing config file: ' . $configurationFilename, ILogger::INFO);
             return;
         }
         $configurationClosure = require $configurationFilename;

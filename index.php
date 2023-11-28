@@ -1,7 +1,14 @@
 <?php
 
 // The Composer auto-loader (official way to load Composer contents) to load external stuff automatically
-require_once __DIR__ . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../autoload.php')) {
+    // called as library
+    define('APP_DIR', __DIR__ . '/../../..');
+} else {
+    // direct usage (TODO: consider whether necessary at all)
+    define('APP_DIR', __DIR__);
+}
+require_once APP_DIR . '/vendor/autoload.php';
 
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\SeablastModel;
@@ -16,7 +23,7 @@ session_start() || error_log('session_start failed');
 //);
 //
 //force debug mode //TODO parametrizovat
-Debugger::enable(false, __DIR__ . '/log'); // TODO ale log aplikace!
+Debugger::enable(false, APP_DIR . '/log'); // TODO zkontrolovat, že jde o log aplikace!
 //Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, __DIR__ . '/log');
 //Debugger::$email = email of admin;
 
