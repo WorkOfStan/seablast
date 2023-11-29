@@ -42,7 +42,7 @@ class SeablastController
         // identify UNDER CONSTRUCTION
         if (
             !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-        // && not in_array($_SERVER['REMOTE_ADDR'], $debug-IP-array) .. ale ne SERVER napřímo
+            // && not in_array($_SERVER['REMOTE_ADDR'], $debug-IP-array) .. ale ne SERVER napřímo
         ) {
             //TODO include from app, pokud tam je, otherwise use this default:
             include __DIR__ . '/../under-construction.html';
@@ -98,7 +98,7 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
-                            throw new Exception(SeablastConstant::SB_SETLOCALE_LOCALES
+                            throw new \Exception(SeablastConstant::SB_SETLOCALE_LOCALES
                                 . ' required if following is set: ' . $property);
                         }
                         setlocale(
@@ -157,7 +157,7 @@ class SeablastController
      * TODO really return void? or string?
      * @return void
      */
-    private function makeSureUrlIsParametric() : void
+    private function makeSureUrlIsParametric(): void
     {
         /*
           // Redirector -> friendly url / parametric url

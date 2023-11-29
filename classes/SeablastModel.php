@@ -3,6 +3,7 @@
 namespace Seablast\Seablast;
 
 use Tracy\Debugger;
+
 //use Webmozart\Assert\Assert;
 
 class SeablastModel
@@ -15,7 +16,6 @@ class SeablastModel
     public function __construct(SeablastController $controller)
     {
         $this->controller = $controller;
-        Debugger::barDump($controller, 'Controller'); // debug
+        Debugger::barDump($this->controller, 'Controller'); // debug
     }
-
 }
