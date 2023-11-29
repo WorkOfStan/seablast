@@ -35,20 +35,23 @@ class SeablastConfiguration
         $this->optionsString = [];
     }
 
+    /**
+     * Check existence of a property within configuration
+     *
+     * @param string $property
+     * @return bool
+     */
     public function exists(string $property): bool
     {
         Assert::string($property);
-//        return
-//            !is_null($this->getArrayString($property)) ||
-//            !is_null($this->getBool($property)) ||
-//            !is_null($this->getInt($property)) ||
-//            !is_null($this->getString($property));
-
         try {
-            $result1 = $this->getArrayString($property);
-            $result2 = $this->getBool($property);
-            $result3 = $this->getInt($property);
-            $result4 = $this->getString($property);
+            // TODO properly test if one exception doesn't stop further execution,
+            // if it would, each call MUST be caught separately!
+            $result1 = $this->getArrayArrayString($property);
+            $result2 = $this->getArrayString($property);
+            $result3 = $this->getBool($property);
+            $result4 = $this->getInt($property);
+            $result5 = $this->getString($property);
         } catch (SeablastConfigurationException $ex) {
             return false;
         }
