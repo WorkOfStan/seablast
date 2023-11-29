@@ -12,6 +12,9 @@ class SeablastConfiguration
     /** @var SeablastFlag */
     public $flag;
 
+    /** @var array<array<string[]>> */
+    private $optionsArrayArrayString;
+
     /** @var array<string[]> */
     private $optionsArrayString;
 
@@ -50,6 +53,21 @@ class SeablastConfiguration
             return false;
         }
         return true;
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return array<array<string>>
+     */
+    public function getArrayArrayString(string $property): array
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsArrayArrayString)) {
+            throw new SeablastConfigurationException('No array string for the property ' . $property);
+//            return null;
+        }
+        return $this->optionsArrayArrayString[$property];
     }
 
     /**
@@ -110,6 +128,24 @@ class SeablastConfiguration
 //            return null;
         }
         return $this->optionsString[$property];
+    }
+
+    /**
+     *
+     * @param string $property
+     * @param string $key
+     * @param string[] $value
+     * @return $this
+     */
+    public function setArrayArrayString(string $property, string $key, array $value): self
+    {
+        Assert::string($property);
+        Assert::string($key);
+        foreach ($value as $row) {
+            Assert::string($row);
+        }
+        $this->optionsArrayArrayString[$property][$key] = $value;
+        return $this;
     }
 
     /**

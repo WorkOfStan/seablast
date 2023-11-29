@@ -3,9 +3,10 @@
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 
-// TODO Description: use AppConstants ... A ty budou nastaveny kde?
-// ... Slouží jako nápověda - každá hodnota je akceptovaná
-
+/**
+ * SeablastConfiguration structure accepts all values, however only the expected ones are processed.
+ * The usage of constants defined in the SeablastConstant class is encouraged for the sake of hinting within IDE.
+ */
 return static function (SeablastConfiguration $SBConfig): void {
     $SBConfig->flag
 //        ->activate(SeablastConstant::FLAG_WEB_RUNNING)

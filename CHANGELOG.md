@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1] - YYYY-MM-DD
 ### Added
 - MVC architecture
+- SeablastConstant class for IDE hinting
 
 ### Changed
 

@@ -70,4 +70,8 @@ class SeablastConstant
      * @var string string[]
      */
     public const DEBUG_IP_LIST = 'DEBUG_IP_LIST';
+    /**
+     * @var string string[]
+     */
+    public const APP_COLLECTION = 'APP_COLLECTION';
 }
