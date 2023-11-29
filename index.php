@@ -1,13 +1,7 @@
 <?php
 
 // The Composer auto-loader (official way to load Composer contents) to load external stuff automatically
-if (file_exists(__DIR__ . '/../../autoload.php')) {
-    // called as library
-    define('APP_DIR', __DIR__ . '/../../..');
-} else {
-    // direct usage (TODO: consider whether necessary at all)
-    define('APP_DIR', __DIR__);
-}
+require_once __DIR__ . '/defineAppDir.php';
 require_once APP_DIR . '/vendor/autoload.php';
 
 use Seablast\Seablast\SeablastController;

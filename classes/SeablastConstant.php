@@ -1,6 +1,7 @@
 <?php
 
 declare (strict_types=1);
+
 namespace Seablast\Seablast;
 
 /**
@@ -8,7 +9,6 @@ namespace Seablast\Seablast;
  */
 class SeablastConstant
 {
-
     /**
      * @var string Running or under construction
      */
