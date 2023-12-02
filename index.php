@@ -13,6 +13,8 @@ use Tracy\Debugger;
 //Tracy is able to show Debug bar and Bluescreens for AJAX and redirected requests.
 //You just have to start session before Tracy
 session_start() || error_log('session_start failed');
+//$setup = new SeablastSetup(); // configuration update
+// $setup contains somehow info for Debugger setup
 //$developmentEnvironment = (
 //    in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) || in_array($_SERVER['REMOTE_ADDR'], $debug-IP-Array)
 //);
