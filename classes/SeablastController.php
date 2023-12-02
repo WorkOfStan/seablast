@@ -22,6 +22,8 @@ class SeablastController
     {
         // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
+
+        // do $setup = new SeablastSetup();
         // Create configuration of the app by applying configuration files in order from generic to specific
         $this->configuration = new SeablastConfiguration();
         $fileConfigurationPriority = [
@@ -32,6 +34,7 @@ class SeablastController
         foreach ($fileConfigurationPriority as $confFilename) {
             $this->updateConfiguration($confFilename);
         }
+        // --do $setup = new SeablastSetup();
         $this->applyConfiguration();
         //$this->devenv = xyz;
         $this->route();
