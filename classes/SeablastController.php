@@ -2,6 +2,7 @@
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -14,8 +15,13 @@ class SeablastController
     /** @var SeablastConfiguration */
     private $configuration;
 
-    public function __construct()
+    /** @var Superglobals */
+    private $superglobals;
+
+    public function __construct(Superglobals $superglobals)
     {
+        // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
+        $this->superglobals = $superglobals;
         // Create configuration of the app by applying configuration files in order from generic to specific
         $this->configuration = new SeablastConfiguration();
         $fileConfigurationPriority = [
@@ -159,16 +165,17 @@ class SeablastController
      */
     private function makeSureUrlIsParametric(): void
     {
+        // makes use of $this->superglobals
         /*
           // Redirector -> friendly url / parametric url
           if !flag redirector_off
-          If Select  * where url
-          mSUIP //rekurze
+          ..If Select  * where url
+          ....mSUIP //rekurze
 
           // Friendly url -> parametric url
           If !flag frienflyURL_off
-          If Select * where url
-          mSUIP
+          ..If Select * where url
+          ....mSUIP
           return parametric;
          */
     }
@@ -185,7 +192,7 @@ class SeablastController
     }
 
     /**
-     * process a configuration file
+     * Process a configuration file
      * @param string $configurationFilename
      * @return void
      */
