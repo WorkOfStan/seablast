@@ -7,6 +7,7 @@ require_once APP_DIR . '/vendor/autoload.php';
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastView;
+use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 
 //Tracy is able to show Debug bar and Bluescreens for AJAX and redirected requests.
@@ -21,6 +22,7 @@ Debugger::enable(false, APP_DIR . '/log'); // TODO zkontrolovat, že jde o log a
 //Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, __DIR__ . '/log');
 //Debugger::$email = email of admin;
 
-$controller = new SeablastController();
+$superglobals = new Superglobals();
+$controller = new SeablastController($superglobals);
 $model = new SeablastModel($controller);
 $view = new SeablastView($model);
