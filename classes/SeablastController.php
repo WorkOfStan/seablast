@@ -162,6 +162,8 @@ class SeablastController
      */
     private function makeSureUrlIsParametric(): void
     {
+        $ru=$this->superglobals->server['REQUEST_URI'];
+        //todo parse to path and query - zřejmě preg_neco otazníkem 
         // makes use of $this->superglobals
         /*
           // Redirector -> friendly url / parametric url
