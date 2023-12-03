@@ -16,8 +16,15 @@ class Superglobals
     public $server;
     /** @var mixed[] */
     public $session;
-    //optional parameters to be able to test variants
-    public function __construct(array $get = $_GET, array $post = $_POST, $server = $_SERVER, $session = $_SESSION)
+
+    /**
+     * May be setup either with superglobals for production or with arbitrary constants to test variants
+     * @param array<mixed> $get
+     * @param array<mixed> $post
+     * @param array<mixed> $server
+     * @param array<mixed> $session
+     */
+    public function __construct(array $get = [], array $post = [], array $server = [], array $session = [])
     {
         //todo named parameters? one array?
         $this->get = $get;

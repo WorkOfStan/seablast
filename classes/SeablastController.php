@@ -2,10 +2,11 @@
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
-use Tracy\ILogger;
 
+//use Tracy\ILogger;
 //use Webmozart\Assert\Assert;
 
 class SeablastController
@@ -18,23 +19,16 @@ class SeablastController
     /** @var Superglobals */
     private $superglobals;
 
-    public function __construct(Superglobals $superglobals)
+    /**
+     *
+     * @param SeablastConfiguration $configuration
+     * @param Superglobals $superglobals
+     */
+    public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
         // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
-
-        // do $setup = new SeablastSetup();
-        // Create configuration of the app by applying configuration files in order from generic to specific
-        $this->configuration = new SeablastConfiguration();
-        $fileConfigurationPriority = [
-            __DIR__ . '/../conf/default.conf.php',
-            APP_DIR . '/conf/app.conf.php',
-            APP_DIR . '/conf/app.conf.local.php',
-        ];
-        foreach ($fileConfigurationPriority as $confFilename) {
-            $this->updateConfiguration($confFilename);
-        }
-        // --do $setup = new SeablastSetup();
+        $this->configuration = $configuration;
         $this->applyConfiguration();
         //$this->devenv = xyz;
         $this->route();
@@ -192,22 +186,5 @@ class SeablastController
         $this->makeSureUrlIsParametric();
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
-    }
-
-    /**
-     * Process a configuration file
-     * @param string $configurationFilename
-     * @return void
-     */
-    private function updateConfiguration(string $configurationFilename): void
-    {
-        Debugger::log('Trying config file: ' . $configurationFilename, ILogger::DEBUG);
-        if (!file_exists($configurationFilename)) {
-            // TODO make sure that with production settings, no INFO is written
-            Debugger::log('Not existing config file: ' . $configurationFilename, ILogger::INFO);
-            return;
-        }
-        $configurationClosure = require $configurationFilename;
-        $configurationClosure($this->configuration);
     }
 }
