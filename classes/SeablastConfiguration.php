@@ -11,28 +11,20 @@ class SeablastConfiguration
 
     /** @var SeablastFlag */
     public $flag;
-
     /** @var array<array<string[]>> */
-    private $optionsArrayArrayString;
-
+    private $optionsArrayArrayString = [];
     /** @var array<string[]> */
-    private $optionsArrayString;
-
+    private $optionsArrayString = [];
     /** @var bool[] */
-    private $optionsBool;
-
+    private $optionsBool = [];
     /** @var int[] */
-    private $optionsInt;
-
+    private $optionsInt = [];
     /** @var string[] */
-    private $optionsString;
+    private $optionsString = [];
 
     public function __construct()
     {
         $this->flag = new SeablastFlag();
-        $this->optionsBool = [];
-        $this->optionsInt = [];
-        $this->optionsString = [];
     }
 
     /**

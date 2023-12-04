@@ -9,9 +9,9 @@ use Seablast\Seablast\SeablastConstant;
 
 return static function (SeablastConfiguration $SBConfig): void {
     $SBConfig->flag
-//        ->activate(SeablastConstant::FLAG_WEB_RUNNING)
-        ->activate('as')
-        ->deactivate('mon');
+        ->activate(SeablastConstant::FLAG_WEB_RUNNING) // debug
+        ->activate('as') // debug
+        ->deactivate('mon'); // debug
     $SBConfig
         ->setInt('a', 23)
         ->setInt('b', 45)

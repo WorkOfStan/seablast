@@ -168,17 +168,17 @@ class SeablastController
         
         //xxxtodo parse to path and query - zřejmě preg_neco otazníkem 
         
-// Use parse_url to parse the URI
-$parsedUrl = parse_url($requestUri);
+        // Use parse_url to parse the URI
+        $parsedUrl = parse_url($requestUri);
 
-// Accessing the individual components
-$this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
-$this->uriQuery = $parsedUrl['query']; // Outputs: category=books&id=123
+        // Accessing the individual components
+        $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
+        $this->uriQuery = $parsedUrl['query']; // Outputs: category=books&id=123
 
-// You can further parse the query string if needed
-parse_str($uriQuery, $queryParams);
-// $queryParams will be an associative array like:
-// Array ( [category] => books [id] => 123 )
+        // You can further parse the query string if needed
+        parse_str($this->uriQuery, $queryParams);
+        // $queryParams will be an associative array like:
+        // Array ( [category] => books [id] => 123 )
 
         // makes use of $this->superglobals
         /*
@@ -205,8 +205,11 @@ parse_str($uriQuery, $queryParams);
     {
         $this->makeSureUrlIsParametric($this->superglobals->server['REQUEST_URI']);
         // uriPath and uriQuery are now populated
-        Debugger::barDump([ 'path' => $this->uriPath,
-        'query' => $this->uriQuery]);
+        Debugger::barDump([ 
+            'APP_DIR' => APP_DIR,
+            'path' => $this->uriPath,
+            'query' => $this->uriQuery
+        ]);
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
     }
