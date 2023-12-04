@@ -207,8 +207,10 @@ class SeablastController
         // uriPath and uriQuery are now populated
         Debugger::barDump([ 
             'APP_DIR' => APP_DIR,
+            'appPath' => (pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME) === '/')
+                 ? '' : pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME),
             'path' => $this->uriPath,
-            'query' => $this->uriQuery
+            'query' => $this->uriQuery,
         ]);
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
