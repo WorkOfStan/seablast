@@ -2,6 +2,7 @@
 
 namespace Seablast\Seablast;
 
+use Tracy\Debugger;
 //use Webmozart\Assert\Assert;
 
 class SeablastView
@@ -14,7 +15,31 @@ class SeablastView
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
-        echo ('<h1>Minimal model</h1>');
-        var_dump($this->model); // minimal
+        Debugger::barDump($this->model, 'model');
+        $this->params = [];
+        $this->params['model'] = $this->model;
+        //echo ('<h1>Minimal model</h1>');
+        //var_dump($this->model); // minimal
+        $this->renderLatte();
+    }
+
+    private function getTemplatePath()
+    {
+        return 'Templates/' . 'template.latte';
+    }
+
+    private function renderLatte()
+    {
+        $latte = new \Latte\Engine;
+        // cache directory
+        $latte->setTempDirectory($this->model->cache());
+
+        //$params = [ /* template variables */ ];
+        // or $params = new TemplateParameters(/* ... */);
+
+        // render to output
+        $latte->render($this->getTemplatePath(), $this->params);
+        // or render to variable
+        //$output = $latte->renderToString('template.latte', $params);
     }
 }
