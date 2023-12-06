@@ -21,7 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - MVC architecture
 - SeablastConstant class for IDE hinting
-- Latte for rendering
+- added SeablastSetup to combine configuration files into a valid configuration before starting Tracy/Debugger and then Controller
+- added class Superglobals to shield code from direct access to superglobals
+- added Latte rendeing, cache added
+- added nice layout: BlueprintWeb.latte
+- default configuration for environment is ready
+- added do not send automatic emails to admin by default
+- Code quality: add Assertions to eliminate PHPStan identified issues
+- added prototype of parametric routing
 
 ### Changed
 
