@@ -23,7 +23,7 @@ class SeablastModel
      *
      * @return SeablastConfiguration
      */
-    public function getConfiguration() : SeablastConfiguration
+    public function getConfiguration(): SeablastConfiguration
     {
         return $this->controller->getConfiguration();
     }

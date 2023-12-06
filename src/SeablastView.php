@@ -43,7 +43,7 @@ class SeablastView
      */
     private function renderLatte(): void
     {
-        $latte = new \Latte\Engine;
+        $latte = new \Latte\Engine();
 
         // Maybe only for PHP8+
         // aktivuje rozšíření pro Tracy

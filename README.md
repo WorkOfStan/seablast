@@ -22,4 +22,4 @@ The goal is to be able to create a complex web application only by configuration
 | cache/ | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | log/ | logs - this is just for development as production-wise, there will be logs/ directory in the root of the app |
 | src/ | Seablast classes |
-| templates/ | Latte templates to be inherited | 
+| templates/ | Latte templates to be inherited |

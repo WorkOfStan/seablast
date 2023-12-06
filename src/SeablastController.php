@@ -30,6 +30,8 @@ class SeablastController
         // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
+        Debugger::barDump($this->configuration, 'configuration');
+        $this->underConstruction();
         $this->applyConfiguration();
         //$this->devenv = xyz;
         $this->route();
@@ -42,19 +44,9 @@ class SeablastController
      */
     private function applyConfiguration(): void
     {
-        Debugger::barDump($this->configuration, 'configuration');
-        // identify UNDER CONSTRUCTION
-        if (
-            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-            // && not in_array($_SERVER['REMOTE_ADDR'], $debug-IP-array) .. ale ne SERVER napřímo
-        ) {
-            //TODO include from app, pokud tam je, otherwise use this default:
-            include __DIR__ . '/../under-construction.html';
-            exit;
-        }
         $configurationOrder = [
             SeablastConstant::SB_ERROR_REPORTING,
-            SeablastConstant::SB_INI_SET_SESSION_COOKIE_LIFETIME,
+            SeablastConstant::SB_SESSION_SET_COOKIE_LIFETIME,
             SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME,
             //SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH, // required if _LIFETIME
             SeablastConstant::SB_SETLOCALE_CATEGORY,
@@ -64,9 +56,9 @@ class SeablastController
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
             SeablastConstant::SB_PHINX_ENVIRONMENT,
             SeablastConstant::BACKYARD_LOGGING_LEVEL,
-            SeablastConstant::BACKYARD_MAIL_FOR_ADMIN_ENABLED,
-            SeablastConstant::BACKYARD_ADMIN_MAIL_ADDRESS,
-            SeablastConstant::DEBUG_IP_LIST,
+            //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
+            SeablastConstant::ADMIN_MAIL_ADDRESS,
+            //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
         //$arrayOfSettings = [];
         //foreach ($arrayOfSettings as $setting => $value) {
@@ -79,7 +71,7 @@ class SeablastController
                     case SeablastConstant::SB_ERROR_REPORTING:
                         error_reporting($this->configuration->getInt($property));
                         break;
-                    case SeablastConstant::SB_INI_SET_SESSION_COOKIE_LIFETIME:
+                    case SeablastConstant::SB_SESSION_SET_COOKIE_LIFETIME:
                         ini_set('session.gc_divisor', '100');
                         ini_set('session.gc_maxlifetime', strval(2 * $this->configuration->getInt($property)));
                         ini_set('session.cookie_lifetime', strval($this->configuration->getInt($property)));
@@ -91,7 +83,10 @@ class SeablastController
                                 . ' required if following is set: ' . $property);
                         }
                         ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
-                        if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
+                        if (
+                            isset($this->superglobals->server['REQUEST_SCHEME']) &&
+                            $this->superglobals->server['REQUEST_SCHEME'] == 'https'
+                        ) {
                             ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
                         }
                         ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
@@ -115,53 +110,32 @@ class SeablastController
                         mb_http_output($this->configuration->getString($property));
                         break;
                     case SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE:
-                        Debugger::barDump($property, 'not coded yet');
+                        ini_set('session.use_strict_mode', $this->configuration->getString($property));
                         break;
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
-                        Debugger::barDump($property, 'not coded yet');
+                        ini_set('display_errors', $this->configuration->getString($property));
                         break;
-                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
-                        Debugger::barDump($property, 'not coded yet');
-                        break;
-                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
-                        Debugger::barDump($property, 'not coded yet');
-                        break;
-                    case SeablastConstant::BACKYARD_MAIL_FOR_ADMIN_ENABLED:
-                        Debugger::barDump($property, 'not coded yet');
-                        break;
-                    case SeablastConstant::BACKYARD_ADMIN_MAIL_ADDRESS:
-                        Debugger::barDump($property, 'not coded yet');
-                        break;
-                    case SeablastConstant::DEBUG_IP_LIST:
-                        Debugger::barDump($property, 'not coded yet');
+//                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
+//                        Debugger::barDump($property, 'not coded yet');
+//                        break;
+//                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
+//                        Debugger::barDump($property, 'not coded yet');
+//                        break;
+                    case SeablastConstant::ADMIN_MAIL_ADDRESS:
+                        if($this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)) {
+                            Debugger::$email = $this->configuration->getString($property);
+                        }
                         break;
                 }
             }
         }
-
-        // TODO rewrite the values below as default configuration
-        //error_reporting(E_ALL & ~E_NOTICE);
-        // TODO fix 3 lines below: '#Parameter \#2 \$newvalue of function ini_set expects string, true given.#'
-//        ini_set('session.http_only', true); // @ phpstan-ignore-line TODO true as string?
-//        if (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
-//            ini_set('session.cookie_secure', true); // @ phpstan-ignore-line TODO true as string?
-//        }
-//        ini_set('session.cookie_httponly', true); // @ phpstan-ignore-line TODO true as string?
-//        ini_set('session.gc_divisor', '100');
-//        ini_set('session.gc_maxlifetime', '200000');
-//        ini_set('session.cokie_lifetime', '2000000');
-//        session_set_cookie_params(10800, '/');
-//        setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
-//        mb_internal_encoding('UTF-8');
-//        mb_http_output('UTF-8');
-        //require_once __DIR__ . '/config.php';
     }
 
     /**
      *
      * @return SeablastConfiguration
      */
-    public function getConfiguration() : SeablastConfiguration
+    public function getConfiguration(): SeablastConfiguration
     {
         return $this->configuration;
     }
@@ -173,16 +147,11 @@ class SeablastController
      */
     private function makeSureUrlIsParametric($requestUri): void
     {
-
-        //xxxtodo parse to path and query - zřejmě preg_neco otazníkem
-
         // Use parse_url to parse the URI
         $parsedUrl = parse_url($requestUri);
         Debugger::barDump(
-            [
-                'requestUri' => $requestUri,
-                'parsedUrl' => $parsedUrl
-            ], 'makeSureUrlIsParametric'
+            ['requestUri' => $requestUri, 'parsedUrl' => $parsedUrl],
+            'makeSureUrlIsParametric'
         );
         Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
         Assert::keyExists($parsedUrl, 'path');
@@ -231,5 +200,30 @@ class SeablastController
         ]);
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
+    }
+
+    /**
+     * Identify UNDER CONSTRUCTION situation
+     * @return void
+     */
+    private function underConstruction(): void
+    {
+        if (
+            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
+        ) {
+            Debugger::barDump('UNDER_CONSTRUCTION!');
+            if (
+                !in_array(
+                    $this->superglobals->server['REMOTE_ADDR'],
+                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
+                )
+            ) {
+                //TODO TEST include from app, pokud tam je, otherwise use this default:
+                include file_exists(APP_DIR . '/under-construction.html')
+                    ? APP_DIR . '/under-construction.html'
+                    : __DIR__ . '/../under-construction.html';
+                exit;
+            }
+        }
     }
 }

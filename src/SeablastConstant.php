@@ -14,13 +14,13 @@ class SeablastConstant
      */
     public const FLAG_WEB_RUNNING = 'SB:web:running';
     /**
-     * @var string Level of error_reporting
+     * @var string Level of PHP built-in error_reporting
      */
     public const SB_ERROR_REPORTING = 'SB:error_reporting';
     /**
      * @var string ini_set('session.cokie_lifetime', '2000000');
      */
-    public const SB_INI_SET_SESSION_COOKIE_LIFETIME = 'SB_INI_SET_SESSION_COOKIE_LIFETIME';
+    public const SB_SESSION_SET_COOKIE_LIFETIME = 'SB_INI_SET_SESSION_COOKIE_LIFETIME';
     /**
      * @var string session_set_cookie_params(10800, '/');
      */
@@ -51,27 +51,29 @@ class SeablastConstant
      */
     public const SB_INI_SET_DISPLAY_ERRORS = 'SB_INI_SET_DISPLAY_ERRORS';
     /**
+     * TODO: make sure this is needed
      * @var string $phinxEnvironment = 'development'; // use this phinx.yml environment for database connection
      */
     public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
     /**
+     * TODO: make sure this is needed
      * @var string
      */
     public const BACKYARD_LOGGING_LEVEL = 'BACKYARD_LOGGING_LEVEL';
     /**
-     * @var string bool
+     * @var string flag whether to send emails to admin
      */
-    public const BACKYARD_MAIL_FOR_ADMIN_ENABLED = 'BACKYARD_MAIL_FOR_ADMIN_ENABLED';
+    public const ADMIN_MAIL_ENABLED = 'ADMIN_MAIL:ENABLED';
     /**
-     * @var string string
+     * @var string string admin's email address
      */
-    public const BACKYARD_ADMIN_MAIL_ADDRESS = 'BACKYARD_ADMIN_MAIL_ADDRESS';
+    public const ADMIN_MAIL_ADDRESS = 'ADMIN_MAIL:ADDRESS';
     /**
-     * @var string string[]
+     * @var string string[] IP addresses where to show Tracy
      */
     public const DEBUG_IP_LIST = 'DEBUG_IP_LIST';
     /**
-     * @var string string[]
+     * @var string string[] mapping slugs to templates and tables
      */
     public const APP_COLLECTION = 'APP_COLLECTION';
     /**
