@@ -17,6 +17,7 @@ The goal is to be able to create a complex web application only by configuration
 
 ## Directory description
 | Directory | Description |
+|-----|------|
 | .github/ | automations |
 | cache/ | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | log/ | logs - this is just for development as production-wise, there will be logs/ directory in the root of the app |

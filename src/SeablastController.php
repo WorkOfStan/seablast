@@ -5,9 +5,7 @@ namespace Seablast\Seablast;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
-
-//use Tracy\ILogger;
-//use Webmozart\Assert\Assert;
+use Webmozart\Assert\Assert;
 
 class SeablastController
 {
@@ -169,8 +167,9 @@ class SeablastController
     }
 
     /**
-     * TODO really return void? or string?
-     * @return void
+     *
+     * @param string $requestUri
+     * @return void as uriPath and uriQuery are populated
      */
     private function makeSureUrlIsParametric($requestUri): void
     {
@@ -179,7 +178,14 @@ class SeablastController
 
         // Use parse_url to parse the URI
         $parsedUrl = parse_url($requestUri);
-        Debugger::barDump($parsedUrl, 'parsedUrl');
+        Debugger::barDump(
+            [
+                'requestUri' => $requestUri,
+                'parsedUrl' => $parsedUrl
+            ], 'makeSureUrlIsParametric'
+        );
+        Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
+        Assert::keyExists($parsedUrl, 'path');
 
         // Accessing the individual components
         $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
@@ -213,6 +219,7 @@ class SeablastController
      */
     private function route(): void
     {
+        Assert::string($this->superglobals->server['REQUEST_URI']);
         $this->makeSureUrlIsParametric($this->superglobals->server['REQUEST_URI']);
         // uriPath and uriQuery are now populated
         Debugger::barDump([
