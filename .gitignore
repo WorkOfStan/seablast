@@ -1,5 +1,7 @@
 #disable temporary and log files and dirs
-log/*
+/cache/*
+!/cache/.htaccess
+/log/*
 !/log/.htaccess
 /.sass-cache/
 /.php_cs.cache
