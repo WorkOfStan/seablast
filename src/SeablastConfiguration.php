@@ -60,7 +60,6 @@ class SeablastConfiguration
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayArrayString)) {
             throw new SeablastConfigurationException('No array string for the property ' . $property);
-//            return null;
         }
         return $this->optionsArrayArrayString[$property];
     }
@@ -75,7 +74,6 @@ class SeablastConfiguration
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayString)) {
             throw new SeablastConfigurationException('No array string for the property ' . $property);
-//            return null;
         }
         return $this->optionsArrayString[$property];
     }
@@ -89,7 +87,6 @@ class SeablastConfiguration
     {
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsBool)) {
-            //    return null;
             throw new SeablastConfigurationException('No bool value for the property ' . $property);
         }
         return $this->optionsBool[$property];
@@ -105,7 +102,6 @@ class SeablastConfiguration
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsInt)) {
             throw new SeablastConfigurationException('No int value for the property ' . $property);
-//            return null;
         }
         return $this->optionsInt[$property];
     }
@@ -120,7 +116,6 @@ class SeablastConfiguration
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsString)) {
             throw new SeablastConfigurationException('No string value for the property ' . $property);
-//            return null;
         }
         return $this->optionsString[$property];
     }
@@ -202,7 +197,7 @@ class SeablastConfiguration
     }
 
     /**
-     *
+     * Debug
      * @return void
      */
     public function dump(): void

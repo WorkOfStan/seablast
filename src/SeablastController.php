@@ -122,7 +122,8 @@ class SeablastController
 //                        Debugger::barDump($property, 'not coded yet');
 //                        break;
                     case SeablastConstant::ADMIN_MAIL_ADDRESS:
-                        if($this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)) {
+                        if ($this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)) {
+                            // set here the admin email address to all debug tools
                             Debugger::$email = $this->configuration->getString($property);
                         }
                         break;
@@ -189,17 +190,24 @@ class SeablastController
     private function route(): void
     {
         Assert::string($this->superglobals->server['REQUEST_URI']);
-        $this->makeSureUrlIsParametric($this->superglobals->server['REQUEST_URI']);
+        $appPath = (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
+            ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME);
+        $this->makeSureUrlIsParametric(substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)));
         // uriPath and uriQuery are now populated
         Debugger::barDump([
+            'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
             'APP_DIR' => APP_DIR,
-            'appPath' => (pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME) === '/')
-                 ? '' : pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME),
+            'appPath' => $appPath,
             'path' => $this->uriPath,
             'query' => $this->uriQuery,
         ]);
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
+        //
+        // debug to see whether mapping actually works
+        $collections = $this->configuration->getArrayArrayString(SeablastConstant::APP_COLLECTION);
+        Debugger::barDump($collections[$this->uriPath] ?? null, 'collection');
+        // TODO zde by se měl invokovat model??
     }
 
     /**
