@@ -74,4 +74,12 @@ class SeablastConstant
      * @var string string[]
      */
     public const APP_COLLECTION = 'APP_COLLECTION';
+    /**
+     * @var string string with path to directory with Latte templates
+     */
+    public const LATTE_TEMPLATE = 'LATTE_TEMPLATE';
+    /**
+     * @var string string with path to directory with cache for Latte
+     */
+    public const LATTE_CACHE = 'LATTE_CACHE';
 }

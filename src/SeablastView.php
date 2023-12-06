@@ -11,6 +11,8 @@ class SeablastView
 
     /** @var SeablastModel */
     private $model;
+    /** @var array TODO: Object */
+    private $params;
 
     public function __construct(SeablastModel $model)
     {
@@ -26,14 +28,19 @@ class SeablastView
     private function getTemplatePath()
     {
         // todo - check file exists + inheritance
-        return 'templates/' . 'template.latte';
+        return $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/' . 'template.latte';
     }
 
     private function renderLatte()
     {
         $latte = new \Latte\Engine;
+
+        // Maybe only for PHP8+
+        // aktivuje rozšíření pro Tracy
+        // $latte->addExtension(new Latte\Bridges\Tracy\TracyExtension);
+
         // cache directory
-        $latte->setTempDirectory($this->model->cache());
+        $latte->setTempDirectory($this->model->getConfiguration()->getString(SeablastConstant::LATTE_CACHE));
 
         //$params = [ /* template variables */ ];
         // or $params = new TemplateParameters(/* ... */);

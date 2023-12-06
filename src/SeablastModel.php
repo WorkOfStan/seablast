@@ -18,4 +18,13 @@ class SeablastModel
         $this->controller = $controller;
         Debugger::barDump($this->controller, 'Controller'); // debug
     }
+
+    /**
+     *
+     * @return SeablastConfiguration
+     */
+    public function getConfiguration() : SeablastConfiguration
+    {
+        return $this->controller->getConfiguration();
+    }
 }

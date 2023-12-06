@@ -160,20 +160,30 @@ class SeablastController
     }
 
     /**
+     *
+     * @return SeablastConfiguration
+     */
+    public function getConfiguration() : SeablastConfiguration
+    {
+        return $this->configuration;
+    }
+
+    /**
      * TODO really return void? or string?
      * @return void
      */
     private function makeSureUrlIsParametric($requestUri): void
     {
-        
-        //xxxtodo parse to path and query - zřejmě preg_neco otazníkem 
-        
+
+        //xxxtodo parse to path and query - zřejmě preg_neco otazníkem
+
         // Use parse_url to parse the URI
         $parsedUrl = parse_url($requestUri);
+        Debugger::barDump($parsedUrl, 'parsedUrl');
 
         // Accessing the individual components
         $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
-        $this->uriQuery = $parsedUrl['query']; // Outputs: category=books&id=123
+        $this->uriQuery = $parsedUrl['query'] ?? ''; // Outputs: category=books&id=123
 
         // You can further parse the query string if needed
         parse_str($this->uriQuery, $queryParams);
@@ -191,7 +201,7 @@ class SeablastController
           If !flag frienflyURL_off
           ..If Select * where url
           ....mSUIP //rekurze
-          
+
           //return parametric;
          */
         return; // uriPath and uriQuery are now parametrically populated
@@ -205,7 +215,7 @@ class SeablastController
     {
         $this->makeSureUrlIsParametric($this->superglobals->server['REQUEST_URI']);
         // uriPath and uriQuery are now populated
-        Debugger::barDump([ 
+        Debugger::barDump([
             'APP_DIR' => APP_DIR,
             'appPath' => (pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME) === '/')
                  ? '' : pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME),
