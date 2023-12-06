@@ -25,7 +25,8 @@ class SeablastView
 
     private function getTemplatePath()
     {
-        return 'Templates/' . 'template.latte';
+        // todo - check file exists + inheritance
+        return 'templates/' . 'template.latte';
     }
 
     private function renderLatte()
