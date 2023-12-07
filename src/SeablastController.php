@@ -11,6 +11,8 @@ class SeablastController
 {
     use \Nette\SmartObject;
 
+    /** @var string[] mapping of URL to processing */
+    public $collection;
     /** @var SeablastConfiguration */
     private $configuration;
     /** @var Superglobals */
@@ -184,15 +186,56 @@ class SeablastController
     }
 
     /**
+     * if string start with prefix, remove it
+     */
+    static private function removePrefix ($string, $prefix): string
+    {
+        return (substr($string, 0, strlen($prefix)) === $prefix) ? substr($string, strlen($prefix)) : $string;
+    }
+
+    /**
+     * if string ends with suffix, remove it
+     */
+    static private function removeSuffix ($string, $suffix): string
+    {
+        return (substr($string, -strlen($suffix)) === $suffix) ? substr($string, 0, strlen($string) - strlen($suffix)) : $string;
+    }
+
+    /**
      *
      * @return void
      */
     private function route(): void
     {
         Assert::string($this->superglobals->server['REQUEST_URI']);
+
         $appPath = (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
             ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME);
-        $this->makeSureUrlIsParametric(substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)));
+        Debugger::barDump(
+            [
+                'a' => substr($appPath, -strlen('vendor/seablast/seablast')),
+                'b' => substr($appPath, -strlen('vendor/seablast/seablast')),
+                'c' => substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast',
+                'd' => (substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast') ? substr($appPath, 0, strlen($appPath) - strlen('vendor/seablast/seablast')) : $appPath
+            ],
+            'find the right root'
+        );
+        Debugger::barDump(
+            [
+                'var1' => substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)),
+                'var2' => explode($appPath, $this->superglobals->server['REQUEST_URI']),
+                //'var3' => explode(appPath, $this->superglobals->server['REQUEST_URI']),
+            ],
+            'get the slug'
+        );
+        Debugger::barDump($appPath, 'appPath before');
+        $appPath = self::removeSuffix($appPath, '/vendor/seablast/seablast');
+        Debugger::barDump($appPath, 'appPath after suffix removal');
+        Debugger::barDump($this->superglobals->server['REQUEST_URI'], 'REQUEST_URI');
+        $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
+        Debugger::barDump($urlToBeProcessed, 'URL 2b processed');
+        //$this->makeSureUrlIsParametric(substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)));
+        $this->makeSureUrlIsParametric($urlToBeProcessed);
         // uriPath and uriQuery are now populated
         Debugger::barDump([
             'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
@@ -201,12 +244,20 @@ class SeablastController
             'path' => $this->uriPath,
             'query' => $this->uriQuery,
         ]);
+        //phpinfo();exit;//debug
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
         //
         // debug to see whether mapping actually works
         $collections = $this->configuration->getArrayArrayString(SeablastConstant::APP_COLLECTION);
         Debugger::barDump($collections[$this->uriPath] ?? null, 'collection');
+        if(!isset($collections[$this->uriPath])) {
+            // 404 Not found
+            http_response_code(404);
+            // TODO make it nice
+            exit;
+        }
+        $this->collection = $collections[$this->uriPath];
         // TODO zde by se měl invokovat model??
     }
 

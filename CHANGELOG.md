@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added do not send automatic emails to admin by default
 - Code quality: add Assertions to eliminate PHPStan identified issues
 - added prototype of parametric routing
+- URL maps to template (404 otherwise)
 
 ### Changed
 

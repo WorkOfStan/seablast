@@ -10,6 +10,8 @@ class SeablastModel
 {
     use \Nette\SmartObject;
 
+    /** @var string[] mapping of URL to processing */
+    public $collection;
     /** @var SeablastController */
     private $controller;
 
@@ -17,6 +19,7 @@ class SeablastModel
     {
         $this->controller = $controller;
         Debugger::barDump($this->controller, 'Controller'); // debug
+        $this->collection = $this->controller->collection;
     }
 
     /**
