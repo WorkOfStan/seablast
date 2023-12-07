@@ -29,7 +29,7 @@ class SeablastController
      */
     public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
-        // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
+        // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'configuration');
@@ -198,7 +198,9 @@ class SeablastController
      */
     static private function removeSuffix ($string, $suffix): string
     {
-        return (substr($string, -strlen($suffix)) === $suffix) ? substr($string, 0, strlen($string) - strlen($suffix)) : $string;
+        return (substr($string, -strlen($suffix)) === $suffix)
+            ? substr($string, 0, strlen($string) - strlen($suffix))
+            : $string;
     }
 
     /**
@@ -211,29 +213,30 @@ class SeablastController
 
         $appPath = (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
             ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME);
-        Debugger::barDump(
-            [
-                'a' => substr($appPath, -strlen('vendor/seablast/seablast')),
-                'b' => substr($appPath, -strlen('vendor/seablast/seablast')),
-                'c' => substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast',
-                'd' => (substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast') ? substr($appPath, 0, strlen($appPath) - strlen('vendor/seablast/seablast')) : $appPath
-            ],
-            'find the right root'
-        );
-        Debugger::barDump(
-            [
-                'var1' => substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)),
-                'var2' => explode($appPath, $this->superglobals->server['REQUEST_URI']),
-                //'var3' => explode(appPath, $this->superglobals->server['REQUEST_URI']),
-            ],
-            'get the slug'
-        );
-        Debugger::barDump($appPath, 'appPath before');
-        $appPath = self::removeSuffix($appPath, '/vendor/seablast/seablast');
-        Debugger::barDump($appPath, 'appPath after suffix removal');
-        Debugger::barDump($this->superglobals->server['REQUEST_URI'], 'REQUEST_URI');
+//        Debugger::barDump(
+//            [
+//                'a' => substr($appPath, -strlen('vendor/seablast/seablast')),
+//                'b' => substr($appPath, -strlen('vendor/seablast/seablast')),
+//                'c' => substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast',
+//                'd' => (substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast')
+//                ? substr($appPath, 0, strlen($appPath) - strlen('vendor/seablast/seablast')) : $appPath
+//            ],
+//            'find the right root'
+//        );
+//        Debugger::barDump(
+//            [
+//                'var1' => substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)),
+//                'var2' => explode($appPath, $this->superglobals->server['REQUEST_URI']),
+//                //'var3' => explode(appPath, $this->superglobals->server['REQUEST_URI']),
+//            ],
+//            'get the slug'
+//        );
+//        Debugger::barDump($appPath, 'appPath before');
+        $appPath = self::removeSuffix($appPath, '/vendor/seablast/seablast'); // TODO combine with the above definition
+//        Debugger::barDump($appPath, 'appPath after suffix removal');
+//        Debugger::barDump($this->superglobals->server['REQUEST_URI'], 'REQUEST_URI');
         $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
-        Debugger::barDump($urlToBeProcessed, 'URL 2b processed');
+//        Debugger::barDump($urlToBeProcessed, 'URL 2b processed');
         //$this->makeSureUrlIsParametric(substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)));
         $this->makeSureUrlIsParametric($urlToBeProcessed);
         // uriPath and uriQuery are now populated
