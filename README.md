@@ -7,6 +7,9 @@ The goal is to be able to create a complex web application only by configuration
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 
+## Model
+SeablastModel uses model field in APP_COLLECTION to invoke the model in the App. The invoked class MUST have a public method `getParameters()`.
+
 ## Stack
 - PHP7.2+
 - Latte

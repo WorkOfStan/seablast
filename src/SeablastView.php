@@ -20,8 +20,8 @@ class SeablastView
     {
         $this->model = $model;
         Debugger::barDump($this->model, 'model');
-        $this->params = [];
-        $this->params['model'] = $this->model;
+        $this->params = $this->model->getParameters();
+        $this->params['model'] = $this->model; // debug
         //echo ('<h1>Minimal model</h1>');
         //var_dump($this->model); // minimal
         $this->renderLatte();
