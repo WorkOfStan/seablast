@@ -188,7 +188,7 @@ class SeablastController
     /**
      * if string start with prefix, remove it
      */
-    static private function removePrefix ($string, $prefix): string
+    private static function removePrefix($string, $prefix): string
     {
         return (substr($string, 0, strlen($prefix)) === $prefix) ? substr($string, strlen($prefix)) : $string;
     }
@@ -196,11 +196,10 @@ class SeablastController
     /**
      * if string ends with suffix, remove it
      */
-    static private function removeSuffix ($string, $suffix): string
+    private static function removeSuffix($string, $suffix): string
     {
         return (substr($string, -strlen($suffix)) === $suffix)
-            ? substr($string, 0, strlen($string) - strlen($suffix))
-            : $string;
+            ? substr($string, 0, strlen($string) - strlen($suffix)) : $string;
     }
 
     /**
@@ -259,7 +258,7 @@ class SeablastController
         // debug to see whether mapping actually works
         $collections = $this->configuration->getArrayArrayString(SeablastConstant::APP_COLLECTION);
         Debugger::barDump($collections[$this->uriPath] ?? null, 'collection');
-        if(!isset($collections[$this->uriPath])) {
+        if (!isset($collections[$this->uriPath])) {
             // 404 Not found
             http_response_code(404);
             // TODO make it nice

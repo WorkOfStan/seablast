@@ -35,16 +35,18 @@ class SeablastView
     private function getTemplatePath(): string
     {
         // todo - check file exists + inheritance
-        $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/' . $this->model->collection['template'] . '.latte'; 
+        $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/'
+            . $this->model->collection['template'] . '.latte';
         // APP
-        if(file_exists('../../../' . $templatePath)) {
+        if (file_exists('../../../' . $templatePath)) {
             return '../../../' . $templatePath;
         }
         // INHERITED
-        if(file_exists( $templatePath)) {
+        if (file_exists($templatePath)) {
             return $templatePath;
         }
-        throw new \Exception ($this->model->collection['template'] . ' template is neither in app '.$templatePath.' nor in library'); // TODO improve the error message
+        throw new \Exception($this->model->collection['template'] . ' template is neither in app ' . $templatePath
+            . ' nor in library'); // TODO improve the error message
     }
 
     /**
