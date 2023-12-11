@@ -39,7 +39,7 @@ class SeablastModel
     }
 
     /**
-     * TODO: change to object as parameters for Latte render
+     * TODO: change to object as parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest)
      * @return array<mixed>
      */
     public function getParameters(): array

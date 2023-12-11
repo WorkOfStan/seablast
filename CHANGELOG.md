@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality: add Assertions to eliminate PHPStan identified issues
 - added prototype of parametric routing
 - URL maps to template (404 otherwise)
+- Controller: /book and /book/ and /book/?id=1 are all resolved to /book
 
 ### Changed
 

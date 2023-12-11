@@ -247,6 +247,11 @@ class SeablastController
             'path' => $this->uriPath,
             'query' => $this->uriQuery,
         ]);
+        // so that /book and /book/ and /book/?id=1 are all resolved to /book
+        $this->uriPath = self::removeSuffix($this->uriPath, '/');
+        Debugger::barDump([
+            'pathWithoutTrailingSlash' => $this->uriPath,
+        ]);
         //phpinfo();exit;//debug
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
@@ -258,6 +263,7 @@ class SeablastController
             // 404 Not found
             http_response_code(404);
             // TODO make it nice
+            echo "404 Not found";
             exit;
         }
         $this->collection = $collections[$this->uriPath];
