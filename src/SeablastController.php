@@ -190,6 +190,10 @@ class SeablastController
 
     /**
      * if string start with prefix, remove it
+     *
+     * @param string $string
+     * @param string $prefix
+     * @return string
      */
     private static function removePrefix($string, $prefix): string
     {
@@ -198,6 +202,10 @@ class SeablastController
 
     /**
      * if string ends with suffix, remove it
+     *
+     * @param string $string
+     * @param string $suffix
+     * @return string
      */
     private static function removeSuffix($string, $suffix): string
     {

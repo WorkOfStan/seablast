@@ -3,8 +3,7 @@
 namespace Seablast\Seablast;
 
 use Tracy\Debugger;
-
-//use Webmozart\Assert\Assert;
+use Webmozart\Assert\Assert;
 
 class SeablastModel
 {
@@ -15,7 +14,7 @@ class SeablastModel
     /** @var SeablastController */
     private $controller;
     /** @var array<mixed> TODO: use object instead */
-    private $viewParameters = null;
+    private $viewParameters = []; // null;
 
     public function __construct(SeablastController $controller)
     {
@@ -25,6 +24,7 @@ class SeablastModel
         if (isset($this->collection['model'])) {
             $className = $this->collection['model'];
             $m = new $className();
+            Assert::methodExists($m, 'getParameters', "{$className} model MUST have method getParameters()");
             $this->viewParameters = $m->getParameters();
         }
     }
@@ -44,10 +44,10 @@ class SeablastModel
      */
     public function getParameters(): array
     {
-        if (is_null($this->viewParameters)) {
-            // no parameters
-            return [];
-        }
+        //if (is_null($this->viewParameters)) {
+        //    // no parameters
+        //    return [];
+        //}
         return $this->viewParameters;
     }
 }
