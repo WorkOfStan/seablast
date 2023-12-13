@@ -21,6 +21,7 @@ class SeablastView
         $this->model = $model;
         Debugger::barDump($this->model, 'model');
         $this->params = $this->model->getParameters();
+        $this->params['configuration'] = $this->model->getConfiguration();
         $this->params['model'] = $this->model; // debug
         //echo ('<h1>Minimal model</h1>');
         //var_dump($this->model); // minimal
@@ -36,7 +37,7 @@ class SeablastView
     {
         // todo - check file exists + inheritance
         $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/'
-            . $this->model->collection['template'] . '.latte';
+            . $this->model->mapping['template'] . '.latte';
         // APP
         if (file_exists('../../../' . $templatePath)) {
             return '../../../' . $templatePath;
@@ -45,7 +46,7 @@ class SeablastView
         if (file_exists($templatePath)) {
             return $templatePath;
         }
-        throw new \Exception($this->model->collection['template'] . ' template is neither in app ' . $templatePath
+        throw new \Exception($this->model->mapping['template'] . ' template is neither in app ' . $templatePath
             . ' nor in library'); // TODO improve the error message
     }
 

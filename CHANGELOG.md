@@ -31,8 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added prototype of parametric routing
 - URL maps to template (404 otherwise)
 - Controller: /book and /book/ and /book/?id=1 are all resolved to /book
+- configuration is handed over to renderLatte
 
 ### Changed
+- APP_COLLECTION -> APP_MAPPING
 
 ### Deprecated
 

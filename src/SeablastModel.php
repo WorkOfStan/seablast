@@ -10,7 +10,7 @@ class SeablastModel
     use \Nette\SmartObject;
 
     /** @var string[] mapping of URL to processing */
-    public $collection;
+    public $mapping;
     /** @var SeablastController */
     private $controller;
     /** @var array<mixed> TODO: use object instead */
@@ -20,9 +20,9 @@ class SeablastModel
     {
         $this->controller = $controller;
         Debugger::barDump($this->controller, 'Controller'); // debug
-        $this->collection = $this->controller->collection;
-        if (isset($this->collection['model'])) {
-            $className = $this->collection['model'];
+        $this->mapping = $this->controller->mapping;
+        if (isset($this->mapping['model'])) {
+            $className = $this->mapping['model'];
             $m = new $className();
             Assert::methodExists($m, 'getParameters', "{$className} model MUST have method getParameters()");
             $this->viewParameters = $m->getParameters();

@@ -75,7 +75,7 @@ class SeablastConstant
     /**
      * @var string string[] mapping slugs to templates and tables
      */
-    public const APP_COLLECTION = 'APP_COLLECTION';
+    public const APP_MAPPING = 'APP_MAPPING';
     /**
      * @var string string with path to directory with Latte templates
      */

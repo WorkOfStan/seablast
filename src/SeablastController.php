@@ -12,7 +12,7 @@ class SeablastController
     use \Nette\SmartObject;
 
     /** @var string[] mapping of URL to processing */
-    public $collection;
+    public $mapping;
     /** @var SeablastConfiguration */
     private $configuration;
     /** @var Superglobals */
@@ -262,16 +262,16 @@ class SeablastController
         // --> model & params & view type (html, json)
         //
         // debug to see whether mapping actually works
-        $collections = $this->configuration->getArrayArrayString(SeablastConstant::APP_COLLECTION);
-        Debugger::barDump($collections[$this->uriPath] ?? null, 'collection');
-        if (!isset($collections[$this->uriPath])) {
+        $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
+        Debugger::barDump($mapping[$this->uriPath] ?? null, 'collection');
+        if (!isset($mapping[$this->uriPath])) {
             // 404 Not found - route not found
             http_response_code(404);
             // TODO make it nice
             echo "404 Not found";
             exit;
         }
-        $this->collection = $collections[$this->uriPath];
+        $this->mapping = $mapping[$this->uriPath];
         // TODO pokud má být id nebo code a v get není, tak 404
         // TODO zde by se měl invokovat model?? asi až v SBmodel
     }
