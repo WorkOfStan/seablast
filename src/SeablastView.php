@@ -21,10 +21,23 @@ class SeablastView
         $this->model = $model;
         Debugger::barDump($this->model, 'model');
         $this->params = $this->model->getParameters();
-        $this->params['configuration'] = $this->model->getConfiguration();
-        $this->params['model'] = $this->model; // debug
+        if (isArray($this->params) {
+            // array, current way - deprecated
+            $this->params['configuration'] = $this->model->getConfiguration();
+            $this->params['model'] = $this->model; // debug
+        } else {
+            // object, the target way
+            $this->params->configuration = $this->model->getConfiguration();
+            $this->params->model = $this->model; // debug
+        }
         //echo ('<h1>Minimal model</h1>');
         //var_dump($this->model); // minimal
+        // API
+        if (isset($this->params->rest) {
+            $this->renderJson();
+            return;
+        }
+        // HTML UI
         $this->renderLatte();
     }
 
@@ -48,6 +61,16 @@ class SeablastView
         }
         throw new \Exception($this->model->mapping['template'] . ' template is neither in app ' . $templatePath
             . ' nor in library'); // TODO improve the error message
+    }
+
+    /**
+     * Outputs the given data as JSON.
+     *
+     * @param array|object $json The data to be encoded as JSON.
+     */
+    private function renderJson($json) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($json);
     }
 
     /**
