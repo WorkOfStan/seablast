@@ -4,6 +4,7 @@ namespace Seablast\Seablast;
 
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
+use stdClass;
 
 class SeablastModel
 {
@@ -13,7 +14,7 @@ class SeablastModel
     public $mapping;
     /** @var SeablastController */
     private $controller;
-    /** @var array<mixed> TODO: use object instead */
+    /** @var array<mixed>|stdClass TODO: use only object instead */
     private $viewParameters = []; // null;
 
     public function __construct(SeablastController $controller)
@@ -40,9 +41,9 @@ class SeablastModel
 
     /**
      * TODO: change to object as parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest)
-     * @return array<mixed>
+     * @return array<mixed>|stdClass
      */
-    public function getParameters(): array
+    public function getParameters()
     {
         //if (is_null($this->viewParameters)) {
         //    // no parameters

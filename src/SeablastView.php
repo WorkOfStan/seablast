@@ -2,9 +2,9 @@
 
 namespace Seablast\Seablast;
 
+use stdClass;
 use Tracy\Debugger;
-
-//use Webmozart\Assert\Assert;
+use Webmozart\Assert\Assert;
 
 class SeablastView
 {
@@ -13,15 +13,20 @@ class SeablastView
     /** @var SeablastModel */
     private $model;
 
-    /** @var array<mixed> TODO: Object */
+    /** @var array<mixed>|stdClass TODO: only Object */
     private $params;
 
+    /**
+     *
+     * @param \Seablast\Seablast\SeablastModel $model
+     * @return void
+     */
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
         Debugger::barDump($this->model, 'model');
         $this->params = $this->model->getParameters();
-        if (isArray($this->params) {
+        if (is_array($this->params)) {
             // array, current way - deprecated
             $this->params['configuration'] = $this->model->getConfiguration();
             $this->params['model'] = $this->model; // debug
@@ -33,8 +38,8 @@ class SeablastView
         //echo ('<h1>Minimal model</h1>');
         //var_dump($this->model); // minimal
         // API
-        if (isset($this->params->rest) {
-            $this->renderJson();
+        if (isset($this->params->rest)) {
+            $this->renderJson($this->params->rest);
             return;
         }
         // HTML UI
@@ -66,11 +71,14 @@ class SeablastView
     /**
      * Outputs the given data as JSON.
      *
-     * @param array|object $json The data to be encoded as JSON.
+     * @param array<mixed>|object $json The data to be encoded as JSON.
      */
-    private function renderJson($json) {
+    private function renderJson($json): string
+    {
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($json);
+        $result = json_encode($json);
+        Assert::string($result);
+        return $result;
     }
 
     /**
