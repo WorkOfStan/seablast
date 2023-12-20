@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - URL maps to template (404 otherwise)
 - Controller: /book and /book/ and /book/?id=1 are all resolved to /book
 - configuration is handed over to renderLatte
+- GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
+- SeablastModelInterface.php to define minimal requirements for a model used by SeablastModel
 
 ### Changed
 - APP_COLLECTION -> APP_MAPPING

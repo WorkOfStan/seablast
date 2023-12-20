@@ -8,7 +8,9 @@ The goal is to be able to create a complex web application only by configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 
 ## Model
-SeablastModel uses model field in APP_COLLECTION to invoke the model in the App. The invoked class MUST have a public method `getParameters()`.
+SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
+The invoked class MUST have a public method `getParameters()` and accept SeablastConfiguration as a constructor argument.
+The minimal requirements are to be implemented by SeablastModelInterface.
 
 ## Stack
 - PHP7.2+
@@ -17,6 +19,7 @@ SeablastModel uses model field in APP_COLLECTION to invoke the model in the App.
 
 ## Notes
 - the constant `APP_DIR` = the directory of the current application (or the library if built directly)
+- don't start the name of a configuration field in the app.conf.php with SB to prevent value collision
 
 ## Directory description
 | Directory | Description |

@@ -33,9 +33,8 @@ class SeablastController
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'configuration');
-        $this->underConstruction();
+        $this->pageUnderConstruction();
         $this->applyConfiguration();
-        //$this->devenv = xyz;
         $this->route();
     }
 
@@ -62,11 +61,6 @@ class SeablastController
             SeablastConstant::ADMIN_MAIL_ADDRESS,
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
-        //$arrayOfSettings = [];
-        //foreach ($arrayOfSettings as $setting => $value) {
-        //    case
-        //}
-
         foreach ($configurationOrder as $property) {
             if ($this->configuration->exists($property)) {
                 switch ($property) {
@@ -165,12 +159,12 @@ class SeablastController
         $this->uriPath = self::removeSuffix($this->uriPath, '/');
         // TODO refactor the above
         $this->uriQuery = $parsedUrl['query'] ?? ''; // Outputs: category=books&id=123
-
+        //
         // You can further parse the query string if needed
         parse_str($this->uriQuery, $queryParams);
         // $queryParams will be an associative array like:
         // Array ( [category] => books [id] => 123 )
-
+        //
         // makes use of $this->superglobals
         /*
           // Redirector -> friendly url / parametric url
@@ -186,6 +180,20 @@ class SeablastController
           //return parametric;
          */
         return; // uriPath and uriQuery are now parametrically populated
+    }
+
+    /**
+     *
+     * @param string $specificMessage
+     * @return never
+     */
+    private function page404(string $specificMessage): void
+    {
+        Debugger::barDump($specificMessage, 'HTTP 404');
+        http_response_code(404);
+        // TODO make it nice
+        echo "404 Not found";
+        exit;
     }
 
     /**
@@ -220,34 +228,12 @@ class SeablastController
     private function route(): void
     {
         Assert::string($this->superglobals->server['REQUEST_URI']);
-
-        $appPath = (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
-            ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME);
-//        Debugger::barDump(
-//            [
-//                'a' => substr($appPath, -strlen('vendor/seablast/seablast')),
-//                'b' => substr($appPath, -strlen('vendor/seablast/seablast')),
-//                'c' => substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast',
-//                'd' => (substr($appPath, -strlen('vendor/seablast/seablast')) === 'vendor/seablast/seablast')
-//                ? substr($appPath, 0, strlen($appPath) - strlen('vendor/seablast/seablast')) : $appPath
-//            ],
-//            'find the right root'
-//        );
-//        Debugger::barDump(
-//            [
-//                'var1' => substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)),
-//                'var2' => explode($appPath, $this->superglobals->server['REQUEST_URI']),
-//                //'var3' => explode(appPath, $this->superglobals->server['REQUEST_URI']),
-//            ],
-//            'get the slug'
-//        );
-//        Debugger::barDump($appPath, 'appPath before');
-        $appPath = self::removeSuffix($appPath, '/vendor/seablast/seablast'); // TODO combine with the above definition
-//        Debugger::barDump($appPath, 'appPath after suffix removal');
-//        Debugger::barDump($this->superglobals->server['REQUEST_URI'], 'REQUEST_URI');
+        $appPath = self::removeSuffix(
+                (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
+                    ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
+                '/vendor/seablast/seablast'
+        );
         $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
-//        Debugger::barDump($urlToBeProcessed, 'URL 2b processed');
-        //$this->makeSureUrlIsParametric(substr($this->superglobals->server['REQUEST_URI'], strlen($appPath)));
         $this->makeSureUrlIsParametric($urlToBeProcessed);
         // uriPath and uriQuery are now populated
         Debugger::barDump([
@@ -261,26 +247,40 @@ class SeablastController
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
         //
-        // debug to see whether mapping actually works
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
-        Debugger::barDump($mapping[$this->uriPath] ?? null, 'collection');
         if (!isset($mapping[$this->uriPath])) {
-            // 404 Not found - route not found
-            http_response_code(404);
-            // TODO make it nice
-            echo "404 Not found";
-            exit;
+            $this->page404("Route {$this->uriPath} not found");
         }
         $this->mapping = $mapping[$this->uriPath];
-        // TODO pokud má být id nebo code a v get není, tak 404
-        // TODO zde by se měl invokovat model?? asi až v SBmodel
+        Debugger::barDump($this->mapping, 'Mapping');
+        // If id argument is expected, it is also required
+        if (isset($this->mapping['id'])) {
+            if (!isset($this->superglobals->get[$this->mapping['id']])) {
+                $this->page404("Route {$this->uriPath} missing numeric parameter {$this->mapping['id']}");
+            }
+            Assert::scalar($this->superglobals->get[$this->mapping['id']]);
+            $this->configuration->setInt(SeablastConstant::SB_GET_ARGUMENT_ID, (int) $this->superglobals->get[$this->mapping['id']]);
+        }
+        // If code argument is expected, it is also required
+        if (isset($this->mapping['code'])) {
+            if (!isset($this->superglobals->get[$this->mapping['code']])) {
+                $this->page404("Route {$this->uriPath} missing string parameter {$this->mapping['code']}");
+            }
+            Assert::scalar($this->superglobals->get[$this->mapping['code']]);
+            // TODO secure against injection
+            $this->configuration->setString(
+                SeablastConstant::SB_GET_ARGUMENT_CODE,
+                (string) $this->superglobals->get[$this->mapping['code']]
+            );
+        }
+        // if the id or code value is wrong, it MUST fail in the model
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation
+     * Identify UNDER CONSTRUCTION situation and returns an UNDER CONSTRUCTION page
      * @return void
      */
-    private function underConstruction(): void
+    private function pageUnderConstruction(): void
     {
         if (
             !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
@@ -293,9 +293,7 @@ class SeablastController
                 )
             ) {
                 //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html')
-                    ? APP_DIR . '/under-construction.html'
-                    : __DIR__ . '/../under-construction.html';
+                include file_exists(APP_DIR . '/under-construction.html') ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
                 exit;
             }
         }

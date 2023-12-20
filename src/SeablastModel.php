@@ -4,6 +4,7 @@ namespace Seablast\Seablast;
 
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
+use Seablast\Seablast\SeablastController;
 use stdClass;
 
 class SeablastModel
@@ -24,7 +25,7 @@ class SeablastModel
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
-            $m = new $className();
+            $m = new $className($this->controller->getConfiguration());
             Assert::methodExists($m, 'getParameters', "{$className} model MUST have method getParameters()");
             $this->viewParameters = $m->getParameters();
         }

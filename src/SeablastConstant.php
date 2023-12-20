@@ -6,6 +6,7 @@ namespace Seablast\Seablast;
 
 /**
  * @api
+ * Each string MUST start with SB to avoid unintended value collision
  */
 class SeablastConstant
 {
@@ -59,29 +60,37 @@ class SeablastConstant
      * TODO: make sure this is needed
      * @var string
      */
-    public const BACKYARD_LOGGING_LEVEL = 'BACKYARD_LOGGING_LEVEL';
+    public const BACKYARD_LOGGING_LEVEL = 'SB:BACKYARD_LOGGING_LEVEL';
     /**
      * @var string flag whether to send emails to admin
      */
-    public const ADMIN_MAIL_ENABLED = 'ADMIN_MAIL:ENABLED';
+    public const ADMIN_MAIL_ENABLED = 'SB:ADMIN_MAIL:ENABLED';
     /**
      * @var string string admin's email address
      */
-    public const ADMIN_MAIL_ADDRESS = 'ADMIN_MAIL:ADDRESS';
+    public const ADMIN_MAIL_ADDRESS = 'SB:ADMIN_MAIL:ADDRESS';
     /**
      * @var string string[] IP addresses where to show Tracy
      */
-    public const DEBUG_IP_LIST = 'DEBUG_IP_LIST';
+    public const DEBUG_IP_LIST = 'SB:DEBUG_IP_LIST';
     /**
      * @var string string[] mapping slugs to templates and tables
      */
-    public const APP_MAPPING = 'APP_MAPPING';
+    public const APP_MAPPING = 'SB:APP_MAPPING';
     /**
      * @var string string with path to directory with Latte templates
      */
-    public const LATTE_TEMPLATE = 'LATTE_TEMPLATE';
+    public const LATTE_TEMPLATE = 'SB:LATTE_TEMPLATE';
     /**
      * @var string string with path to directory with cache for Latte
      */
-    public const LATTE_CACHE = 'LATTE_CACHE';
+    public const LATTE_CACHE = 'SB:LATTE_CACHE';
+    /**
+     * @var string Name of an expected and accepted numeric GET argument
+     */
+    public const SB_GET_ARGUMENT_ID = 'SB_GET_ARGUMENT_ID';
+    /**
+     * @var string Name of an expected and accepted string GET argument
+     */
+    public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
 }
