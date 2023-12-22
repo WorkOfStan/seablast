@@ -242,7 +242,7 @@ class SeablastController
             'appPath' => $appPath,
             'path' => $this->uriPath,
             'query' => $this->uriQuery,
-        ]);
+        ], 'route resolved');
         //phpinfo();exit;//debug
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
