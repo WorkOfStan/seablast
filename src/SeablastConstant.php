@@ -15,6 +15,10 @@ class SeablastConstant
      */
     public const FLAG_WEB_RUNNING = 'SB:web:running';
     /**
+     * @var string Running or under construction
+     */
+    public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
+    /**
      * @var string Level of PHP built-in error_reporting
      */
     public const SB_ERROR_REPORTING = 'SB:error_reporting';
