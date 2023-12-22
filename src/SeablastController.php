@@ -168,12 +168,12 @@ class SeablastController
         // makes use of $this->superglobals
         /*
           // Redirector -> friendly url / parametric url
-          if !flag redirector_off
+          if FLAG_CHECK_REDIRECTOR
           ..If Select  * where url
           ....mSUIP //rekurze
 
           // Friendly url -> parametric url
-          If !flag frienflyURL_off
+          If !flag frienflyURL_off //TODO v APP_MAPPING musí být jméno sloupce_LANG, kde hledat
           ..If Select * where url
           ....mSUIP //rekurze
 
