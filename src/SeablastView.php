@@ -24,8 +24,9 @@ class SeablastView
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
-        Debugger::barDump($this->model, 'model');
+        Debugger::barDump($this->model, 'Model passed to SBView'); // debug
         $this->params = $this->model->getParameters();
+        Debugger::barDump($this->params, 'Params for SBView'); // debug
         if (is_array($this->params)) {
             // array, current way - deprecated
             $this->params['configuration'] = $this->model->getConfiguration();
@@ -71,14 +72,19 @@ class SeablastView
     /**
      * Outputs the given data as JSON.
      *
-     * @param array<mixed>|object $json The data to be encoded as JSON.
+     * @param array<mixed>|object $data2json The data to be encoded as JSON.
+     * @ param bool $htmlOutput if true, Tracy is displayed // TODO use FLAGS instead
+     * @return never Outputs JSON
      */
-    private function renderJson($json): string
+    private function renderJson(
+        $data2json
+        //, bool $htmlOutput = false
+    ): string
     {
-        header('Content-Type: application/json; charset=utf-8');
-        $result = json_encode($json);
+        header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
+        $result = json_encode($data2json);
         Assert::string($result);
-        return $result;
+        exit($result);
     }
 
     /**
