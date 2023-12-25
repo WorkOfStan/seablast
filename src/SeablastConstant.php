@@ -101,4 +101,13 @@ class SeablastConstant
      * @var string Name of an expected and accepted string GET argument
      */
     public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
+    /**
+     * @var string Int to forced update of external CSS and Javascript files
+     * TODO use this in seablast-dist
+     */
+    public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';
+    /**
+     * @var string The absolute URL of the root of the application
+     */
+    public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
 }

@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SeablastModel uses permanent argument Superglobals $superglobals instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available
 - FLAG_DEBUG_JSON: Output JSON as HTML instead of application/json so that Tracy is displayed
 - `declare(strict_types=1);` everywhere
+- SB_WEB_FORCE_ASSET_VERSION Int to forced update of external CSS and JavaScript files
+- SB_APP_ROOT_ABSOLUTE_URL The absolute URL of the root of the application
 
 ### Changed
 - APP_COLLECTION -> APP_MAPPING

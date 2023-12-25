@@ -34,7 +34,7 @@ class SeablastController
         // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
-        Debugger::barDump($this->configuration, 'configuration');
+        Debugger::barDump($this->configuration, 'Configuration at SBController start');
         $this->pageUnderConstruction();
         $this->applyConfiguration();
         $this->route();
@@ -128,6 +128,18 @@ class SeablastController
                 }
             }
         }
+        // Addition to configuration with info derived from superglobals
+        $this->configuration->setString(
+            SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
+            'http' .
+            (($this->superglobals->server['SERVER_PORT'] === 443) ? 's' : '') .
+            '://' .
+            $this->superglobals->server['HTTP_HOST'] .
+            $this->removeSuffix(
+                filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL),
+                '/vendor/seablast/seablast/index.php'
+            )
+        );
     }
 
     /**
