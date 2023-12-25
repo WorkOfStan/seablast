@@ -27,5 +27,5 @@ Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRO
 // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
 $superglobals = new Superglobals($_GET, $_POST, $_SERVER, $_SESSION);
 $controller = new SeablastController($setup->getConfiguration(), $superglobals);
-$model = new SeablastModel($controller);
+$model = new SeablastModel($controller, $superglobals);
 $view = new SeablastView($model);

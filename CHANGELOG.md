@@ -34,9 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - configuration is handed over to renderLatte
 - GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
 - SeablastModelInterface.php to define minimal requirements for a model used by SeablastModel
+- SeablastModel uses permanent argument Superglobals $superglobals instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available
+- FLAG_DEBUG_JSON: Output JSON as HTML instead of application/json so that Tracy is displayed
+- `declare(strict_types=1);` everywhere
 
 ### Changed
 - APP_COLLECTION -> APP_MAPPING
+- model->getParameters() -> model->knowledge()
 
 ### Deprecated
 

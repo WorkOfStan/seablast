@@ -1,33 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast;
 
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 use Seablast\Seablast\SeablastController;
+use Seablast\Seablast\Superglobals;
 use stdClass;
 
 class SeablastModel
 {
     use \Nette\SmartObject;
 
-    /** @var string[] mapping of URL to processing */
-    public $mapping;
     /** @var SeablastController */
     private $controller;
+    /** @var string[] mapping of URL to processing */
+    public $mapping;
     /** @var array<mixed>|stdClass TODO: use only object instead */
     private $viewParameters = []; // null;
 
-    public function __construct(SeablastController $controller)
+    /**
+     *
+     * @param SeablastController $controller
+     * @param Superglobals $superglobals
+     */
+    public function __construct(SeablastController $controller, Superglobals $superglobals)
     {
         $this->controller = $controller;
         Debugger::barDump($this->controller, 'Controller'); // debug
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
-            $m = new $className($this->controller->getConfiguration());
-            Assert::methodExists($m, 'getParameters', "{$className} model MUST have method getParameters()");
-            $this->viewParameters = $m->getParameters();
+            $m = new $className($this->controller->getConfiguration(), $superglobals);
+            Assert::methodExists($m, 'knowledge', "{$className} model MUST have method knowledge()");
+            $this->viewParameters = $m->knowledge();
         }
     }
 

@@ -19,6 +19,10 @@ class SeablastConstant
      */
     public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
     /**
+     * @var string Output JSON as HTML instead of application/json so that Tracy is displayed
+     */
+    public const FLAG_DEBUG_JSON = 'SB:debug:json';
+    /**
      * @var string Level of PHP built-in error_reporting
      */
     public const SB_ERROR_REPORTING = 'SB:error_reporting';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast;
 
 use stdClass;
@@ -40,8 +42,7 @@ class SeablastView
         //var_dump($this->model); // minimal
         // API
         if (isset($this->params->rest)) {
-            $this->renderJson($this->params->rest);
-            return;
+            $this->renderJson($this->params->rest); // terminates
         }
         // HTML UI
         $this->renderLatte();
@@ -79,8 +80,9 @@ class SeablastView
     private function renderJson(
         $data2json
         //, bool $htmlOutput = false
-    ): string
+    ): void
     {
+        if(!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON));
         header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         $result = json_encode($data2json);
         Assert::string($result);

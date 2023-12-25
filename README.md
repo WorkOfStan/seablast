@@ -9,7 +9,8 @@ The goal is to be able to create a complex web application only by configuration
 
 ## Model
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
-The invoked class MUST have a public method `getParameters()` and accept SeablastConfiguration as a constructor argument.
+Model transforms input into knowledge, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
+Also SeablastModel expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 The minimal requirements are to be implemented by SeablastModelInterface.
 
 ## Stack
