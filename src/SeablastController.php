@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
@@ -13,6 +14,8 @@ class SeablastController
 {
     use \Nette\SmartObject;
 
+    /** @var SeablastMysqli */
+    private $connection;
     /** @var string[] mapping of URL to processing */
     public $mapping;
     /** @var SeablastConfiguration */
@@ -142,6 +145,39 @@ class SeablastController
                 '/vendor/seablast/seablast/index.php'
             )
         );
+    }
+
+    // Access to database with lazy initialisation
+    public function dbms(): SeablastMysqli
+    {
+        //Lazy initialisation 
+        if is_null($this->connection) {
+            $this->dbmsCreate();
+        }
+        return $this->connection;
+    }
+
+    private function dbmsCreate(): void
+    {
+        $phinx = $this->dbmsReadPhinx();
+        // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
+        $environment = 'developmnent'; // todo config ?? $phinx['environments']['default_environment']
+        $this->connection = new SeablastMysqli(
+            $phinx['environments'][$environment]['host'], // todo fix localhost      
+            $phinx['environments'][$environment]['user'],
+            $phinx['environments'][$environment]['pass'],
+            $phinx['environments'][$environment]['name'],
+            $phinx['environments'][$environment]['port'] ?? null,
+        );
+        // todo Assert:: connection 
+    }
+
+    private static function dbmsReadPhinx(): array
+    {
+        if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
+            throw new \Exception('Give credentials to use database');
+        }
+        include APP_DIR . '/conf/phinx.local.php'; // which contains the return statement
     }
 
     /**
