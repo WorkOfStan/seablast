@@ -129,6 +129,8 @@ class SeablastController
             }
         }
         // Addition to configuration with info derived from superglobals
+        $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
+        Assert::string($scriptName);
         $this->configuration->setString(
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
             'http' .
@@ -136,7 +138,7 @@ class SeablastController
             '://' .
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix(
-                filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL),
+                $scriptName,
                 '/vendor/seablast/seablast/index.php'
             )
         );
