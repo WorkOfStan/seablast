@@ -169,7 +169,8 @@ class SeablastController
             $phinx['environments'][$environment]['name'],
             $phinx['environments'][$environment]['port'] ?? null,
         );
-        // todo Assert:: connection 
+        // todo Assert:: connection
+        // todo charset nastavit zde, nikoli injection apod
     }
 
     private static function dbmsReadPhinx(): array
