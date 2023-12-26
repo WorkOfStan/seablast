@@ -79,7 +79,7 @@ class SeablastConfiguration
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
             throw new \Exception('Give credentials to use database');
         }
-        include APP_DIR . '/conf/phinx.local.php'; // which contains the return statement
+        return require APP_DIR . '/conf/phinx.local.php';
     }
 
     /**
