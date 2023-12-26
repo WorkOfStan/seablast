@@ -1,43 +1,85 @@
 <?php
 
-namespace Seablast/Seablast;
+declare(strict_types=1);
+
+namespace Seablast\Seablast;
 
 use mysqli;
+use Seablast\Seablast\Tracy\BarPanelTemplate;
+use Tracy\Debugger;
 
+/**
+ * mysqli wrapper with logging
+ */
 class SeablastMysqli extends mysqli
 {
-    //nette declaration
+    use \Nette\SmartObject;
+
+    /** @var bool true if any of the SQL statements ended in an error state */
+    private $databaseError = false;
 
     /** @var string */
     private $logPath = 'query_log.txt'; // TODO default is where??
-    /** @var string[] For Tracy Bar Panel. */
-    private $statementList;
 
-    public function __construct($host, $username, $password, $dbname, $port = null, $socket = null) {
+    /** @var string[] For Tracy Bar Panel. */
+    private $statementList = [];
+
+    public function __construct(
+        string $host,
+        string $username,
+        string $password,
+        string $dbname,
+        ?int $port = null,
+        ?string $socket = null
+    )
+    {
+        // TODO if port/socket null, not call it at all
         parent::__construct($host, $username, $password, $dbname, $port, $socket);
-        $this->set_charset("utf8"); // TODO viz configuration, ale jak to volat? Injection?
-        $this->statementList = [];
     }
 
-    public function query($query, $resultmode = MYSQLI_STORE_RESULT) {
+    public function query($query, $resultmode = MYSQLI_STORE_RESULT)
+    {
         $trimmedQuery = trim($query);
-        $this->statementList[] = $trimmedQuery;
         // todo what other keywords?
-        if (stripos($trimmedQuery, 'SELECT') !== 0 && stripos($trimmedQuery, 'INFO') !== 0) {
+        if (!$this->isSelectOrInfoQuery($trimmedQuery)) {
             // Log the query if it doesn't start with SELECT or INFO
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->logQuery($query);
         }
-        return parent::query($query, $resultmode);
+        $result = parent::query($query, $resultmode);
+        $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
+        if ($result === false) {
+            $this->databaseError = true;
+        }
+        return $result;
     }
 
-    private function logQuery($query) {
-        // Implement your logging logic here
+    private function isSelectOrInfoQuery(string $query): bool
+    {
+        return stripos($query, 'SELECT') === 0 || stripos($query, 'INFO') === 0;
+    }
+
+    /**
+     *
+     * @param string $query
+     * @return void
+     */
+    private function logQuery(string $query): void
+    {
+        // TODO Implement your logging logic here
+        // TODO add timestamp, rotating logs, error_log might be better
         file_put_contents($this->logPath, $query . PHP_EOL, FILE_APPEND);
     }
 
-    public function showSqlBarPanel() {
-        // todo vrátit ten panel!
-        return $this->statementList;
+    public function showSqlBarPanel(): void
+    {
+        if (empty($this->sqlStatementsArray)) {
+            return;
+        }
+        $sqlBarPanel = new BarPanelTemplate('SQL: ' . count($this->statementList), $this->statementList);
+        if ($this->databaseError) {
+            $sqlBarPanel->setError();
+        }
+        Debugger::getBar()->addPanel($sqlBarPanel);
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use Seablast\Seablast\SeablastConfiguration;
-use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
@@ -14,8 +13,6 @@ class SeablastController
 {
     use \Nette\SmartObject;
 
-    /** @var SeablastMysqli */
-    private $connection;
     /** @var string[] mapping of URL to processing */
     public $mapping;
     /** @var SeablastConfiguration */
@@ -147,40 +144,6 @@ class SeablastController
         );
     }
 
-    // Access to database with lazy initialisation
-    public function dbms(): SeablastMysqli
-    {
-        //Lazy initialisation 
-        if is_null($this->connection) {
-            $this->dbmsCreate();
-        }
-        return $this->connection;
-    }
-
-    private function dbmsCreate(): void
-    {
-        $phinx = $this->dbmsReadPhinx();
-        // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
-        $environment = 'developmnent'; // todo config ?? $phinx['environments']['default_environment']
-        $this->connection = new SeablastMysqli(
-            $phinx['environments'][$environment]['host'], // todo fix localhost      
-            $phinx['environments'][$environment]['user'],
-            $phinx['environments'][$environment]['pass'],
-            $phinx['environments'][$environment]['name'],
-            $phinx['environments'][$environment]['port'] ?? null,
-        );
-        // todo Assert:: connection
-        // todo charset nastavit zde, nikoli injection apod
-    }
-
-    private static function dbmsReadPhinx(): array
-    {
-        if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
-            throw new \Exception('Give credentials to use database');
-        }
-        include APP_DIR . '/conf/phinx.local.php'; // which contains the return statement
-    }
-
     /**
      *
      * @return SeablastConfiguration
@@ -289,13 +252,16 @@ class SeablastController
         $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
         $this->makeSureUrlIsParametric($urlToBeProcessed);
         // uriPath and uriQuery are now populated
-        Debugger::barDump([
-            'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
-            'APP_DIR' => APP_DIR,
-            'appPath' => $appPath,
-            'path' => $this->uriPath,
-            'query' => $this->uriQuery,
-        ], 'route resolved');
+        Debugger::barDump(
+            [
+                'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
+                'APP_DIR' => APP_DIR,
+                'appPath' => $appPath,
+                'path' => $this->uriPath,
+                'query' => $this->uriQuery,
+            ],
+            'route resolved'
+        );
         //phpinfo();exit;//debug
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
@@ -312,7 +278,10 @@ class SeablastController
                 $this->page404("Route {$this->uriPath} missing numeric parameter {$this->mapping['id']}");
             }
             Assert::scalar($this->superglobals->get[$this->mapping['id']]);
-            $this->configuration->setInt(SeablastConstant::SB_GET_ARGUMENT_ID, (int) $this->superglobals->get[$this->mapping['id']]);
+            $this->configuration->setInt(
+                SeablastConstant::SB_GET_ARGUMENT_ID,
+                (int) $this->superglobals->get[$this->mapping['id']]
+            );
         }
         // If code argument is expected, it is also required
         if (isset($this->mapping['code'])) {
@@ -346,7 +315,8 @@ class SeablastController
                 )
             ) {
                 //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html') ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+                include file_exists(APP_DIR . '/under-construction.html')
+                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
                 exit;
             }
         }

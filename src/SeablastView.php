@@ -14,7 +14,6 @@ class SeablastView
 
     /** @var SeablastModel */
     private $model;
-
     /** @var array<mixed>|stdClass TODO: only Object */
     private $params;
 
@@ -38,20 +37,22 @@ class SeablastView
             $this->params->configuration = $this->model->getConfiguration();
             $this->params->model = $this->model; // debug
         }
-        //echo ('<h1>Minimal model</h1>');
-        //var_dump($this->model); // minimal
-        // API
         if (isset($this->params->rest)) {
-            $this->renderJson($this->params->rest); // terminates
+            // API
+            $this->renderJson($this->params->rest);
+        } else {
+            // HTML UI
+            $this->renderLatte();
         }
-        // HTML UI
-        $this->renderLatte();
+        // TODO show BarPanel for User etc
+        $this->model->getConfiguration()->dbms()->showSqlBarPanel();
     }
 
     /**
      * Use app version of template, if unavailable use Seablast default version of template
      * If unavailable throw an Exception
      * @return string
+     * @throws \Exception
      */
     private function getTemplatePath(): string
     {
@@ -75,7 +76,7 @@ class SeablastView
      *
      * @param array<mixed>|object $data2json The data to be encoded as JSON.
      * @ param bool $htmlOutput if true, Tracy is displayed // TODO use FLAGS instead
-     * @return never Outputs JSON
+     * @return void Outputs JSON
      */
     private function renderJson(
         $data2json
@@ -86,7 +87,7 @@ class SeablastView
         header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         $result = json_encode($data2json);
         Assert::string($result);
-        exit($result);
+        echo($result);
     }
 
     /**

@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `declare(strict_types=1);` everywhere
 - SB_WEB_FORCE_ASSET_VERSION Int to forced update of external CSS and JavaScript files
 - SB_APP_ROOT_ABSOLUTE_URL The absolute URL of the root of the application
+- show SQL statements in Tracy
 
 ### Changed
 - APP_COLLECTION -> APP_MAPPING

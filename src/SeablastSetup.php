@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
-//use Tracy\Debugger;
-//use Tracy\ILogger;
-
-//use Webmozart\Assert\Assert;
-
 class SeablastSetup
 {
     use \Nette\SmartObject;
