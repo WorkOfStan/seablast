@@ -33,8 +33,13 @@ class SeablastMysqli extends mysqli
         ?string $socket = null
     )
     {
-        // TODO if port/socket null, not call it at all
-        parent::__construct($host, $username, $password, $dbname, $port, $socket);
+        if (is_null($port)) {
+            parent::__construct($host, $username, $password, $dbname);
+        } elseif (is_null($socket)) {
+            parent::__construct($host, $username, $password, $dbname, $port);
+        } else {
+            parent::__construct($host, $username, $password, $dbname, $port, $socket);
+        }
     }
 
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
@@ -73,7 +78,7 @@ class SeablastMysqli extends mysqli
 
     public function showSqlBarPanel(): void
     {
-        if (empty($this->sqlStatementsArray)) {
+        if (empty($this->statementList)) {
             return;
         }
         $sqlBarPanel = new BarPanelTemplate('SQL: ' . count($this->statementList), $this->statementList);

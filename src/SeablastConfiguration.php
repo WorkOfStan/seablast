@@ -55,13 +55,14 @@ class SeablastConfiguration
     {
         $phinx = $this->dbmsReadPhinx();
         // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
-        $environment = 'developmnent'; // todo config ?? $phinx['environments']['default_environment']
+        $environment = 'development'; // todo config ?? $phinx['environments']['default_environment']
+        Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
         $this->connection = new SeablastMysqli(
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
             $phinx['environments'][$environment]['pass'],
             $phinx['environments'][$environment]['name'],
-            $phinx['environments'][$environment]['port'] ?? null
+            (int) $phinx['environments'][$environment]['port'] ?? null
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
@@ -77,7 +78,7 @@ class SeablastConfiguration
     private static function dbmsReadPhinx(): array
     {
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
-            throw new \Exception('Give credentials to use database');
+            throw new \Exception('Provide credentials to use database');
         }
         return require APP_DIR . '/conf/phinx.local.php';
     }
