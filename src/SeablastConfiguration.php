@@ -83,6 +83,16 @@ class SeablastConfiguration
     }
 
     /**
+     * Returns true on connected, false on not connected
+     * So that SQL Bar Panel is not requested in vain
+     * @return bool
+     */
+    public function dbmsStatus(): bool
+    {
+        return !is_null($this->connection);
+    }
+
+    /**
      * Check existence of a property within configuration
      *
      * @param string $property

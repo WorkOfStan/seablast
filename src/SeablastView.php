@@ -45,7 +45,9 @@ class SeablastView
             $this->renderLatte();
         }
         // TODO show BarPanel for User etc
-        $this->model->getConfiguration()->dbms()->showSqlBarPanel();
+        if ($this->model->getConfiguration()->dbmsStatus()) {
+            $this->model->getConfiguration()->dbms()->showSqlBarPanel();
+        }
     }
 
     /**
