@@ -24,6 +24,16 @@ class SeablastMysqli extends mysqli
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
 
+    /**
+     *
+     * @param string $host
+     * @param string $username
+     * @param string $password
+     * @param string $dbname
+     * @param int|null $port
+     * @param string|null $socket
+     * @throws \Exception
+     */
     public function __construct(
         string $host,
         string $username,
@@ -39,6 +49,11 @@ class SeablastMysqli extends mysqli
             parent::__construct($host, $username, $password, $dbname, $port);
         } else {
             parent::__construct($host, $username, $password, $dbname, $port, $socket);
+        }
+        if ($this->connect_error) {
+            throw new \Exception(
+                'Connection to database failed with error #' . $this->connect_errno . ' ' . $this->connect_error
+            );
         }
     }
 

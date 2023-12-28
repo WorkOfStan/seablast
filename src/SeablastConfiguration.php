@@ -40,7 +40,7 @@ class SeablastConfiguration
     public function dbms(): SeablastMysqli
     {
         //Lazy initialisation
-        if (is_null($this->connection)) {
+        if (!$this->dbmsStatus()) {
             Debugger::barDump('Creating database connection');
             $this->dbmsCreate();
         }
@@ -56,13 +56,16 @@ class SeablastConfiguration
         $phinx = $this->dbmsReadPhinx();
         // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
         $environment = 'development'; // todo config ?? $phinx['environments']['default_environment']
+        Assert::isArray($phinx['environments']);
         Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
+        $port = isset($phinx['environments'][$environment]['port'])
+            ? (int) $phinx['environments'][$environment]['port'] : null;
         $this->connection = new SeablastMysqli(
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
             $phinx['environments'][$environment]['pass'],
             $phinx['environments'][$environment]['name'],
-            (int) $phinx['environments'][$environment]['port'] ?? null
+            $port
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
@@ -90,7 +93,7 @@ class SeablastConfiguration
      */
     public function dbmsStatus(): bool
     {
-        return !is_null($this->connection);
+        return !is_a($this->connection, '\mysqli');
     }
 
     /**

@@ -13,6 +13,9 @@ Model transforms input into knowledge, therefore the invoked class MUST have a p
 Also SeablastModel expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 The minimal requirements are to be implemented by SeablastModelInterface.
 
+- If model replies with `rest` property, API response is triggered instead of HTML UI.
+- If model replies with `redirection` property, then `url` and optionally `httpCode` properties trigger redirection (instead of HTML UI)-
+
 ## Stack
 - PHP7.2+
 - Latte

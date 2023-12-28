@@ -51,27 +51,14 @@ class SeablastView
         if (isset($this->params->redirection)) {
             Assert::string($this->params->redirection->url);
             if (isset($this->params->redirection->httpCode)) {
-                Assert::inArray($this->httpCode, [301, 302, 303], 'Unauthorized redirect type %s');
+                Assert::inArray($this->params->redirection->httpCode, [301, 302, 303], 'Unauthorized redirect type %s');
             } else {
-                $this->httpCode = 301; // better for SEO than 303
+                $this->params->redirection->httpCode = 301; // better for SEO than 303
             }
-            header("Location: {$redir}", true, $httpCode); // Note: for SEO 301 is much better than 303
+            header("Location: {$this->params->redirection->url}", true, $this->params->redirections->httpCode);
             header('Connection: close');
-            // todo mapping template redirection
-            /*
-            <!DOCTYPE html>
-<html>
-<head>
-    <title>Page Redirect</title>
-    <!-- Redirect to the specified URL after 5 seconds -->
-    <meta http-equiv="refresh" content="5;url=https://www.example.com">
-</head>
-<body>
-    <h1>Redirecting...</h1>
-    <p>You will be redirected in 5 seconds. If not, <a href="https://www.example.com">click here</a>.</p>
-</body>
-</html>
-            */
+            $this->model->mapping['template'] = 'redirection';
+            $this->renderLatte();
         }
     }
 
