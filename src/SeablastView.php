@@ -40,13 +40,38 @@ class SeablastView
         if (isset($this->params->rest)) {
             // API
             $this->renderJson($this->params->rest);
-        } else {
+        } elseif (!isset($this->params->redirection)) {
             // HTML UI
             $this->renderLatte();
         }
         // TODO show BarPanel for User etc
         if ($this->model->getConfiguration()->dbmsStatus()) {
             $this->model->getConfiguration()->dbms()->showSqlBarPanel();
+        }
+        if (isset($this->params->redirection)) {
+            Assert::string($this->params->redirection->url);
+            if (isset($this->params->redirection->httpCode)) {
+                Assert::inArray($this->httpCode, [301, 302, 303], 'Unauthorized redirect type %s');
+            } else {
+                $this->httpCode = 301; // better for SEO than 303
+            }
+            header("Location: {$redir}", true, $httpCode); // Note: for SEO 301 is much better than 303
+            header('Connection: close');
+            // todo mapping template redirection
+            /*
+            <!DOCTYPE html>
+<html>
+<head>
+    <title>Page Redirect</title>
+    <!-- Redirect to the specified URL after 5 seconds -->
+    <meta http-equiv="refresh" content="5;url=https://www.example.com">
+</head>
+<body>
+    <h1>Redirecting...</h1>
+    <p>You will be redirected in 5 seconds. If not, <a href="https://www.example.com">click here</a>.</p>
+</body>
+</html>
+            */
         }
     }
 
