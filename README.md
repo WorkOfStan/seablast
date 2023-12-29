@@ -26,7 +26,7 @@ The minimal requirements are to be implemented by SeablastModelInterface.
 - don't start the value of a constant for a configuration field in the app.conf.php with SB to prevent value collision
 
 ## App expectation
-- SeablastMysqli expects log directory to store query_log.txt there
+- SeablastMysqli expects log directory to store query.log there
 
 ## Directory description
 | Directory | Description |
