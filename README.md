@@ -16,7 +16,7 @@ The goal is to be able to create a complex web application ONLY by configuration
 
 ## Model
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
-*Model transforms input into knowledge*, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
+**Model transforms input into knowledge**, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
 - SeablastModel also expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 
 The minimal requirements are to be implemented by SeablastModelInterface.
@@ -36,12 +36,12 @@ The minimal requirements are to be implemented by SeablastModelInterface.
 ## App expectation
 - SeablastMysqli expects `log` directory to store query.log there
 
-## Directory description
+## Framework directory description
 | Directory | Description |
 |-----|------|
-| .github/ | automations |
+| .github/ | Automations |
 | cache/ | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/ | Default configuration for a Seablast app and for PHPStan |
-| log/ | logs - this is just for development as production-wise, there will be log/ directory in the root of the app |
+| log/ | Logs - this is just for development as production-wise, there will be `log` directory in the root of the app |
 | src/ | Seablast classes |
 | templates/ | Latte templates to be inherited |
