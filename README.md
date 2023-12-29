@@ -1,6 +1,6 @@
 # Seablast for PHP
-[![Total Downloads](https://img.shields.io/packagist/dt/workofstan/seablast.svg)](https://packagist.org/packages/workofstan/seablast)
-[![Latest Stable Version](https://img.shields.io/packagist/v/workofstan/seablast.svg)](https://packagist.org/packages/workofstan/seablast)
+[![Total Downloads](https://img.shields.io/packagist/dt/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
+[![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 
 A minimalist MVC framework added by composer.
 The goal is to be able to create a complex web application ONLY by configuration.
