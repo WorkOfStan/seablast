@@ -19,7 +19,7 @@ class SeablastMysqli extends mysqli
     private $databaseError = false;
 
     /** @var string */
-    private $logPath = 'query_log.txt'; // TODO default is where??
+    private $logPath = APP_DIR . '/log/query_log.txt';
 
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
@@ -61,8 +61,8 @@ class SeablastMysqli extends mysqli
     {
         $trimmedQuery = trim($query);
         // todo what other keywords?
-        if (!$this->isSelectOrInfoQuery($trimmedQuery)) {
-            // Log the query if it doesn't start with SELECT or INFO
+        if (!$this->isSelectTypeQuery($trimmedQuery)) {
+            // Log queries that may change data
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->logQuery($query);
         }
@@ -74,9 +74,13 @@ class SeablastMysqli extends mysqli
         return $result;
     }
 
-    private function isSelectOrInfoQuery(string $query): bool
+    /**
+     * Identify query that doesn't change data
+     */
+    private function isSelectTypeQuery(string $query): bool
     {
-        return stripos($query, 'SELECT') === 0 || stripos($query, 'INFO') === 0;
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0
+            || stripos($query, 'SHOW ') === 0;
     }
 
     /**
