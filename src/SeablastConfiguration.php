@@ -93,7 +93,7 @@ class SeablastConfiguration
      */
     public function dbmsStatus(): bool
     {
-        return !is_a($this->connection, '\mysqli');
+        return is_a($this->connection, '\mysqli');
     }
 
     /**
