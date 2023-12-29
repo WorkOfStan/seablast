@@ -25,12 +25,15 @@ The minimal requirements are to be implemented by SeablastModelInterface.
 - the constant `APP_DIR` = the directory of the current application (or the library if built directly)
 - don't start the value of a constant for a configuration field in the app.conf.php with SB to prevent value collision
 
+## App expectation
+- SeablastMysqli expects log directory to store query_log.txt there
+
 ## Directory description
 | Directory | Description |
 |-----|------|
 | .github/ | automations |
 | cache/ | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/ | Default configuration for a Seablast app and for PHPStan |
-| log/ | logs - this is just for development as production-wise, there will be logs/ directory in the root of the app |
+| log/ | logs - this is just for development as production-wise, there will be log/ directory in the root of the app |
 | src/ | Seablast classes |
 | templates/ | Latte templates to be inherited |
