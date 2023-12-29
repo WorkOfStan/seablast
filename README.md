@@ -1,7 +1,12 @@
 # Seablast for PHP
+[![Total Downloads](https://img.shields.io/packagist/dt/workofstan/seablast.svg)](https://packagist.org/packages/workofstan/seablast)
+[![Latest Stable Version](https://img.shields.io/packagist/v/workofstan/seablast.svg)](https://packagist.org/packages/workofstan/seablast)
+
 A minimalist MVC framework added by composer.
-The goal is to be able to create a complex web application only by configuration.
+The goal is to be able to create a complex web application ONLY by configuration.
 (The future is in an easy to maintain technology.)
+- Also render templates are optional.
+- Last but not least, the unique business logic MUST by implemented as models.
 
 - See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it.
 
