@@ -21,7 +21,7 @@ Also SeablastModel expects Superglobals $superglobals argument (instead of injec
 The minimal requirements are to be implemented by SeablastModelInterface.
 
 - If model replies with `rest` property, API response is triggered instead of HTML UI.
-- If model replies with `redirection` property, then `url` and optionally `httpCode` properties trigger redirection (instead of HTML UI)-
+- If model replies with `redirection` property, then `url` and optionally `httpCode` properties trigger redirection (instead of HTML UI).
 
 ## Stack
 - PHP7.2+
