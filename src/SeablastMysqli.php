@@ -17,10 +17,8 @@ class SeablastMysqli extends mysqli
 
     /** @var bool true if any of the SQL statements ended in an error state */
     private $databaseError = false;
-
     /** @var string */
-    private $logPath = APP_DIR . '/log/query_log.txt';
-
+    private $logPath = APP_DIR . '/log/query.log';
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
 
@@ -61,7 +59,7 @@ class SeablastMysqli extends mysqli
     {
         $trimmedQuery = trim($query);
         // todo what other keywords?
-        if (!$this->isSelectTypeQuery($trimmedQuery)) {
+        if (!$this->isReafDataTypeQuery($trimmedQuery)) {
             // Log queries that may change data
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->logQuery($query);
@@ -77,7 +75,7 @@ class SeablastMysqli extends mysqli
     /**
      * Identify query that doesn't change data
      */
-    private function isSelectTypeQuery(string $query): bool
+    private function isReadDataTypeQuery(string $query): bool
     {
         return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0
             || stripos($query, 'SHOW ') === 0;
