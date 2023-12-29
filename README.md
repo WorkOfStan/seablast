@@ -16,8 +16,9 @@ The goal is to be able to create a complex web application ONLY by configuration
 
 ## Model
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
-Model transforms input into knowledge, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
-Also SeablastModel expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
+*Model transforms input into knowledge*, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
+- SeablastModel also expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
+
 The minimal requirements are to be implemented by SeablastModelInterface.
 
 - If model replies with `rest` property, API response is triggered instead of HTML UI.
@@ -33,7 +34,7 @@ The minimal requirements are to be implemented by SeablastModelInterface.
 - don't start the value of a constant for a configuration field in the app.conf.php with SB to prevent value collision
 
 ## App expectation
-- SeablastMysqli expects log directory to store query.log there
+- SeablastMysqli expects `log` directory to store query.log there
 
 ## Directory description
 | Directory | Description |
