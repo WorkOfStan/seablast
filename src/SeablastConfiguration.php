@@ -73,8 +73,8 @@ class SeablastConfiguration
     }
 
     /**
-     * TODO ignore: `Method Seablast\Seablast\SeablastConfiguration::dbmsReadPhinx() should return array but
-     * TODO ignore: return statement is missing.`
+     * Read the database connection parameters from an external phinx configuration
+     *
      * @return array<mixed>
      * @throws \Exception
      */

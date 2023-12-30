@@ -15,7 +15,7 @@ class SeablastConstant
      */
     public const FLAG_WEB_RUNNING = 'SB:web:running';
     /**
-     * @var string Running or under construction
+     * @var string Redirection database should be looked up (unused so far)
      */
     public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
     /**
