@@ -171,10 +171,10 @@ class SeablastController
 
         // Accessing the individual components
         $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
-        // so that /book and /book/ and /book/?id=1 are all resolved to /book
+        // so that /item and /item/ and /item/?id=1 are all resolved to /book
         $this->uriPath = self::removeSuffix($this->uriPath, '/');
         if (empty($this->uriPath)) {
-            // so that homepage works
+            // so that the homepage has non empty path
             $this->uriPath = '/';
         }
         $this->uriQuery = $parsedUrl['query'] ?? ''; // Outputs: category=books&id=123

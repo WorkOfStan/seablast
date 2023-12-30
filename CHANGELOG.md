@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.1] - YYYY-MM-DD
+## [0.1] - 2023-12-30
 ### Added
 - MVC architecture
 - SeablastConstant class for IDE hinting
@@ -30,11 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Code quality: add Assertions to eliminate PHPStan identified issues
 - added prototype of parametric routing
 - URL maps to template (404 otherwise)
-- Controller: /book and /book/ and /book/?id=1 are all resolved to /book
+- Controller: /item and /item/ and /item/?id=1 are all resolved to /item
 - configuration is handed over to renderLatte
 - GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
 - SeablastModelInterface.php to define minimal requirements for a model used by SeablastModel
-- SeablastModel uses permanent argument Superglobals $superglobals instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available
+- SeablastModel uses permanent argument Superglobals $superglobals (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available)
 - FLAG_DEBUG_JSON: Output JSON as HTML instead of application/json so that Tracy is displayed
 - `declare(strict_types=1);` everywhere
 - SB_WEB_FORCE_ASSET_VERSION Int to forced update of external CSS and JavaScript files
