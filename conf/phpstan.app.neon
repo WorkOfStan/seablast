@@ -1,0 +1,9 @@
+parameters:
+    level: 9
+    excludePaths:
+        analyseAndScan:
+            - ../cache/*
+        analyse:
+          - ../vendor
+    scanDirectories:
+      - ../src
