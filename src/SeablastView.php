@@ -14,6 +14,7 @@ class SeablastView
 
     /** @var SeablastModel */
     private $model;
+
     /** @var array<mixed>|stdClass TODO: only Object */
     private $params;
 
@@ -51,11 +52,15 @@ class SeablastView
         if (isset($this->params->redirection)) {
             Assert::string($this->params->redirection->url);
             if (isset($this->params->redirection->httpCode)) {
-                Assert::inArray($this->params->redirection->httpCode, [301, 302, 303], 'Unauthorized redirect type %s');
+                Assert::inArray(
+                    $this->params->redirection->httpCode,
+                    [301, 302, 303],
+                    'Unauthorized redirect HTTP code %s'
+                );
             } else {
                 $this->params->redirection->httpCode = 301; // better for SEO than 303
             }
-            header("Location: {$this->params->redirection->url}", true, $this->params->redirections->httpCode);
+            header("Location: {$this->params->redirection->url}", true, $this->params->redirection->httpCode);
             header('Connection: close');
             $this->model->mapping['template'] = 'redirection';
             $this->renderLatte();
@@ -89,16 +94,13 @@ class SeablastView
      * Outputs the given data as JSON.
      *
      * @param array<mixed>|object $data2json The data to be encoded as JSON.
-     * @ param bool $htmlOutput if true, Tracy is displayed // TODO use FLAGS instead
      * @return void Outputs JSON
      */
-    private function renderJson(
-        $data2json
-        //, bool $htmlOutput = false
-    ): void
+    private function renderJson($data2json): void
     {
-        if(!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON));
-        header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
+        if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
+            header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
+        }
         $result = json_encode($data2json);
         Assert::string($result);
         echo($result);
