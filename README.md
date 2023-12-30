@@ -30,7 +30,7 @@ The minimal requirements are to be implemented by SeablastModelInterface.
 - Tracy
 
 ## Notes
-- the constant `APP_DIR` = the directory of the current application (or the library if built directly)
+- the constant `APP_DIR` = the directory of the current application (or the library, if deployed directly)
 - don't start the value of a constant for a configuration field in the app.conf.php with SB to prevent value collision
 
 ## App expectation
