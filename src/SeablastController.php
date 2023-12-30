@@ -173,7 +173,10 @@ class SeablastController
         $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
         // so that /book and /book/ and /book/?id=1 are all resolved to /book
         $this->uriPath = self::removeSuffix($this->uriPath, '/');
-        // TODO refactor the above
+        if (empty($this->uriPath)) {
+            // so that homepage works
+            $this->uriPath = '/';
+        }
         $this->uriQuery = $parsedUrl['query'] ?? ''; // Outputs: category=books&id=123
         //
         // You can further parse the query string if needed
