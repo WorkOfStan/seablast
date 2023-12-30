@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast;
 
+use stdClass;
 use Tracy\Debugger;
-
-//use Webmozart\Assert\Assert;
+use Webmozart\Assert\Assert;
 
 class SeablastView
 {
@@ -13,25 +15,63 @@ class SeablastView
     /** @var SeablastModel */
     private $model;
 
-    /** @var array<mixed> TODO: Object */
+    /** @var array<mixed>|stdClass TODO: only Object */
     private $params;
 
+    /**
+     *
+     * @param \Seablast\Seablast\SeablastModel $model
+     * @return void
+     */
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
-        Debugger::barDump($this->model, 'model');
+        Debugger::barDump($this->model, 'Model passed to SBView'); // debug
         $this->params = $this->model->getParameters();
-        $this->params['configuration'] = $this->model->getConfiguration();
-        $this->params['model'] = $this->model; // debug
-        //echo ('<h1>Minimal model</h1>');
-        //var_dump($this->model); // minimal
-        $this->renderLatte();
+        Debugger::barDump($this->params, 'Params for SBView'); // debug
+        if (is_array($this->params)) {
+            // array, current way - deprecated
+            $this->params['configuration'] = $this->model->getConfiguration();
+            $this->params['model'] = $this->model; // debug
+        } else {
+            // object, the target way
+            $this->params->configuration = $this->model->getConfiguration();
+            $this->params->model = $this->model; // debug
+        }
+        if (isset($this->params->rest)) {
+            // API
+            $this->renderJson($this->params->rest);
+        } elseif (!isset($this->params->redirection)) {
+            // HTML UI
+            $this->renderLatte();
+        }
+        // TODO show BarPanel for User etc
+        if ($this->model->getConfiguration()->dbmsStatus()) {
+            $this->model->getConfiguration()->dbms()->showSqlBarPanel();
+        }
+        if (isset($this->params->redirection)) {
+            Assert::string($this->params->redirection->url);
+            if (isset($this->params->redirection->httpCode)) {
+                Assert::inArray(
+                    $this->params->redirection->httpCode,
+                    [301, 302, 303],
+                    'Unauthorized redirect HTTP code %s'
+                );
+            } else {
+                $this->params->redirection->httpCode = 301; // better for SEO than 303
+            }
+            header("Location: {$this->params->redirection->url}", true, $this->params->redirection->httpCode);
+            header('Connection: close');
+            $this->model->mapping['template'] = 'redirection';
+            $this->renderLatte();
+        }
     }
 
     /**
      * Use app version of template, if unavailable use Seablast default version of template
      * If unavailable throw an Exception
      * @return string
+     * @throws \Exception
      */
     private function getTemplatePath(): string
     {
@@ -51,6 +91,23 @@ class SeablastView
     }
 
     /**
+     * Outputs the given data as JSON.
+     *
+     * @param array<mixed>|object $data2json The data to be encoded as JSON.
+     * @return void Outputs JSON
+     */
+    private function renderJson($data2json): void
+    {
+        if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
+            header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
+        }
+        $result = json_encode($data2json);
+        Assert::string($result);
+        echo($result);
+    }
+
+    /**
+     * Render selected latte template with the calculated parameters
      *
      * @return void
      */

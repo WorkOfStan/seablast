@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast;
 
 use Seablast\Seablast\SeablastConfigurationException;
+use Seablast\Seablast\SeablastMysqli;
+use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
 class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
+    /** @var SeablastMysqli */
+    private $connection = null;
     /** @var SeablastFlag */
     public $flag;
     /** @var array<array<string[]>> */
@@ -25,6 +31,69 @@ class SeablastConfiguration
     public function __construct()
     {
         $this->flag = new SeablastFlag();
+    }
+
+    /**
+     * Access to database with lazy initialisation
+     * @return SeablastMysqli
+     */
+    public function dbms(): SeablastMysqli
+    {
+        //Lazy initialisation
+        if (!$this->dbmsStatus()) {
+            Debugger::barDump('Creating database connection');
+            $this->dbmsCreate();
+        }
+        return $this->connection;
+    }
+
+    /**
+     * Creates a database connection and sets up charset.
+     * @return void
+     */
+    private function dbmsCreate(): void
+    {
+        $phinx = $this->dbmsReadPhinx();
+        // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
+        $environment = 'development'; // todo config ?? $phinx['environments']['default_environment']
+        Assert::isArray($phinx['environments']);
+        Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
+        $port = isset($phinx['environments'][$environment]['port'])
+            ? (int) $phinx['environments'][$environment]['port'] : null;
+        $this->connection = new SeablastMysqli(
+            $phinx['environments'][$environment]['host'], // todo fix localhost
+            $phinx['environments'][$environment]['user'],
+            $phinx['environments'][$environment]['pass'],
+            $phinx['environments'][$environment]['name'],
+            $port
+        );
+        // todo does this really differentiate between successful connection, failed connection and no connection?
+        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
+        $this->connection->set_charset('utf8'); // TODO viz configuration
+    }
+
+    /**
+     * Read the database connection parameters from an external phinx configuration
+     *
+     * @return array<mixed>
+     * @throws \Exception
+     */
+    private static function dbmsReadPhinx(): array
+    {
+        if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
+            throw new \Exception('Provide credentials to use database');
+        }
+        return require APP_DIR . '/conf/phinx.local.php';
+    }
+
+    /**
+     * Returns true on connected, false on not connected
+     * So that SQL Bar Panel is not requested in vain
+     * @return bool
+     */
+    public function dbmsStatus(): bool
+    {
+        return is_a($this->connection, '\mysqli');
     }
 
     /**
@@ -198,11 +267,11 @@ class SeablastConfiguration
 
     /**
      * Debug
-     * @return void
+     * @ return void
      */
-    public function dump(): void
-    {
-        var_dump($this->optionsBool);
-        var_dump($this->optionsInt, $this->optionsString);
-    }
+//    public function dump(): void
+//    {
+//        var_dump($this->optionsBool);
+//        var_dump($this->optionsInt, $this->optionsString);
+//    }
 }

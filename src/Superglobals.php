@@ -1,8 +1,8 @@
 <?php
 
-namespace Seablast\Seablast;
+declare(strict_types=1);
 
-//use Webmozart\Assert\Assert;
+namespace Seablast\Seablast;
 
 class Superglobals
 {
@@ -26,7 +26,6 @@ class Superglobals
      */
     public function __construct(array $get = [], array $post = [], array $server = [], array $session = [])
     {
-        //todo named parameters? one array?
         $this->get = $get;
         $this->post = $post;
         $this->server = $server;

@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE html>{* template expected by SeablastView for redirection *}
 <html>
     <head>
-        <title>A Seablast app under construction</title>
+        <title>A Seablast app page redirect</title>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+        {* Redirect to the specified URL after 5 seconds *}
+        <meta http-equiv="refresh" content="5;url={$redirection->url}">
         <style>
             body {
                 font-family: 'Roboto', sans-serif;
@@ -38,8 +40,8 @@
     </head>
     <body>
         <div class="container">
-            <h1>Under Construction</h1>
-            <p>The Seablast web app is currently under construction. We'll be back soon with an amazing experience!</p>
+            <h1>Redirecting...</h1>
+            <p>You will be redirected in 5 seconds. If not, <a href="{$redirection->url}">click here</a>.</p>
         </div>
     </body>
 </html>
