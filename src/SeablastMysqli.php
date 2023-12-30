@@ -39,8 +39,7 @@ class SeablastMysqli extends mysqli
         string $dbname,
         ?int $port = null,
         ?string $socket = null
-    )
-    {
+    ) {
         if (is_null($port)) {
             parent::__construct($host, $username, $password, $dbname);
         } elseif (is_null($socket)) {
@@ -55,6 +54,12 @@ class SeablastMysqli extends mysqli
         }
     }
 
+    /**
+     *
+     * @param string $query
+     * @param int $resultmode
+     * @return bool|\mysqli_result
+     */
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
         $trimmedQuery = trim($query);
@@ -77,8 +82,7 @@ class SeablastMysqli extends mysqli
      */
     private function isReadDataTypeQuery(string $query): bool
     {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0
-            || stripos($query, 'SHOW ') === 0;
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0;
     }
 
     /**
@@ -88,11 +92,15 @@ class SeablastMysqli extends mysqli
      */
     private function logQuery(string $query): void
     {
-        // TODO Implement your logging logic here
         // TODO add timestamp, rotating logs, error_log might be better
         file_put_contents($this->logPath, $query . PHP_EOL, FILE_APPEND);
     }
 
+    /**
+     * Show Tracy BarPanel with SQL statements.
+     *
+     * @return void
+     */
     public function showSqlBarPanel(): void
     {
         if (empty($this->statementList)) {

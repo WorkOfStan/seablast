@@ -107,6 +107,7 @@ class SeablastView
     }
 
     /**
+     * Render selected latte template with the calculated parameters
      *
      * @return void
      */

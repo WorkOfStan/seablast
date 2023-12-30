@@ -248,9 +248,9 @@ class SeablastController
     {
         Assert::string($this->superglobals->server['REQUEST_URI']);
         $appPath = self::removeSuffix(
-                (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
-                    ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
-                '/vendor/seablast/seablast'
+            (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
+                ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
+            '/vendor/seablast/seablast'
         );
         $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
         $this->makeSureUrlIsParametric($urlToBeProcessed);
