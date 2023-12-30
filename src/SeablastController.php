@@ -266,6 +266,7 @@ class SeablastController
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
         //
+        // TODO if deployed standalone, ends with exception `No array string for the property SB:APP_MAPPING`. OK?
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         if (!isset($mapping[$this->uriPath])) {
             $this->page404("Route {$this->uriPath} not found");

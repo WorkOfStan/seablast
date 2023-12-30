@@ -59,7 +59,7 @@ class SeablastMysqli extends mysqli
     {
         $trimmedQuery = trim($query);
         // todo what other keywords?
-        if (!$this->isReafDataTypeQuery($trimmedQuery)) {
+        if (!$this->isReadDataTypeQuery($trimmedQuery)) {
             // Log queries that may change data
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->logQuery($query);
