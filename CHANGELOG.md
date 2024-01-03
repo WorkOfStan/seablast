@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 ### `Changed` for changes in existing functionality
+- improved SeablastMysqli error logging
 
 ### `Deprecated` for soon-to-be removed features
 
