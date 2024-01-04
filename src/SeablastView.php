@@ -101,6 +101,10 @@ class SeablastView
         if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
+        if (isset($this->params->status) && is_scalar($this->params->status)) {
+            // todo in_array((int),[allowed codes]
+            http_response_code((int) $this->params->status); // Set the status code
+        }
         $result = json_encode($data2json);
         Assert::string($result);
         echo($result);
