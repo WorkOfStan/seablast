@@ -14,7 +14,6 @@ class SeablastView
 
     /** @var SeablastModel */
     private $model;
-
     /** @var array<mixed>|stdClass TODO: only Object */
     private $params;
 
@@ -106,7 +105,7 @@ class SeablastView
             if ((int) $this->params->status < 100 || (int) $this->params->status > 599) {
                 throw new \Exception('Unknown HTTP code: ' . (int) $this->params->status);
             }
-            http_response_code((int) $this->params->status); // Set the status code
+            http_response_code((int) $this->params->status); // Send the status code
         }
         $result = json_encode($data2json);
         Assert::string($result);
