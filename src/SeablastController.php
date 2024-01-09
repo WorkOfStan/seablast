@@ -131,10 +131,15 @@ class SeablastController
         // Addition to configuration with info derived from superglobals
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
+        // more ways to identify HTTPS
+        $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
+            && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
+            (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
+            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
             'http' .
-            (($this->superglobals->server['SERVER_PORT'] === 443) ? 's' : '') .
+            ($isHttps ? 's' : '') .
             '://' .
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix(
