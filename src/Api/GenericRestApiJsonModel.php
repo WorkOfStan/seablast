@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast;
+namespace Seablast\Seablast\Api;
 
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;

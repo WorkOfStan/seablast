@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### `Added` for new features
-- class GenericRestApiJsonModel implements SeablastModelInterface
+- class Api\GenericRestApiJsonModel implements SeablastModelInterface
 - Exception\UploadException to translate (int) code to (string) message
+- class Api\ApiErrorModel to be directly used by application
 
 ### `Changed` for changes in existing functionality
 - improved SeablastMysqli error logging
