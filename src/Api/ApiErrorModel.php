@@ -8,26 +8,50 @@ use Seablast\Seablast\Api\GenericRestApiJsonModel;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use stdClass;
-use Tracy\Debugger;
-use Webmozart\Assert\Assert;
 
 /**
- * Log errors reported by AJAX saved to the standard error log
+ * Log errors reported by Ajax saved to the standard error log
  * - message
  * - severity (default=error)
  * - order of ajax call from one script
  * - page name that invoked the call
  *
  * Usage:
- * ->setArrayArrayString(
- *     SeablastConstant::APP_MAPPING,
- *     '/api/error',
- *     [
- *         'model' => '\Seablast\Seablast\Api\ApiErrorModel',
- *     ]
- * )
- * TODO: add JavaScript client
+ * conf/app.conf.php
+  ->setArrayArrayString(
+      SeablastConstant::APP_MAPPING,
+      '/api/error',
+      [
+          'model' => '\Seablast\Seablast\Api\ApiErrorModel',
+      ]
+  )
  *
+ * JavaScript client
+    let errorCount = 0;
+    function errorLog(message, severity = 'error') {
+        const stringifiedData = JSON.stringify({
+            message: message,
+            severity: severity,
+            order: ++errorCount,
+            page: window.location.href
+        });
+        console.log(stringifiedData);
+        $.ajax({
+            url: './api/error',
+            type: 'POST',
+            contentType: 'application/json',
+            data: stringifiedData,
+            dataType: 'json', // Expecting JSON response
+            success: function(response) {
+                console.log('Error sent successfully to be logged');
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error sending data of error: ' + errorCount, error);
+                addBanner('Error sending data ' + error, 'warning');
+            }
+        });
+    }
  */
 class ApiErrorModel extends GenericRestApiJsonModel
 {
@@ -56,8 +80,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
             return $result;
         }
         $this->executeBusinessLogic();
-        //Assert::propertyExists($result, 'rest');
-        $result->rest->message = $this->message; // TODO nepřemaže to jen ok výsledek z parent??
+        $result->rest->message = $this->message;
         return $result;
     }
 
@@ -72,6 +95,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
             // todo log better - into log folder
             error_log(($this->data->page ?? 'unknown-page') . ' ' . ($this->data->order ?? '-') . ' '
                 . ($this->data->severity ?? 'error') . ' ' . ($this->data->message ?? '(missing message)'));
+            $this->message = 'Error logged.';
             return;
         }
         throw new \Exception('Unexpected HTTP method');

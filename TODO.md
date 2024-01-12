@@ -2,7 +2,7 @@
 All planned changes to this project are documented in this file.
 
 ## Features
-- 240111, Messages from server and AJAX to user friendly closable banners; how to localize these messages - by some l10n?
+- 240111, Messages from server and Ajax to user friendly closable banners; how to localize these messages - by some l10n?
 
 ## UX
 - 231207, nice 404 (adapt redirection.latte to special operational pages layout)

@@ -6,21 +6,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### `Added` for new features
-- class Api\GenericRestApiJsonModel implements SeablastModelInterface
-- Exception\UploadException to translate (int) code to (string) message
-- class Api\ApiErrorModel to be directly used by application
 
 ### `Changed` for changes in existing functionality
-- improved SeablastMysqli error logging
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
 ### `Fixed` for any bugfixes
-- more ways to identify HTTPS from SERVER headers
 
 ### `Security` in case of vulnerabilities
+
+## [0.1.1] - 2024-01-12
+### Added
+- class Api\GenericRestApiJsonModel implements SeablastModelInterface
+- Exception\UploadException to translate (int) code to (string) message
+- class Api\ApiErrorModel to be directly used by application
+
+### Changed
+- improved SeablastMysqli error logging
+
+### Fixed
+- more ways to identify HTTPS from SERVER headers
 
 ## [0.1] - 2023-12-30
 ### Added
@@ -61,5 +68,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.1...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1
 [0.1]: https://github.com/WorkOfStan/seablast/releases/tag/v0.1
