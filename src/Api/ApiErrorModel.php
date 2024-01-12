@@ -26,6 +26,7 @@ use Webmozart\Assert\Assert;
  *         'model' => '\Seablast\Seablast\Api\ApiErrorModel',
  *     ]
  * )
+ * TODO: add JavaScript client
  *
  */
 class ApiErrorModel extends GenericRestApiJsonModel
