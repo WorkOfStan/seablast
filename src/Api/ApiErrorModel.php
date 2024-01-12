@@ -12,7 +12,7 @@ use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
 /**
- * Log errors reported by AJAX
+ * Log errors reported by AJAX saved to the standard error log
  * - message
  * - severity (default=error)
  * - order of ajax call from one script
@@ -69,7 +69,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
     {
         if ($this->superglobals->server['REQUEST_METHOD'] === 'POST') {
             // todo log better - into log folder
-            error_log('SB:' . ($this->data->page ?? 'unknown-page') . ' ' . ($this->data->order ?? '-') . ' '
+            error_log(($this->data->page ?? 'unknown-page') . ' ' . ($this->data->order ?? '-') . ' '
                 . ($this->data->severity ?? 'error') . ' ' . ($this->data->message ?? '(missing message)'));
             return;
         }
