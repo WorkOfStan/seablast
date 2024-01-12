@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - class Api\GenericRestApiJsonModel implements SeablastModelInterface
 - Exception\UploadException to translate (int) code to (string) message
 - class Api\ApiErrorModel to be directly used by application
+- JSON response uses `status` property as a response HTTP code.
 
 ### Changed
 - improved SeablastMysqli error logging
