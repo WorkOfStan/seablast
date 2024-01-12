@@ -102,7 +102,7 @@ class SeablastConstant
      */
     public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
     /**
-     * @var string Int to forced update of external CSS and Javascript files
+     * @var string Int to forced update of external CSS and JavaScript files
      * TODO use this in seablast-dist
      */
     public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';

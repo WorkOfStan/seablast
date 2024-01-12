@@ -73,6 +73,13 @@ class SeablastMysqli extends mysqli
         $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
         if ($result === false) {
             $this->databaseError = true;
+            // TODO optimize error logging
+            Debugger::barDump(
+                ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
+                'Database error'
+            );
+            $this->statementList[] = "{$this->errno}: {$this->error}";
+            $this->logQuery("{$trimmedQuery} ... {$this->errno}: {$this->error}");
         }
         return $result;
     }

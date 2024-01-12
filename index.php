@@ -12,7 +12,7 @@ use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 
-//Tracy is able to show Debug bar and Bluescreens for AJAX and redirected requests.
+//Tracy is able to show Debug bar and Bluescreens for Ajax and redirected requests.
 //You just have to start session before Tracy
 session_start() || error_log('session_start failed');
 $setup = new SeablastSetup(); // combine configuration files into a valid configuration

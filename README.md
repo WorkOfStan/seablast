@@ -21,7 +21,7 @@ SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 
 The minimal requirements are to be implemented by SeablastModelInterface.
 
-- If model replies with `rest` property, API response is triggered instead of HTML UI.
+- If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `status` property is used as a response HTTP code.
 - If model replies with `redirection` property, then `url` and optionally `httpCode` (301, 302 or 303) properties trigger redirection (instead of HTML UI).
 
 ## Stack
