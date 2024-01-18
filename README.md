@@ -21,10 +21,10 @@ SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 **Model transforms input into knowledge**, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
 - SeablastModel also expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 
-The minimal requirements are to be implemented by SeablastModelInterface.
+The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 
-- If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `status` property is used as a response HTTP code.
-- If model replies with `redirection` property, then `url` and optionally `httpCode` (301, 302 or 303) properties trigger redirection (instead of HTML UI).
+- If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `status` property is used as the response HTTP code. - TODO change `status` to `httpCode` on the same level.
+- If model replies with `redirection` property, then its sub-properties `url` and optionally `httpCode` (301, 302 or 303) trigger redirection (instead of HTML UI).
 
 ## Stack
 - PHP7.2+
