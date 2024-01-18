@@ -2,13 +2,15 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 
-A minimalist MVC framework added by composer.
-The goal is to be able to create a complex web application ONLY by configuration.
-(The future is in an easy to maintain technology.)
-- Also render templates are optional.
-- Last but not least, the unique business logic MUST by implemented as models.
+This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex web application ONLY by configuration: 
+- you configure routes for controller,
+- add models for the app business functionality,
+- optionally modify view templates.
 
-- See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it.
+The framework takes care of logs, database, multiple languages, friendly URL.
+(The future is in an easy to maintain technology.)
+
+- See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repo.
 
 ## Configuration
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
