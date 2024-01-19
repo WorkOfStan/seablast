@@ -44,6 +44,6 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 | .github/ | Automations |
 | cache/ | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/ | Default configuration for a Seablast app and for PHPStan |
-| log/ | Logs - this is just for development as production-wise, there will be `log` directory in the root of the app |
+| log/ | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app |
 | src/ | Seablast classes |
 | templates/ | Latte templates to be inherited |
