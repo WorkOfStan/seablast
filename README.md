@@ -19,7 +19,7 @@ The framework takes care of logs, database, multiple languages, friendly URL.
 ## Model
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 **Model transforms input into knowledge**, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
-- SeablastModel also expects Superglobals $superglobals argument (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
+- SeablastModel also expects Superglobals $superglobals argument (instead of injection `$model->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 
 The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 
