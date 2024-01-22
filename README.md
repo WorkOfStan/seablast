@@ -26,6 +26,9 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 - If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `status` property is used as the response HTTP code. - TODO change `status` to `httpCode` on the same level.
 - If model replies with `redirection` property, then its sub-properties `url` and optionally `httpCode` (301, 302 or 303) trigger redirection (instead of HTML UI).
 
+## Security
+All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` latte variable.
+
 ## Stack
 - PHP7.2+
 - Latte
