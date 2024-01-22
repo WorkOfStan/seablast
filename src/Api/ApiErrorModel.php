@@ -76,7 +76,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
     {
         $result = parent::knowledge();
         if ($result->status >= 400) {
-            // error state means that further execution isn't reasonable
+            // Error state means that further processing is not desired
             return $result;
         }
         $this->executeBusinessLogic();
