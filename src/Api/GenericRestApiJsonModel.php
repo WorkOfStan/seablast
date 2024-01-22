@@ -9,6 +9,8 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Tracy\Debugger;
 use Tracy\ILogger;
 use Webmozart\Assert\Assert;
@@ -31,7 +33,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     /** @var string API response message */
     protected $message = 'Input ready for processing.';
     /** @var int HTTP status to be used in response */
-    protected $status = 200;
+    protected $status = 200; // todo use httpCode instead
     /** @var Superglobals */
     protected $superglobals;
 
@@ -76,7 +78,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
          */
         // if ($this->status < 400) {$this->executeBusinessLogic();} // TODO move to SBdist
         return (object) [
-                'status' => $this->status,
+                'status' => $this->status, // todo use httpCode instead
                 'rest' => (object) [
                     'message' => $this->message,
                 ]
@@ -115,7 +117,24 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             return;
         }
         $this->data = $jsonDecoded;
-        Assert::object($this->data); // just to read the property, it will be used in a child class
+        if (!isset($this->data->csrfToken)) {
+            Debugger::barDump("CSRF token missing", 'ERROR on input');
+            Debugger::log("CSRF token missing", ILogger::ERROR);
+            $this->status = 401; // Unauthorized
+            $this->message = 'CSRF token missing';
+            return;
+        }
+        // CSRF validation
+        $csrfToken = new CsrfToken('sb_json', (string) $this->data->csrfToken);
+        $csrfTokenManager = new CsrfTokenManager();
+        if (!$csrfTokenManager->isTokenValid($csrfToken)) {
+            Debugger::barDump("CSRF token mismatch", 'ERROR on input');
+            Debugger::log("CSRF token mismatch", ILogger::ERROR);
+            $this->status = 401; // Unauthorized
+            $this->message = 'CSRF token mismatch';
+            return;
+        }
+        //Assert::object($this->data); // just to read the property, it will be used in a child class
         // Note: Access the data like this
         //$userInput = $this->data->userInput;
     }
