@@ -11,7 +11,7 @@ class SeablastFlag
     use \Nette\SmartObject;
 
     /** @var bool[] */
-    protected $flags;
+    private $flags;
 
     public function __construct()
     {
