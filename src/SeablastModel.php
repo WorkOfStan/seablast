@@ -21,7 +21,7 @@ class SeablastModel
     /** @ var string[] mapping of URL to processing */
     //public $mapping;
     /** @var stdClass */
-    private $viewParameters!
+    private $viewParameters;
 
     /**
      *
