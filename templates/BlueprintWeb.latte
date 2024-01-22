@@ -54,6 +54,9 @@
                 }
             }
         </style>
+        <script>
+            const csrf_token = '{$csrfToken}';
+        </script>
     </head>
     <body>
         <header>
@@ -73,6 +76,7 @@
         <main>
             Initial content
             {block mainblock}{/block}
+            <p>CSRF token: {$csrfToken}{* sb_json TODO to JavaScript section *}</p>
         </main>
 
         <footer>
