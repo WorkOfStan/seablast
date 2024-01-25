@@ -28,15 +28,8 @@ class SeablastView
         Debugger::barDump($this->model, 'Model passed to SBView'); // debug
         $this->params = $this->model->getParameters();
         Debugger::barDump($this->params, 'Params for SBView'); // debug
-//        if (is_array($this->params)) {
-//            // array, current way - deprecated
-//            $this->params['configuration'] = $this->model->getConfiguration();
-//            $this->params['model'] = $this->model; // debug
-//        } else {
-//            // object, the target way
-            $this->params->configuration = $this->model->getConfiguration();
-            $this->params->model = $this->model; // debug
-//        }
+        $this->params->configuration = $this->model->getConfiguration();
+        //$this->params->model = $this->model; // debug
         if (isset($this->params->rest)) {
             // API
             $this->renderJson($this->params->rest);
@@ -48,10 +41,11 @@ class SeablastView
         if ($this->model->getConfiguration()->dbmsStatus()) {
             $this->model->getConfiguration()->dbms()->showSqlBarPanel();
         }
+        // Redirection
         if (isset($this->params->redirection)) { // TODO Does redirection makes sense? Use rather redirectionUrl ?
             Assert::string($this->params->redirection->url);
             if (isset($this->params->redirection->httpCode)) {
-                throw new \Exception('not redirection->httpCode but httpCode is wanted'); // debug
+                throw new \Exception('not redirection->httpCode but httpCode is wanted'); // debug deprecated
             }
             if (isset($this->params->httpCode)) {
                 Assert::inArray(
@@ -104,7 +98,7 @@ class SeablastView
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
         if (isset($this->params->status)) {
-            throw new \Exception('not status but httpCode is wanted'); // debug
+            throw new \Exception('not status but httpCode is wanted'); // debug deprecated
         }
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // todo in_array((int),[allowed codes] to replace basic validation below
