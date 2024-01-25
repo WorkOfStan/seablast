@@ -44,7 +44,7 @@ class SeablastModel
         }
         // CSRF token to be used by view
         $csrfTokenManager = new CsrfTokenManager();
-        $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json');
+        $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json')->getValue();
         // todo kdy invalidovat? určitě při logout
     }
 

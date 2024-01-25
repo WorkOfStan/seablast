@@ -27,7 +27,7 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 - If model replies with `redirection` property, then its sub-properties `url` and optionally `httpCode` (301, 302 or 303) trigger redirection (instead of HTML UI).
 
 ## Security
-All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` latte variable.
+All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` string latte variable.
 
 ## Stack
 - PHP7.2+
