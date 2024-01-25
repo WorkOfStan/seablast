@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast\Api;
+namespace Seablast\Seablast\Apis;
 
-use Seablast\Seablast\Api\GenericRestApiJsonModel;
+use Seablast\Seablast\Apis\GenericRestApiJsonModel;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use stdClass;
@@ -75,7 +75,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
     public function knowledge(): stdClass
     {
         $result = parent::knowledge();
-        if ($result->status >= 400) {
+        if ($result->httpCode >= 400) {
             // Error state means that further processing is not desired
             return $result;
         }

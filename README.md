@@ -49,4 +49,4 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 | conf/ | Default configuration for a Seablast app and for PHPStan |
 | log/ | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app |
 | src/ | Seablast classes |
-| templates/ | Latte templates to be inherited |
+| views/ | Latte templates to be inherited |

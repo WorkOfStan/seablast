@@ -14,4 +14,3 @@ All planned changes to this project are documented in this file.
 - 231128, replace `.github/linters/*.yml` and `.github/workflows/*.yml` by Seablast versions, probably `WorkOfStan/Seablast-github/.github/workflows/`
 - 231206, cut Latte out of the core Seablast to be used as Seablast/render-latte
 - 231206, either add PHPUnit tests or remove Test from composer.json
-- 240118 - use plural in directories: Exceptions, Apis. Views instead of templates

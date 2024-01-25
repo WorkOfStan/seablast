@@ -14,7 +14,7 @@ class SeablastView
 
     /** @var SeablastModel */
     private $model;
-    /** @var array<mixed>|stdClass TODO: only Object */
+    /** @var stdClass */
     private $params;
 
     /**
@@ -28,15 +28,15 @@ class SeablastView
         Debugger::barDump($this->model, 'Model passed to SBView'); // debug
         $this->params = $this->model->getParameters();
         Debugger::barDump($this->params, 'Params for SBView'); // debug
-        if (is_array($this->params)) {
-            // array, current way - deprecated
-            $this->params['configuration'] = $this->model->getConfiguration();
-            $this->params['model'] = $this->model; // debug
-        } else {
-            // object, the target way
+//        if (is_array($this->params)) {
+//            // array, current way - deprecated
+//            $this->params['configuration'] = $this->model->getConfiguration();
+//            $this->params['model'] = $this->model; // debug
+//        } else {
+//            // object, the target way
             $this->params->configuration = $this->model->getConfiguration();
             $this->params->model = $this->model; // debug
-        }
+//        }
         if (isset($this->params->rest)) {
             // API
             $this->renderJson($this->params->rest);
@@ -48,18 +48,21 @@ class SeablastView
         if ($this->model->getConfiguration()->dbmsStatus()) {
             $this->model->getConfiguration()->dbms()->showSqlBarPanel();
         }
-        if (isset($this->params->redirection)) {
+        if (isset($this->params->redirection)) { // TODO Does redirection makes sense? Use rather redirectionUrl ?
             Assert::string($this->params->redirection->url);
             if (isset($this->params->redirection->httpCode)) {
+                throw new \Exception('not redirection->httpCode but httpCode is wanted'); // debug
+            }
+            if (isset($this->params->httpCode)) {
                 Assert::inArray(
-                    $this->params->redirection->httpCode,
+                    $this->params->httpCode,
                     [301, 302, 303],
                     'Unauthorized redirect HTTP code %s'
                 );
             } else {
-                $this->params->redirection->httpCode = 301; // better for SEO than 303
+                $this->params->httpCode = 301; // better for SEO than 303
             }
-            header("Location: {$this->params->redirection->url}", true, $this->params->redirection->httpCode);
+            header("Location: {$this->params->redirection->url}", true, (int) $this->params->httpCode);
             header('Connection: close');
             $this->model->mapping['template'] = 'redirection';
             $this->renderLatte();
@@ -100,12 +103,15 @@ class SeablastView
         if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
-        if (isset($this->params->status) && is_scalar($this->params->status)) {
+        if (isset($this->params->status)) {
+            throw new \Exception('not status but httpCode is wanted'); // debug
+        }
+        if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // todo in_array((int),[allowed codes] to replace basic validation below
-            if ((int) $this->params->status < 100 || (int) $this->params->status > 599) {
-                throw new \Exception('Unknown HTTP code: ' . (int) $this->params->status);
+            if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
+                throw new \Exception('Unknown HTTP code: ' . (int) $this->params->httpCode);
             }
-            http_response_code((int) $this->params->status); // Send the status code
+            http_response_code((int) $this->params->httpCode); // Send the status code
         }
         $result = json_encode($data2json);
         Assert::string($result);

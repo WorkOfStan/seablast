@@ -18,8 +18,8 @@ class SeablastModel
 
     /** @var SeablastController */
     private $controller;
-    /** @ var string[] mapping of URL to processing */
-    //public $mapping;
+    /** @var string[] mapping of URL to processing accessible in SeablastView */
+    public $mapping;
     /** @var stdClass */
     private $viewParameters;
 
@@ -32,10 +32,9 @@ class SeablastModel
     {
         $this->controller = $controller;
         Debugger::barDump($this->controller, 'Controller'); // debug
-        //$this->mapping = $this->controller->mapping;
-        // todo $this->mapping is redundant
-        if (isset($this->controller->mapping['model'])) {
-            $className = $this->controller->mapping['model'];
+        $this->mapping = $this->controller->mapping;
+        if (isset($this->mapping['model'])) {
+            $className = $this->mapping['model'];
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
