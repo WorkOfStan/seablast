@@ -32,8 +32,8 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     protected $data;
     /** @var string API response message */
     protected $message = 'Input ready for processing.';
-    /** @var int HTTP status to be used in response */
-    protected $httpCode = 200; // todo use httpCode instead
+    /** @var int HTTP status to be used as a default response */
+    protected $httpCode = 200;
     /** @var Superglobals */
     protected $superglobals;
 
@@ -134,9 +134,6 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             $this->message = 'CSRF token mismatch';
             return;
         }
-        //Assert::object($this->data); // just to read the property, it will be used in a child class
-        // Note: Access the data like this
-        //$userInput = $this->data->userInput;
     }
     // todo example to be used in SBdist
     /* private function executeBusinessLogic()
