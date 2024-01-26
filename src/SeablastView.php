@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Tracy\BarPanelTemplate;
 use stdClass;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
@@ -41,6 +42,7 @@ class SeablastView
         if ($this->model->getConfiguration()->dbmsStatus()) {
             $this->model->getConfiguration()->dbms()->showSqlBarPanel();
         }
+        $this->showHttpErrorPanel();
         // Redirection
         if (isset($this->params->redirection)) { // TODO Does redirection makes sense? Use rather redirectionUrl ?
             Assert::string($this->params->redirection->url);
@@ -61,6 +63,17 @@ class SeablastView
             $this->model->mapping['template'] = 'redirection';
             $this->renderLatte();
         }
+    }
+
+    // If HTTP error code, show Tracy BarPanel
+    private function showHttpErrorPanel(): void
+    {
+        if ($this->params->httpCode < 400) {
+            return;
+        }
+        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, $this->params);
+        $httpBarPanel->setError();
+        Debugger::getBar()->addPanel($httpBarPanel);
     }
 
     /**
