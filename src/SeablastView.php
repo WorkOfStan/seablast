@@ -68,10 +68,14 @@ class SeablastView
     // If HTTP error code, show Tracy BarPanel
     private function showHttpErrorPanel(): void
     {
-        if ($this->params->httpCode < 400) {
+        if (!isset($this->params->httpCode) || ($this->params->httpCode < 400)) {
             return;
         }
-        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, ['Params' => $this->params]);
+        $httpBarPanelInfo = []; // 'Params' => $this->params
+        if (isset($this->params->rest->message)) {
+            $httpBarPanelInfo['message'] = $this->params->rest->message;
+        }
+        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, $httpBarPanelInfo);
         $httpBarPanel->setError();
         Debugger::getBar()->addPanel($httpBarPanel);
     }

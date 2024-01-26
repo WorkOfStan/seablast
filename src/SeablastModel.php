@@ -9,7 +9,6 @@ use Webmozart\Assert\Assert;
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\Superglobals;
 use stdClass;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 
 class SeablastModel
@@ -38,9 +37,9 @@ class SeablastModel
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
-        // todo pokud potřeba
-        //} else {
-        //    $this->viewParemeters = new stdClass();
+        } else {
+            // so that csrfToken can be added
+            $this->viewParameters = new stdClass();
         }
         // CSRF token to be used by view
         $csrfTokenManager = new CsrfTokenManager();
