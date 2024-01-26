@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### `Added` for new features
+- TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
 
@@ -17,14 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.2.0] - 2024-01-26
+## [0.2] - 2024-01-27
 ### Added
 - show HTTP code error Tracy BarPanel
 - /api/error for is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
 
 ### Changed **BREAKING**
 - SeablastModel->getParameters() returns object: no more option to return array<mixed>
-- use plural in directories: Exceptions, Apis.
+- use plural in directories: Exceptions, `Apis`.
 - templates folder renamed to views
 - model result property `status` renamed to the self-explaining `httpCode`
 

@@ -8,5 +8,5 @@
 // LIMIT offset ... zacit 1-20
 // todo podporovat číselníky, tedy vazby mezi tabulkama
 
-// POST a DELETE přes API (todo CSRF) TableUpdateApi /api/table 
+// POST a DELETE přes API (todo CSRF) TableUpdateApi /api/table
 // UPDATE jen pokud editable field
