@@ -71,7 +71,7 @@ class SeablastView
         if ($this->params->httpCode < 400) {
             return;
         }
-        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, $this->params);
+        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, ['Params' => $this->params]);
         $httpBarPanel->setError();
         Debugger::getBar()->addPanel($httpBarPanel);
     }
