@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast\Exception;
+namespace Seablast\Seablast\Exceptions;
 
 use Exception;
 

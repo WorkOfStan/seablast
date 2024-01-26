@@ -9,6 +9,7 @@ use Webmozart\Assert\Assert;
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\Superglobals;
 use stdClass;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
 
 class SeablastModel
 {
@@ -16,10 +17,10 @@ class SeablastModel
 
     /** @var SeablastController */
     private $controller;
-    /** @var string[] mapping of URL to processing */
+    /** @var string[] mapping of URL to processing accessible in SeablastView */
     public $mapping;
-    /** @var array<mixed>|stdClass TODO: use only object instead */
-    private $viewParameters = []; // null;
+    /** @var stdClass */
+    private $viewParameters;
 
     /**
      *
@@ -33,10 +34,17 @@ class SeablastModel
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
-            $m = new $className($this->controller->getConfiguration(), $superglobals);
-            Assert::methodExists($m, 'knowledge', "{$className} model MUST have method knowledge()");
-            $this->viewParameters = $m->knowledge();
+            $model = new $className($this->controller->getConfiguration(), $superglobals);
+            Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
+            $this->viewParameters = $model->knowledge();
+        } else {
+            // so that csrfToken can be added
+            $this->viewParameters = new stdClass();
         }
+        // CSRF token to be used by view
+        $csrfTokenManager = new CsrfTokenManager();
+        $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json')->getValue();
+        // todo kdy invalidovat? určitě při logout
     }
 
     /**
@@ -49,8 +57,8 @@ class SeablastModel
     }
 
     /**
-     * TODO: change to object as parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest)
-     * @return array<mixed>|stdClass
+     * Parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest)
+     * @return stdClass
      */
     public function getParameters()
     {

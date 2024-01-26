@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast\Api;
+namespace Seablast\Seablast\Apis;
 
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Tracy\Debugger;
 use Tracy\ILogger;
 use Webmozart\Assert\Assert;
@@ -30,8 +32,8 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     protected $data;
     /** @var string API response message */
     protected $message = 'Input ready for processing.';
-    /** @var int HTTP status to be used in response */
-    protected $status = 200;
+    /** @var int HTTP status to be used as a default response */
+    protected $httpCode = 200;
     /** @var Superglobals */
     protected $superglobals;
 
@@ -66,7 +68,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         // todo move this example to SBdist
         /*
           return (object) [
-          'status' => $this->status,
+          'httpCode' => $this->httpCode,
           'rest' => (object) [
           'message' => 'Calculation completed successfully',
           'result' => $this->businessLogicResult
@@ -76,7 +78,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
          */
         // if ($this->status < 400) {$this->executeBusinessLogic();} // TODO move to SBdist
         return (object) [
-                'status' => $this->status,
+                'httpCode' => $this->httpCode,
                 'rest' => (object) [
                     'message' => $this->message,
                 ]
@@ -95,7 +97,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         if (!is_string($jsonInput)) {
             Debugger::barDump(["php://input doesn't contain string", $jsonInput], 'ERROR on input');
             Debugger::log("php://input doesn't contain string", ILogger::ERROR);
-            $this->status = 400; // Bad Request
+            $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid input';
             return;
         }
@@ -103,21 +105,35 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         Debugger::barDump($jsonDecoded, 'data json_decoded from php://input');
         // Validate JSON input
         if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->status = 400; // Bad Request
+            $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid JSON input'; // TODO be more specific by https://www.php.net/json_last_error
             return;
         }
         if (!is_object($jsonDecoded)) { // maybe this is redundant vs json_last_error above
             Debugger::barDump("Decoded JSON doesn't translate to an object", 'ERROR on input');
             Debugger::log("Decoded JSON doesn't translate to an object", ILogger::ERROR);
-            $this->status = 400; // Bad Request
+            $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid JSON decoding';
             return;
         }
         $this->data = $jsonDecoded;
-        Assert::object($this->data); // just to read the property, it will be used in a child class
-        // Note: Access the data like this
-        //$userInput = $this->data->userInput;
+        if (!isset($this->data->csrfToken)) {
+            Debugger::barDump("CSRF token missing", 'ERROR on input');
+            Debugger::log("CSRF token missing", ILogger::ERROR);
+            $this->httpCode = 401; // Unauthorized
+            $this->message = 'CSRF token missing';
+            return;
+        }
+        // CSRF validation
+        $csrfToken = new CsrfToken('sb_json', (string) $this->data->csrfToken);
+        $csrfTokenManager = new CsrfTokenManager();
+        if (!$csrfTokenManager->isTokenValid($csrfToken)) {
+            Debugger::barDump("CSRF token mismatch", 'ERROR on input');
+            Debugger::log("CSRF token mismatch", ILogger::ERROR);
+            $this->httpCode = 401; // Unauthorized
+            $this->message = 'CSRF token mismatch';
+            return;
+        }
     }
     // todo example to be used in SBdist
     /* private function executeBusinessLogic()

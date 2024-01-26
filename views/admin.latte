@@ -1,0 +1,63 @@
+{* template latte where app version should be used instead of library version *}
+{* TODO: improve this template *}
+{layout 'BlueprintWeb.latte'}
+{block mainblock}
+{*
+    Latte template which uses
+1) variable $menu = array of labels (Content, User management, Language, Logout) and links to generate horizontal menu;
+2) variable $content = array of database tables to generate vertical menu;
+3) variable $table = array of 10 rows and 6 columns (id, date, language, code, text, active) to be displayed as table.
+*}
+    <style>
+        .menu, .content-menu {
+            list-style-type: none;
+            padding: 0;
+        }
+        .menu li {
+            display: inline;
+            margin-right: 10px;
+        }
+        .content-menu li {
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+
+    <nav>
+        <ul class="menu">
+            <li n:foreach="$menu as $menuItem, $link"><a href="{$link}">{$menuItem}</a></li>
+        </ul>
+    </nav>
+
+    <aside>
+        <ul class="content-menu">
+            <li n:foreach="$content as $dbTable">{$dbTable}</li>
+        </ul>
+    </aside>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th n:foreach="$table[0] as $column => $value">{$column|capitalize}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr n:foreach="$table as $row">
+                    <td n:foreach="$row as $value">{$value}</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+{/block}

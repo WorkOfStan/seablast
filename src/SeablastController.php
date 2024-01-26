@@ -173,11 +173,11 @@ class SeablastController
         );
         Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
         Assert::keyExists($parsedUrl, 'path');
-
-        // Accessing the individual components
-        $this->uriPath = $parsedUrl['path']; // Outputs: /myapp/products
-        // so that /item and /item/ and /item/?id=1 are all resolved to /book
-        $this->uriPath = self::removeSuffix($this->uriPath, '/');
+        // so that /products and /products/ and /products/?id=1 are all resolved to /products
+        $this->uriPath = self::removeSuffix(
+            $parsedUrl['path'], // Outputs: /myapp/products
+            '/'
+        );
         if (empty($this->uriPath)) {
             // so that the homepage has non empty path
             $this->uriPath = '/';
@@ -221,7 +221,7 @@ class SeablastController
     }
 
     /**
-     * if string start with prefix, remove it
+     * If string start with prefix, remove it
      *
      * @param string $string
      * @param string $prefix
@@ -233,7 +233,7 @@ class SeablastController
     }
 
     /**
-     * if string ends with suffix, remove it
+     * If string ends with suffix, remove it
      *
      * @param string $string
      * @param string $suffix

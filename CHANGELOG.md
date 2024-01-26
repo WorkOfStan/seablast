@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### `Added` for new features
+- TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
 
@@ -16,6 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2] - 2024-01-27
+### Added
+- show HTTP code error Tracy BarPanel
+- /api/error for is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
+
+### Changed **BREAKING**
+- SeablastModel->getParameters() returns object: no more option to return array<mixed>
+- use plural in directories: Exceptions, `Apis`.
+- templates folder renamed to views
+- model result property `status` renamed to the self-explaining `httpCode`
+
+### Security
+- symfony/security-csrf component generates CSRF tokens (always checked if GenericRestApiJsonModel is extended)
 
 ## [0.1.1] - 2024-01-12
 ### Added
@@ -31,7 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - more ways to identify HTTPS from SERVER headers
 
 ## [0.1] - 2023-12-30
-### Added
 - MVC architecture
 - SeablastConstant class for IDE hinting
 - added SeablastSetup to combine configuration files into a valid configuration before starting Tracy/Debugger and then Controller
@@ -42,7 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added do not send automatic emails to admin by default
 - Code quality: add Assertions to eliminate PHPStan identified issues
 - added prototype of parametric routing
-- URL maps to template (404 otherwise)
 - Controller: /item and /item/ and /item/?id=1 are all resolved to /item
 - configuration is handed over to renderLatte
 - GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
@@ -55,20 +68,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - show SQL statements in Tracy
 - SeablastMysqli lazy initialisation; database load checked, if fails an Exception is thrown
 - if Location redirection fails, a nice redirection HTML page ( redirection.latte ) is displayed
+- APP_MAPPING controls route to model to view, i.e. URL maps to template (404 otherwise)
+- model returns knowledge()
+- a nice Under construction page
 
-### Changed
-- APP_COLLECTION -> APP_MAPPING
-- model->getParameters() -> model->knowledge()
-- nice Under construction page
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2...HEAD
+[0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2
 [0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1
 [0.1]: https://github.com/WorkOfStan/seablast/releases/tag/v0.1
