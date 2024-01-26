@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - show HTTP code error Tracy BarPanel
+- /api/error is always available (if not overriden)
 
 ### `Changed` for changes in existing functionality
 - SeablastModel->getParameters() returns object: no more option to return array<mixed>

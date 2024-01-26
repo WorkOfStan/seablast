@@ -36,5 +36,13 @@ return static function (SeablastConfiguration $SBConfig): void {
         // Latte templates
         ->setString(SeablastConstant::LATTE_TEMPLATE, 'views')
         ->setString(SeablastConstant::LATTE_CACHE, APP_DIR . '/cache')
+        // Error API is always available if not overriden
+        ->setArrayArrayString(
+            SeablastConstant::APP_MAPPING,
+            '/api/error', // todo in SB-dist
+            [
+                'model' => '\Seablast\Seablast\Apis\ApiErrorModel',
+            ]
+        )
     ;
 };
