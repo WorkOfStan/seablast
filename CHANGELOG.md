@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+- Symfony component generates CSRF tokens that are always checked if GenericRestApiJsonModel is used
 
 ## [0.1.1] - 2024-01-12
 ### Added
