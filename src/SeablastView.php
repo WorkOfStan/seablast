@@ -44,6 +44,7 @@ class SeablastView
         }
         $this->showHttpErrorPanel();
         // Redirection
+        // todo redirectionUrl , otherwise assert
         if (isset($this->params->redirection)) { // TODO Does redirection makes sense? Use rather redirectionUrl ?
             Assert::string($this->params->redirection->url);
             if (isset($this->params->redirection->httpCode)) {
