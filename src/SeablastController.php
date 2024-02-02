@@ -281,8 +281,11 @@ class SeablastController
         }
         $this->mapping = $mapping[$this->uriPath];
         Debugger::barDump($this->mapping, 'Mapping');
-        // todo if SC:SBidentity $identity = new $id();
-        // todo if mapping[group] {if !in_array($id[group], mapping[group $http=401/3
+        // todo if SC:SBidentity $identity = new $id(); // LazyLoad!
+        // todo if mapping[group]
+        //     if not_logged => 403 // quick:page404
+        //     if logged but not the right group, i.e.
+        //     {if !in_array($id[group], mapping[group $http=401 // quick:page404
         // If id argument is expected, it is also required
         if (isset($this->mapping['id'])) {
             if (!isset($this->superglobals->get[$this->mapping['id']])) {
