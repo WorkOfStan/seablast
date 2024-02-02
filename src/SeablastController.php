@@ -281,11 +281,25 @@ class SeablastController
         }
         $this->mapping = $mapping[$this->uriPath];
         Debugger::barDump($this->mapping, 'Mapping');
-        // todo if SC:SBidentity $identity = new $id(); // LazyLoad!
-        // todo if mapping[group]
-        //     if not_logged => 403 // quick:page404
-        //     if logged but not the right group, i.e.
-        //     {if !in_array($id[group], mapping[group $http=401 // quick:page404
+        // Authenticate if required
+        // .. is there an identity manager to be used?
+        if (!isset($this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER))) {
+            $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
+            $identity = new $identityManager(); // todo LazyLoad
+        }
+        if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
+            if (!$identity) {
+                throw new \Exception('Identity manager expected.');
+            }
+            // Identity required, if not autheticated => 401
+            if (!$identity->isAuthenticated()) {
+                $this->page404("401 Unauthorized: auth required"); // TODO 401
+            }
+            // Specific role expected, if not authorized => 403
+            if (!in_array($identity->getUser()->getRoleId(), $this->mapping['roleIds'])) {
+                $this->page404("403 Forbidden: wrong role"); // TODO 403
+            }
+        }
         // If id argument is expected, it is also required
         if (isset($this->mapping['id'])) {
             if (!isset($this->superglobals->get[$this->mapping['id']])) {

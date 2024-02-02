@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
+- SeablastConstant::SB_SMTP_ default parameters
+- SeablastConstant::SB_IDENTITY_MANAGER and authentication mechanism in SeablastController
 
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
+- Model response params->redirection changed to params->redirectionUrl
 
 ### `Fixed` for any bugfixes
 

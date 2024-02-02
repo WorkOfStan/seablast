@@ -110,4 +110,24 @@ class SeablastConstant
      * @var string The absolute URL of the root of the application
      */
     public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
+    /**
+     * @var string SMTP host to be used by an email plugin
+     */
+    public const SB_SMTP_HOST = 'SB_SMTP_HOST';
+    /**
+     * @var string SMTP port to be used by an email plugin
+     */
+    public const SB_SMTP_PORT = 'SB_SMTP_PORT';
+    /**
+     * @var string SMTP username to be used by an email plugin
+     */
+    public const SB_SMTP_USERNAME = 'SB_SMTP_USERNAME';
+    /**
+     * @var string SMTP password to be used by an email plugin
+     */
+    public const SB_SMTP_PASSWORD = 'SB_SMTP_PASSWORD';
+    /**
+     * @var string class taking care of Authentication (TODO: experiment)
+     */
+    public const SB_IDENTITY_MANAGER = 'SB_IDENTITY_MANAGER';
 }

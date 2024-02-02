@@ -44,5 +44,10 @@ return static function (SeablastConfiguration $SBConfig): void {
                 'model' => '\Seablast\Seablast\Apis\ApiErrorModel',
             ]
         )
+        // Default SMTP parameters
+        ->setString(SeablastConstant::SB_SMTP_HOST, 'localhost')
+        ->setInt(SeablastConstant::SB_SMTP_PORT, 25)
+        ->setString(SeablastConstant::SB_SMTP_USERNAME, '')
+        ->setString(SeablastConstant::SB_SMTP_PASSWORD, '')
     ;
 };
