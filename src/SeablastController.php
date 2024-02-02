@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\SeablastIdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
@@ -13,10 +14,12 @@ class SeablastController
 {
     use \Nette\SmartObject;
 
-    /** @var string[] mapping of URL to processing */
-    public $mapping;
     /** @var SeablastConfiguration */
     private $configuration;
+    /** @var ?SeablastIdentityManagerInterface */
+    private $identity = null;
+    /** @var string[] mapping of URL to processing */
+    public $mapping;
     /** @var Superglobals */
     private $superglobals;
     /** @var string */
@@ -283,20 +286,24 @@ class SeablastController
         Debugger::barDump($this->mapping, 'Mapping');
         // Authenticate if required
         // .. is there an identity manager to be used?
-        if (!isset($this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER))) {
+        if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
-            $identity = new $identityManager(); // todo LazyLoad
+            /* @phpstan-ignore-next-line Property $identity does not accept object. */
+            $this->identity = new $identityManager(); // todo LazyLoad
         }
         if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
-            if (!$identity) {
+            if (is_null($this->identity)) {
                 throw new \Exception('Identity manager expected.');
             }
             // Identity required, if not autheticated => 401
-            if (!$identity->isAuthenticated()) {
+            if (!$this->identity->isAuthenticated()) {
                 $this->page404("401 Unauthorized: auth required"); // TODO 401
             }
             // Specific role expected, if not authorized => 403
-            if (!in_array($identity->getUser()->getRoleId(), $this->mapping['roleIds'])) {
+            if (!method_exists($this->identity->getUser(), 'getRoleId')) {
+                throw new \Exception('identity->getUser()->getRoleId() expected');
+            }
+            if (!in_array($this->identity->getUser()->getRoleId(), explode(',', $this->mapping['roleIds']))) {
                 $this->page404("403 Forbidden: wrong role"); // TODO 403
             }
         }

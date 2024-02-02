@@ -26,6 +26,13 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 - If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `httpCode` property is used as the response HTTP code.
 - If model replies with `redirection` property, then its sub-property `url` and optionally property `httpCode` (301, 302 or 303) trigger redirection (instead of HTML UI).
 
+```php
+SeablastConstant::APP_MAPPING = route => [
+    'model' => class name of the model,
+    'roleIds' => comma delimited roleIds permitted to access the route
+]
+```
+
 ## Security
 All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` string latte variable.
 

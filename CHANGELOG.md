@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 - SeablastConstant::SB_SMTP_ default parameters
 - SeablastConstant::SB_IDENTITY_MANAGER and authentication mechanism in SeablastController
+- SeablastIdentityManagerInterface encompasses the minimum required methods
 
 ### `Changed` for changes in existing functionality
 
