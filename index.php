@@ -1,6 +1,6 @@
 <?php
 
-// The Composer auto-loader (official way to load Composer contents) to load external stuff automatically
+// Load Composer contents for the app if this library is called from within the app
 require_once __DIR__ . '/defineAppDir.php';
 require_once APP_DIR . '/vendor/autoload.php';
 
@@ -14,14 +14,13 @@ use Tracy\Debugger;
 
 //Tracy is able to show Debug bar and Bluescreens for Ajax and redirected requests.
 //You just have to start session before Tracy
-session_start() || error_log('session_start failed');
+Debugger::setSessionStorage(new Tracy\NativeSession);
 $setup = new SeablastSetup(); // combine configuration files into a valid configuration
 // $setup contains the info for Debugger setup
 $developmentEnvironment = (
     in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
     in_array($_SERVER['REMOTE_ADDR'], $setup->getConfiguration()->getArrayString(SeablastConstant::DEBUG_IP_LIST))
 );
-//force debug mode TODO zkontrolovat, že jde o log aplikace!
 Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, APP_DIR . '/log');
 
 // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing

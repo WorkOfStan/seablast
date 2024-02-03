@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
-use Seablast\Seablast\SeablastIdentityManagerInterface;
+use Seablast\Seablast\IdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
@@ -132,6 +132,7 @@ class SeablastController
                 }
             }
         }
+        $this->startSession();
         // Addition to configuration with info derived from superglobals
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
@@ -222,6 +223,31 @@ class SeablastController
         // TODO make it nice
         echo "404 Not found";
         exit;
+    }
+
+    /**
+     * Identify UNDER CONSTRUCTION situation and returns an UNDER CONSTRUCTION page
+     * @return void
+     */
+    private function pageUnderConstruction(): void
+    {
+        if (
+            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
+        ) {
+            Debugger::barDump('UNDER_CONSTRUCTION!');
+            if (
+                !in_array(
+                    $this->superglobals->server['REMOTE_ADDR'],
+                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
+                )
+            ) {
+                $this->startSession(); // as it couldn't be started before
+                //TODO TEST include from app, pokud tam je, otherwise use this default:
+                include file_exists(APP_DIR . '/under-construction.html')
+                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+                exit;
+            }
+        }
     }
 
     /**
@@ -344,26 +370,15 @@ class SeablastController
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation and returns an UNDER CONSTRUCTION page
+     * Starting a session requires more complex initialization, so Tracy was started immediately
+     * (so that it could handle any errors that occur).
+     * Now initialize the session handler and
+     * finally inform Tracy that the session is ready to be used using the dispatch() function.
      * @return void
      */
-    private function pageUnderConstruction(): void
+    private function startSession(): void
     {
-        if (
-            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-        ) {
-            Debugger::barDump('UNDER_CONSTRUCTION!');
-            if (
-                !in_array(
-                    $this->superglobals->server['REMOTE_ADDR'],
-                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
-                )
-            ) {
-                //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html')
-                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
-                exit;
-            }
-        }
+        session_start() || error_log('session_start failed');
+        Debugger::dispatch();
     }
 }

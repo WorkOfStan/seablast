@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Access to a Route can be restricted to certain roles.
 
 ### `Changed` for changes in existing functionality
+- Starting a session requires more complex initialization, so Tracy starts immediately (so that it can handle any errors that occur) and then the session handler is initialized and finally Tracy is informed that the session is ready to be used.
 
 ### `Deprecated` for soon-to-be removed features
 
