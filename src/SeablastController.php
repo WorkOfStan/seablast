@@ -334,10 +334,9 @@ class SeablastController
                 $this->page404("401 Unauthorized: auth required"); // TODO 401
             }
             // Specific role expected, if not authorized => 403
-            if (!in_array(
-                    $this->configuration->getInt(SeablastConstant::USER_ROLE_ID),
-                    explode(',', $this->mapping['roleIds'])
-                )) {
+            $roleIds = explode(',', $this->mapping['roleIds']);
+            Debugger::barDump($roleIds, 'RoleIds allowed');
+            if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {
                 $this->page404("403 Forbidden: wrong role"); // TODO 403
             }
         }
