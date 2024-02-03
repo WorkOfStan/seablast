@@ -331,7 +331,7 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
-                $this->page404("401 Unauthorized: auth required"); // TODO 401
+                $this->page404("401 Unauthorized: auth required"); // TODO 401 - offer log in
             }
             // Specific role expected, if not authorized => 403
             $roleIds = explode(',', $this->mapping['roleIds']);
