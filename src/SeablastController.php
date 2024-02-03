@@ -284,13 +284,13 @@ class SeablastController
         }
         $this->mapping = $mapping[$this->uriPath];
         Debugger::barDump($this->mapping, 'Mapping');
-        // Authenticate if required
-        // .. is there an identity manager to be used?
+        // Authenticate: is there an identity manager to be used?
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
             $this->identity = new $identityManager(); // todo LazyLoad
         }
+        // Authenticate: RBAC (Role-Based Access Control
         if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
             if (is_null($this->identity)) {
                 throw new \Exception('Identity manager expected.');
