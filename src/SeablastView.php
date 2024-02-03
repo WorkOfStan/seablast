@@ -39,6 +39,9 @@ class SeablastView
             $this->renderJson($this->params->rest);
         } elseif (!isset($this->params->redirectionUrl)) {
             // HTML UI
+            if ($this->params->httpCode >= 400) {
+                $this->model->mapping['template'] = 'error';
+            }
             $this->renderLatte();
         }
         // Show Tracy BarPanels

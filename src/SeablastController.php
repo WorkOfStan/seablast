@@ -150,7 +150,7 @@ class SeablastController
             $this->removeSuffix(
                 $scriptName,
                 '/vendor/seablast/seablast/index.php'
-            )
+            ) // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
         );
     }
 
