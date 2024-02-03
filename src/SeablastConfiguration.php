@@ -105,18 +105,25 @@ class SeablastConfiguration
     public function exists(string $property): bool
     {
         Assert::string($property);
-        try {
-            // TODO properly test if one exception doesn't stop further execution,
-            // if it would, each call MUST be caught separately!
-            $result1 = $this->getArrayArrayString($property);
-            $result2 = $this->getArrayString($property);
-            $result3 = $this->getBool($property);
-            $result4 = $this->getInt($property);
-            $result5 = $this->getString($property);
-        } catch (SeablastConfigurationException $ex) {
-            return false;
+        $methods = [
+            'getArrayArrayString',
+            'getArrayString',
+            'getBool',
+            'getInt',
+            'getString'
+        ];
+
+        $exceptionCount = 0;
+
+        foreach ($methods as $method) {
+            try {
+                $result = $this->$method($property);
+            } catch (SeablastConfigurationException $ex) {
+                $exceptionCount++;
+            }
         }
-        return true;
+
+        return $exceptionCount < count($methods);
     }
 
     /**

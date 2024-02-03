@@ -78,6 +78,14 @@ class SeablastConstant
      */
     public const ADMIN_MAIL_ADDRESS = 'SB:ADMIN_MAIL:ADDRESS';
     /**
+     * @var string flag whether to send emails to users
+     */
+    public const USER_MAIL_ENABLED = 'SB:USER_MAIL:ENABLED';
+    /**
+     * @var string string email address from which emails are sent
+     */
+    public const FROM_MAIL_ADDRESS = 'SB:FROM_MAIL:ADDRESS';
+    /**
      * @var string string[] IP addresses where to show Tracy
      */
     public const DEBUG_IP_LIST = 'SB:DEBUG_IP_LIST';
@@ -94,20 +102,48 @@ class SeablastConstant
      */
     public const LATTE_CACHE = 'SB:LATTE_CACHE';
     /**
-     * @var string Name of an expected and accepted numeric GET argument
+     * @var string string Name of an expected and accepted numeric GET argument
      */
     public const SB_GET_ARGUMENT_ID = 'SB_GET_ARGUMENT_ID';
     /**
-     * @var string Name of an expected and accepted string GET argument
+     * @var string stringName of an expected and accepted string GET argument
      */
     public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
     /**
-     * @var string Int to forced update of external CSS and JavaScript files
+     * @var string int to forced update of external CSS and JavaScript files
      * TODO use this in seablast-dist
      */
     public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';
     /**
-     * @var string The absolute URL of the root of the application
+     * @var string string The absolute URL of the root of the application
      */
     public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
+    /**
+     * @var string string SMTP host to be used by an email plugin
+     */
+    public const SB_SMTP_HOST = 'SB_SMTP_HOST';
+    /**
+     * @var string int SMTP port to be used by an email plugin
+     */
+    public const SB_SMTP_PORT = 'SB_SMTP_PORT';
+    /**
+     * @var string string SMTP username to be used by an email plugin
+     */
+    public const SB_SMTP_USERNAME = 'SB_SMTP_USERNAME';
+    /**
+     * @var string string SMTP password to be used by an email plugin
+     */
+    public const SB_SMTP_PASSWORD = 'SB_SMTP_PASSWORD';
+    /**
+     * @var string class taking care of Authentication (TODO: experiment)
+     */
+    public const SB_IDENTITY_MANAGER = 'SB_IDENTITY_MANAGER';
+    /**
+     * @var string bool is user authenticated
+     */
+    public const FLAG_USER_IS_AUTHENTICATED = 'USER_IS_AUTHENTICATED';
+    /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_ID = 'USER_ROLE_ID';
 }

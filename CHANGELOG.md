@@ -7,16 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
+- SeablastConstant::SB_SMTP_ default parameters
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in IdentityManagerInterface, these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
+- Access to a Route can be restricted to certain roles.
 
 ### `Changed` for changes in existing functionality
+- Starting a session requires more complex initialization, so Tracy starts immediately (so that it can handle any errors that occur) and then the session handler is initialized and finally Tracy is informed that the session is ready to be used.
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
+- Model response params->redirection changed to params->redirectionUrl
 
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+- configuration->exists catches all property types separately
+- The session.cookie_secure directive expects a boolean value. When you're using ini_set, you can set it to '1' or 'On' to enable it, or '0' or 'Off' to disable it. PHP will correctly interpret both '1' and 'On' as true, and both '0' and 'Off' as false. However, it's generally a good practice to use '1' for true and '0' for false when setting boolean ini values with ini_set, as this is more explicit and less likely to cause confusion.
 
 ## [0.2] - 2024-01-27
 ### Added

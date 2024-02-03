@@ -10,6 +10,7 @@ use Tracy\Debugger;
 
 /**
  * mysqli wrapper with logging
+ * TODO: explore logging of prepared statements
  */
 class SeablastMysqli extends mysqli
 {

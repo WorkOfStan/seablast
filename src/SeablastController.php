@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\IdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
@@ -13,10 +14,12 @@ class SeablastController
 {
     use \Nette\SmartObject;
 
-    /** @var string[] mapping of URL to processing */
-    public $mapping;
     /** @var SeablastConfiguration */
     private $configuration;
+    /** @var ?IdentityManagerInterface */
+    private $identity = null;
+    /** @var string[] mapping of URL to processing */
+    public $mapping;
     /** @var Superglobals */
     private $superglobals;
     /** @var string */
@@ -80,14 +83,15 @@ class SeablastController
                             throw new \Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
-                        ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
+                        //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
+                        ini_set('session.http_only', '1');
                         if (
                             isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] == 'https'
                         ) {
-                            ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
+                            ini_set('session.cookie_secure', '1');
                         }
-                        ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
+                        ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
                             $this->configuration->getInt($property),
                             $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)
@@ -128,6 +132,7 @@ class SeablastController
                 }
             }
         }
+        $this->startSession();
         // Addition to configuration with info derived from superglobals
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
@@ -150,7 +155,7 @@ class SeablastController
     }
 
     /**
-     *
+     * Getter
      * @return SeablastConfiguration
      */
     public function getConfiguration(): SeablastConfiguration
@@ -159,7 +164,7 @@ class SeablastController
     }
 
     /**
-     *
+     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted
      * @param string $requestUri
      * @return void as uriPath and uriQuery are populated
      */
@@ -221,6 +226,31 @@ class SeablastController
     }
 
     /**
+     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page
+     * @return void
+     */
+    private function pageUnderConstruction(): void
+    {
+        if (
+            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
+        ) {
+            Debugger::barDump('UNDER_CONSTRUCTION!');
+            if (
+                !in_array(
+                    $this->superglobals->server['REMOTE_ADDR'],
+                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
+                )
+            ) {
+                $this->startSession(); // as it couldn't be started before
+                //TODO TEST include from app, pokud tam je, otherwise use this default:
+                include file_exists(APP_DIR . '/under-construction.html')
+                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+                exit;
+            }
+        }
+    }
+
+    /**
      * If string start with prefix, remove it
      *
      * @param string $string
@@ -274,13 +304,42 @@ class SeablastController
         //F(request type = verb/accepted type, url, url params, auth, language)
         // --> model & params & view type (html, json)
         //
-        // TODO if deployed standalone, ends with exception `No array string for the property SB:APP_MAPPING`. OK?
+        // TODO fix: if deployed standalone, ends with exception `No array string for the property SB:APP_MAPPING`. OK?
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         if (!isset($mapping[$this->uriPath])) {
             $this->page404("Route {$this->uriPath} not found");
         }
         $this->mapping = $mapping[$this->uriPath];
         Debugger::barDump($this->mapping, 'Mapping');
+        // Authenticate: is there an identity manager to be used?
+        if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
+            $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
+            /* @phpstan-ignore-next-line Property $identity does not accept object. */
+            $this->identity = new $identityManager($this->configuration->dbms());
+            // TODO consider decoupling dbms from identity
+            Assert::methodExists($this->identity, 'isAuthenticated');
+            if ($this->identity->isAuthenticated()) {
+                $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+                Assert::methodExists($this->identity, 'getRoleId');
+                $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+            }
+        }
+        // Authenticate: RBAC (Role-Based Access Control)
+        if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
+            if (is_null($this->identity)) {
+                throw new \Exception('Identity manager expected.');
+            }
+            // Identity required, if not autheticated => 401
+            if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
+                $this->page404("401 Unauthorized: auth required"); // TODO 401 - offer log in
+            }
+            // Specific role expected, if not authorized => 403
+            $roleIds = explode(',', $this->mapping['roleIds']);
+            Debugger::barDump($roleIds, 'RoleIds allowed');
+            if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {
+                $this->page404("403 Forbidden: wrong role"); // TODO 403
+            }
+        }
         // If id argument is expected, it is also required
         if (isset($this->mapping['id'])) {
             if (!isset($this->superglobals->get[$this->mapping['id']])) {
@@ -308,26 +367,16 @@ class SeablastController
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation and returns an UNDER CONSTRUCTION page
+     * Starting a session requires more complex initialization, so Tracy was started immediately
+     * (so that it could handle any errors that occur).
+     * Now initialize the session handler and
+     * finally inform Tracy that the session is ready to be used using the dispatch() function.
      * @return void
      */
-    private function pageUnderConstruction(): void
+    private function startSession(): void
     {
-        if (
-            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-        ) {
-            Debugger::barDump('UNDER_CONSTRUCTION!');
-            if (
-                !in_array(
-                    $this->superglobals->server['REMOTE_ADDR'],
-                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
-                )
-            ) {
-                //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html')
-                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
-                exit;
-            }
-        }
+        session_start() || error_log('session_start failed');
+        Debugger::dispatch();
+        $this->superglobals->setSession($_SESSION); // as only now the session started
     }
 }

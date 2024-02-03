@@ -31,4 +31,14 @@ class Superglobals
         $this->server = $server;
         $this->session = $session;
     }
+
+    /**
+     * Necessary in case of late session start
+     * @param array<mixed> $session
+     * @return void
+     */
+    public function setSession(array $session = []): void
+    {
+        $this->session = $session;
+    }
 }
