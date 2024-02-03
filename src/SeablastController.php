@@ -83,14 +83,15 @@ class SeablastController
                             throw new \Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
-                        ini_set('session.http_only', true); // @phpstan-ignore-line TODO true as string?
+                        //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
+                        ini_set('session.http_only', '1');
                         if (
                             isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] == 'https'
                         ) {
-                            ini_set('session.cookie_secure', true); // @phpstan-ignore-line TODO true as string?
+                            ini_set('session.cookie_secure', '1');
                         }
-                        ini_set('session.cookie_httponly', true); // @phpstan-ignore-line TODO true as string?
+                        ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
                             $this->configuration->getInt($property),
                             $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)

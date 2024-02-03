@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+- configuration->exists catches all property types separately
+- The session.cookie_secure directive expects a boolean value. When you're using ini_set, you can set it to '1' or 'On' to enable it, or '0' or 'Off' to disable it. PHP will correctly interpret both '1' and 'On' as true, and both '0' and 'Off' as false. However, it's generally a good practice to use '1' for true and '0' for false when setting boolean ini values with ini_set, as this is more explicit and less likely to cause confusion.
 
 ## [0.2] - 2024-01-27
 ### Added
