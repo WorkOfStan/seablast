@@ -226,7 +226,7 @@ class SeablastController
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation and returns an UNDER CONSTRUCTION page
+     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page
      * @return void
      */
     private function pageUnderConstruction(): void
@@ -315,7 +315,8 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager();
+            $this->identity = new $identityManager($this->configuration->dbms());
+            // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
@@ -333,9 +334,6 @@ class SeablastController
                 $this->page404("401 Unauthorized: auth required"); // TODO 401
             }
             // Specific role expected, if not authorized => 403
-//            if (!method_exists($this->identity->getUser(), 'getRoleId')) {
-//                throw new \Exception('identity->getUser()->getRoleId() expected');
-//            }
             if (!in_array(
                     $this->configuration->getInt(SeablastConstant::USER_ROLE_ID),
                     explode(',', $this->mapping['roleIds'])
