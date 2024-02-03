@@ -138,4 +138,12 @@ class SeablastConstant
      * @var string class taking care of Authentication (TODO: experiment)
      */
     public const SB_IDENTITY_MANAGER = 'SB_IDENTITY_MANAGER';
+    /**
+     * @var string bool is user authenticated
+     */
+    public const FLAG_USER_IS_AUTHENTICATED = 'USER_IS_AUTHENTICATED';
+    /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_ID = 'USER_ROLE_ID';
 }

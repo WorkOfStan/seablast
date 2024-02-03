@@ -16,7 +16,7 @@ class SeablastController
 
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var ?SeablastIdentityManagerInterface */
+    /** @var ?IdentityManagerInterface */
     private $identity = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
@@ -153,7 +153,7 @@ class SeablastController
     }
 
     /**
-     *
+     * Getter
      * @return SeablastConfiguration
      */
     public function getConfiguration(): SeablastConfiguration
@@ -162,7 +162,7 @@ class SeablastController
     }
 
     /**
-     *
+     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted
      * @param string $requestUri
      * @return void as uriPath and uriQuery are populated
      */
@@ -288,22 +288,29 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager(); // todo LazyLoad
+            $this->identity = new $identityManager();
+            if ($this->identity->isAuthenticated()) {
+                $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+                $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+            }
         }
-        // Authenticate: RBAC (Role-Based Access Control
+        // Authenticate: RBAC (Role-Based Access Control)
         if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
             if (is_null($this->identity)) {
                 throw new \Exception('Identity manager expected.');
             }
             // Identity required, if not autheticated => 401
-            if (!$this->identity->isAuthenticated()) {
+            if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
                 $this->page404("401 Unauthorized: auth required"); // TODO 401
             }
             // Specific role expected, if not authorized => 403
-            if (!method_exists($this->identity->getUser(), 'getRoleId')) {
-                throw new \Exception('identity->getUser()->getRoleId() expected');
-            }
-            if (!in_array($this->identity->getUser()->getRoleId(), explode(',', $this->mapping['roleIds']))) {
+//            if (!method_exists($this->identity->getUser(), 'getRoleId')) {
+//                throw new \Exception('identity->getUser()->getRoleId() expected');
+//            }
+            if (!in_array(
+                    $this->configuration->getInt(SeablastConstant::USER_ROLE_ID),
+                    explode(',', $this->mapping['roleIds'])
+                )) {
                 $this->page404("403 Forbidden: wrong role"); // TODO 403
             }
         }

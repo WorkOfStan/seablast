@@ -29,9 +29,18 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 ```php
 SeablastConstant::APP_MAPPING = route => [
     'model' => class name of the model,
-    'roleIds' => comma delimited roleIds permitted to access the route
+    'roleIds' => comma delimited roleIds permitted to access the route,
 ]
 ```
+
+## Authentication and authorisation
+Roles are for access.
+Routes can only be allowed for roles (never denied).
+Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
+Groups are on top of it, e.g. for promotions etc.
+
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in IdentityManagerInterface, these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
+- Access to a Route can be restricted to certain roles.
 
 ## Security
 All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` string latte variable.

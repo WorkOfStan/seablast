@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 - TableViewModel for admin.latte
 - SeablastConstant::SB_SMTP_ default parameters
-- SeablastConstant::SB_IDENTITY_MANAGER and authentication mechanism in SeablastController
-- SeablastIdentityManagerInterface encompasses the minimum required methods
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in IdentityManagerInterface, these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
+- Access to a Route can be restricted to certain roles.
 
 ### `Changed` for changes in existing functionality
 
