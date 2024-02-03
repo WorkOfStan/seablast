@@ -24,7 +24,8 @@ $developmentEnvironment = (
 Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, APP_DIR . '/log');
 
 // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
-$superglobals = new Superglobals($_GET, $_POST, $_SERVER, $_SESSION);
+$superglobals = new Superglobals($_GET, $_POST, $_SERVER); // $_SESSION hasn't started, yet
 $controller = new SeablastController($setup->getConfiguration(), $superglobals);
+$superglobals->setSession($_SESSION); // as only now the session started
 $model = new SeablastModel($controller, $superglobals);
 $view = new SeablastView($model);

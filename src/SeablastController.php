@@ -380,5 +380,6 @@ class SeablastController
     {
         session_start() || error_log('session_start failed');
         Debugger::dispatch();
+        $this->superglobals->setSession($_SESSION); // as only now the session started
     }
 }

@@ -31,4 +31,9 @@ class Superglobals
         $this->server = $server;
         $this->session = $session;
     }
+
+    public function setSession(array $session = [])
+    {
+        $this->session = $session;
+    }
 }
