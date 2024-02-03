@@ -14,7 +14,7 @@ use Tracy\Debugger;
 
 //Tracy is able to show Debug bar and Bluescreens for Ajax and redirected requests.
 //You just have to start session before Tracy
-Debugger::setSessionStorage(new Tracy\NativeSession);
+Debugger::setSessionStorage(new Tracy\NativeSession());
 $setup = new SeablastSetup(); // combine configuration files into a valid configuration
 // $setup contains the info for Debugger setup
 $developmentEnvironment = (
