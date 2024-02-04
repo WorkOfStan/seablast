@@ -363,7 +363,7 @@ class SeablastController
                 (string) $this->superglobals->get[$this->mapping['code']]
             );
         }
-        // if the id or code value is wrong, it MUST fail in the model
+        // if the id or code value is wrong, it MUST fail later in the model
     }
 
     /**

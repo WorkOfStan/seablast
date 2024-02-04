@@ -28,8 +28,8 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 
 ```php
 SeablastConstant::APP_MAPPING = route => [
-    'model' => class name of the model,
-    'roleIds' => comma delimited roleIds permitted to access the route,
+    'model' => '\App\Project\ResponseModel', // class name of the model,
+    'roleIds' => '1,2', // comma delimited roleIds permitted to access the route,
 ]
 ```
 

@@ -30,7 +30,6 @@ class SeablastView
         $this->params = $this->model->getParameters();
         Debugger::barDump($this->params, 'Params for SBView'); // debug
         $this->params->configuration = $this->model->getConfiguration();
-        //$this->params->model = $this->model; // debug
         if (isset($this->params->redirection)) { // TODO remove this condition in higher version than 0.2
             throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated
         }

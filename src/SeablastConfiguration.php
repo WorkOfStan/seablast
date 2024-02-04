@@ -30,7 +30,7 @@ class SeablastConfiguration
 
     public function __construct()
     {
-        $this->flag = new SeablastFlag();
+        $this->flag = new SeablastFlag(); // todo je flag zde k něčemu?
     }
 
     /**
@@ -271,14 +271,4 @@ class SeablastConfiguration
         $this->optionsString[$property] = $value;
         return $this;
     }
-
-    /**
-     * Debug
-     * @ return void
-     */
-//    public function dump(): void
-//    {
-//        var_dump($this->optionsBool);
-//        var_dump($this->optionsInt, $this->optionsString);
-//    }
 }
