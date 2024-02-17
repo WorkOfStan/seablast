@@ -26,11 +26,10 @@ class SeablastView
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
-        Debugger::barDump($this->model, 'Model passed to SBView'); // debug
+        Debugger::barDump($this->model, 'Model passed to SeablastView'); // debug
         $this->params = $this->model->getParameters();
-        Debugger::barDump($this->params, 'Params for SBView'); // debug
+        Debugger::barDump($this->params, 'Params for SeablastView'); // debug
         $this->params->configuration = $this->model->getConfiguration();
-        //$this->params->model = $this->model; // debug
         if (isset($this->params->redirection)) { // TODO remove this condition in higher version than 0.2
             throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated
         }

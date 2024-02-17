@@ -141,9 +141,17 @@ class SeablastConstant
     /**
      * @var string bool is user authenticated
      */
-    public const FLAG_USER_IS_AUTHENTICATED = 'USER_IS_AUTHENTICATED';
+    public const FLAG_USER_IS_AUTHENTICATED = 'SB:USER_IS_AUTHENTICATED';
     /**
      * @var string int roleId
      */
-    public const USER_ROLE_ID = 'USER_ROLE_ID';
+    public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
+    /**
+     * @var string int HTTP code
+     */
+    public const ERROR_HTTP_CODE = 'SB:ERROR_HTTP_CODE';
+    /**
+     * @var string string error message
+     */
+    public const ERROR_MESSAGE = 'SB:ERROR_MESSAGE';
 }

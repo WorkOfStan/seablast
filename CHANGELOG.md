@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.2] - 2024-02-18
+### Changed
+- ErrorModel to display the HTTP errors nicely. User friendly HTTP error messages.
+
 ## [0.2.1] - 2024-02-03
 ### Added
 - SeablastConstant::SB_SMTP_ default parameters

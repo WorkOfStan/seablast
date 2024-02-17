@@ -40,9 +40,18 @@ return static function (SeablastConfiguration $SBConfig): void {
         // Error API is always available if not overriden
         ->setArrayArrayString(
             SeablastConstant::APP_MAPPING,
-            '/api/error', // todo in SB-dist
+            '/api/error', // todo demonstrate in SB-dist
             [
                 'model' => '\Seablast\Seablast\Apis\ApiErrorModel',
+            ]
+        )
+        // Error page is always available if not overriden
+        ->setArrayArrayString(
+            SeablastConstant::APP_MAPPING,
+            '/error', // todo demonstrate in SB-dist
+            [
+                'template' => 'error',
+                'model' => '\Seablast\Seablast\Models\ErrorModel',
             ]
         )
         // Default SMTP parameters
