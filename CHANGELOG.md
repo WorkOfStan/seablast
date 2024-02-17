@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
-- ErrorModel to display the HTTP errors nicely. User friendly error messages.
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -18,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.2] - 2024-02-18
+### Changed
+- ErrorModel to display the HTTP errors nicely. User friendly error messages.
 
 ## [0.2.1] - 2024-02-03
 ### Added

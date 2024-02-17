@@ -212,10 +212,10 @@ class SeablastController
     }
 
     /**
-     *
-     * @param string $specificMessage
+     * Change mapping because there's an HTTP error (client side)
+     * @param string $specificMessage that a user will see
      * @param int $httpCode
-     * @return void // never
+     * @return void
      */
     private function page40x(string $specificMessage, int $httpCode = 404): void
     {
@@ -229,8 +229,6 @@ class SeablastController
         // TODO - is there a more direct way than put it into configuration structure?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
-        //$this->mapping['httpCode'] = $httpCode;
-        //$this->mapping['message'] = $specificMessage;
     }
 
     /**
@@ -331,11 +329,10 @@ class SeablastController
             $this->identity = new $identityManager($this->configuration->dbms());
             // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
-            //Debugger::barDump($this->identity->isAuthenticated(), 'isAuthenticated?');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
                 Assert::methodExists($this->identity, 'getRoleId');
-                //Debugger::barDump($this->identity->getRoleId(), 'Role ID');
+                // Save the current user's role into the configuration object
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
             }
         }
@@ -346,13 +343,14 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
-                $this->page40x('401 Unauthorized. Zalogujte se.', 401); // TODO 401 - offer log in seamlessly
+                $this->page40x('401 Unauthorized. Zalogujte se.', 401); // TODO 401 - seamless log in page
                 return;
             }
             Debugger::barDump('User is authenticated');
             // Specific role expected, if not authorized => 403
             $roleIds = explode(',', $this->mapping['roleIds']);
             Debugger::barDump($roleIds, 'RoleIds allowed');
+            // Read the current user's role from the configuration object
             if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {
                 $this->page40x('403 Forbidden. Nedostatečná práva k přístupu.', 403);
                 return;

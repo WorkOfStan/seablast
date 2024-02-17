@@ -19,8 +19,6 @@ class ErrorModel implements SeablastModelInterface
 
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @ var Superglobals */
-    //private $superglobals;
 
     /**
      *
