@@ -315,13 +315,12 @@ class SeablastController
         // TODO fix: if deployed standalone, ends with exception `No array string for the property SB:APP_MAPPING`. OK?
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         if (!isset($mapping[$this->uriPath])) {
-//            $this->uriPath = '/error';
-//            $this->mapping = $mapping['/error'];
-//            $this->mapping = [];
-            $this->page40x("Route {$this->uriPath} not found");
-//            return;
+            Debugger::barDump(
+                "Route {$this->uriPath} not found",
+                '404 Not found'
+            );
+            $this->page40x('Stránka neexistuje.');
         } else {
-//        }
             $this->mapping = $mapping[$this->uriPath];
         }
         Debugger::barDump($this->mapping, 'Mapping');
@@ -347,7 +346,7 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
-                $this->page40x('401 Unauthorized: auth required', 401); // TODO 401 - offer log in
+                $this->page40x('401 Unauthorized. Zalogujte se.', 401); // TODO 401 - offer log in seamlessly
                 return;
             }
             Debugger::barDump('User is authenticated');
@@ -355,14 +354,18 @@ class SeablastController
             $roleIds = explode(',', $this->mapping['roleIds']);
             Debugger::barDump($roleIds, 'RoleIds allowed');
             if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {
-                $this->page40x('403 Forbidden: wrong role', 403); // TODO 403
+                $this->page40x('403 Forbidden. Nedostatečná práva k přístupu.', 403);
                 return;
             }
         }
         // If id argument is expected, it is also required
         if (isset($this->mapping['id'])) {
             if (!isset($this->superglobals->get[$this->mapping['id']])) {
-                $this->page40x("Route {$this->uriPath} missing numeric parameter {$this->mapping['id']}");
+                Debugger::barDump(
+                    "Route {$this->uriPath} missing numeric parameter {$this->mapping['id']}",
+                    '404 Not found'
+                );
+                $this->page40x('Stránka neexistuje.');
                 return;
             }
             Assert::scalar($this->superglobals->get[$this->mapping['id']]);
@@ -374,7 +377,11 @@ class SeablastController
         // If code argument is expected, it is also required
         if (isset($this->mapping['code'])) {
             if (!isset($this->superglobals->get[$this->mapping['code']])) {
-                $this->page40x("Route {$this->uriPath} missing string parameter {$this->mapping['code']}");
+                Debugger::barDump(
+                    "Route {$this->uriPath} missing string parameter {$this->mapping['code']}",
+                    '404 Not found'
+                );
+                $this->page40x('Stránka neexistuje.');
                 return;
             }
             Assert::scalar($this->superglobals->get[$this->mapping['code']]);
