@@ -214,14 +214,18 @@ class SeablastController
     /**
      *
      * @param string $specificMessage
+     * @param int $httpCode
      * @return never
      */
-    private function page404(string $specificMessage): void
+    private function page404(string $specificMessage, int $httpCode = 404): void
     {
-        Debugger::barDump($specificMessage, 'HTTP 404');
-        http_response_code(404);
+        if ($httpCode < 400 || $httpCode > 499) {
+            throw new \Exception("{$specificMessage} with HTTP code {$httpCode}");
+        }
+        Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
+        http_response_code($httpCode);
         // TODO make it nice
-        echo "404 Not found";
+        echo "Chyba {$httpCode}";
         exit;
     }
 
@@ -331,13 +335,13 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
-                $this->page404("401 Unauthorized: auth required"); // TODO 401 - offer log in
+                $this->page404('401 Unauthorized: auth required', 401); // TODO 401 - offer log in
             }
             // Specific role expected, if not authorized => 403
             $roleIds = explode(',', $this->mapping['roleIds']);
             Debugger::barDump($roleIds, 'RoleIds allowed');
             if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {
-                $this->page404("403 Forbidden: wrong role"); // TODO 403
+                $this->page404('403 Forbidden: wrong role', 403); // TODO 403
             }
         }
         // If id argument is expected, it is also required
