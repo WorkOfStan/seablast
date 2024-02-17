@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Models;
 
 use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
@@ -15,6 +16,11 @@ use stdClass;
 class ErrorModel implements SeablastModelInterface
 {
     use \Nette\SmartObject;
+
+    /** @var SeablastConfiguration */
+    private $configuration;
+    /** @ var Superglobals */
+    //private $superglobals;
 
     /**
      *
@@ -35,7 +41,8 @@ class ErrorModel implements SeablastModelInterface
     public function knowledge(): stdClass
     {
         return (object) [
-                'httpCode' => 409,
+            'httpCode' => $this->configuration->getInt(SeablastConstant::ERROR_HTTP_CODE),
+            'message' => $this->configuration->getString(SeablastConstant::ERROR_MESSAGE),
         ];
     }
 }

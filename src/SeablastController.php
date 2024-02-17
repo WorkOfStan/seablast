@@ -225,15 +225,12 @@ class SeablastController
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
-            $this->mapping = $mapping[$this->uriPath];
-//        $this->mapping['template'] = 'error';
-        $this->mapping['httpCode'] = $httpCode;
-        $this->mapping['message'] = $specificMessage;
-//        $this->mapping['model'] = ;
-//        http_response_code($httpCode);
-//        // TODO make it nice
-//        echo "Chyba {$httpCode}";
-//        exit;
+        $this->mapping = $mapping[$this->uriPath];
+        // TODO - is there a more direct way than put it into configuration structure?
+        $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
+        $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
+        //$this->mapping['httpCode'] = $httpCode;
+        //$this->mapping['message'] = $specificMessage;
     }
 
     /**
@@ -335,11 +332,11 @@ class SeablastController
             $this->identity = new $identityManager($this->configuration->dbms());
             // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
-            Debugger::barDump($this->identity->isAuthenticated(), 'isAuthenticated?');
+            //Debugger::barDump($this->identity->isAuthenticated(), 'isAuthenticated?');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
                 Assert::methodExists($this->identity, 'getRoleId');
-                Debugger::barDump($this->identity->getRoleId(), 'Role ID');
+                //Debugger::barDump($this->identity->getRoleId(), 'Role ID');
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
             }
         }
@@ -349,7 +346,6 @@ class SeablastController
                 throw new \Exception('Identity manager expected.');
             }
             // Identity required, if not autheticated => 401
-            Debugger::barDump($this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED), 'au?');
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
                 $this->page40x('401 Unauthorized: auth required', 401); // TODO 401 - offer log in
                 return;
