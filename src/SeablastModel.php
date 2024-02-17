@@ -30,7 +30,7 @@ class SeablastModel
     public function __construct(SeablastController $controller, Superglobals $superglobals)
     {
         $this->controller = $controller;
-        Debugger::barDump($this->controller, 'Controller'); // debug
+        Debugger::barDump($this->controller, 'Controller in SeablastModel'); // debug
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
