@@ -154,5 +154,4 @@ class SeablastConstant
      * @var string string error message
      */
     public const ERROR_MESSAGE = 'SB:ERROR_MESSAGE';
-
 }

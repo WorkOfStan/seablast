@@ -7,7 +7,7 @@ This minimalist MVC framework added by [composer](https://getcomposer.org/) help
 - add models for the app business functionality,
 - optionally modify view templates.
 
-The framework takes care of logs, database, multiple languages, friendly URL.
+The framework takes care of logs, database, multiple languages, user friendly HTTP errors, friendly URL.
 (The future is in an easy to maintain technology.)
 
 - See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repository.
@@ -47,8 +47,10 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 
 ## Stack
 - PHP7.2+
-- Latte
-- Tracy
+- [Latte](http://latte.nette.org/): for templating
+- [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
+- [Tracy](https://github.com/nette/tracy): for debugging
+- [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
 
 ## Notes
 - the constant `APP_DIR` = the directory of the current application (or the library, if deployed directly)
