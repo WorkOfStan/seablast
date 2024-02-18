@@ -62,10 +62,6 @@ class SeablastModel
      */
     public function getParameters()
     {
-        //if (is_null($this->viewParameters)) {
-        //    // no parameters
-        //    return [];
-        //}
         return $this->viewParameters;
     }
 }
