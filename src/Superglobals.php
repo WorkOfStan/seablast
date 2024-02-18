@@ -33,7 +33,7 @@ class Superglobals
     }
 
     /**
-     * Necessary in case of late session start
+     * Injection necessary in case of late session start
      * @param array<mixed> $session
      * @return void
      */
