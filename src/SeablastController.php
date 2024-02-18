@@ -37,7 +37,7 @@ class SeablastController
         // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
-        Debugger::barDump($this->configuration, 'Configuration at SBController start');
+        Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
         $this->applyConfiguration();
         $this->route();
@@ -178,11 +178,8 @@ class SeablastController
         );
         Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
         Assert::keyExists($parsedUrl, 'path');
-        // so that /products and /products/ and /products/?id=1 are all resolved to /products
-        $this->uriPath = self::removeSuffix(
-            $parsedUrl['path'], // Outputs: /myapp/products
-            '/'
-        );
+        // /app/products and /app/products/ and /app/products/?id=1 are all resolved to /products
+        $this->uriPath = self::removeSuffix($parsedUrl['path'], '/');
         if (empty($this->uriPath)) {
             // so that the homepage has non empty path
             $this->uriPath = '/';
@@ -226,7 +223,7 @@ class SeablastController
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         $this->mapping = $mapping[$this->uriPath];
-        // TODO - is there a more direct way than put it into configuration structure?
+        // TODO - is there a more direct way to propagate it to SBView than put it into configuration object?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
     }
