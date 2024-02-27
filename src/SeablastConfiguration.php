@@ -13,7 +13,7 @@ class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
-    /** @var SeablastMysqli */
+    /** @var ?SeablastMysqli */
     private $connection = null;
     /** @var SeablastFlag */
     public $flag;
@@ -53,9 +53,9 @@ class SeablastConfiguration
      */
     private function dbmsCreate(): void
     {
-        $phinx = $this->dbmsReadPhinx();
+        $phinx = self::dbmsReadPhinx();
         // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
-        $environment = 'development'; // todo config ?? $phinx['environments']['default_environment']
+        $environment = $phinx['environments']['default_environment'] ?? 'development'; // todo check
         Assert::isArray($phinx['environments']);
         Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
         $port = isset($phinx['environments'][$environment]['port'])
