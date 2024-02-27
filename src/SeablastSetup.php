@@ -26,7 +26,7 @@ class SeablastSetup
     }
 
     /**
-     *
+     * Getter
      * @return SeablastConfiguration
      */
     public function getConfiguration()
@@ -35,19 +35,15 @@ class SeablastSetup
     }
 
     /**
-     * Process a configuration file
+     * Process a configuration file, if it exists
      * @param string $configurationFilename
      * @return void
      */
     private function updateConfiguration(string $configurationFilename): void
     {
-        //Debugger::log('Trying config file: ' . $configurationFilename, ILogger::DEBUG);
-        if (!file_exists($configurationFilename)) {
-            // TODO make sure that with production settings, no INFO is written
-            //Debugger::log('Not existing config file: ' . $configurationFilename, ILogger::INFO);
-            return;
+        if (file_exists($configurationFilename)) {
+            $configurationClosure = require $configurationFilename;
+            $configurationClosure($this->configuration);
         }
-        $configurationClosure = require $configurationFilename;
-        $configurationClosure($this->configuration);
     }
 }
