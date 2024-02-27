@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
+- SB:phinx:table_prefix
 
 ### `Changed` for changes in existing functionality
 
