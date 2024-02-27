@@ -70,6 +70,7 @@ class SeablastConfiguration
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
         $this->connection->set_charset('utf8'); // TODO viz configuration
+        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? ''); // todo SBconstant
     }
 
     /**
