@@ -223,7 +223,7 @@ class SeablastController
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         $this->mapping = $mapping[$this->uriPath];
-        // TODO - is there a more direct way to propagate it to SBView than put it into configuration object?
+        // TODO - is there a more direct way to propagate it to SeablastView than put it into configuration object?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
     }
@@ -279,7 +279,7 @@ class SeablastController
     }
 
     /**
-     *
+     * Transform URI to model with parameters and RBAC
      * @return void
      */
     private function route(): void
