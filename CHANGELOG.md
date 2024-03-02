@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
+- SeablastConfiguration::optionsBool as redundant (use flag instead)
 
 ### `Fixed` for any bugfixes
 

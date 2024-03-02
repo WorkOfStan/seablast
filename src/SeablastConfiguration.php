@@ -21,8 +21,8 @@ class SeablastConfiguration
     private $optionsArrayArrayString = [];
     /** @var array<string[]> */
     private $optionsArrayString = [];
-    /** @var bool[] */
-    private $optionsBool = [];
+    /** @ var bool[] */
+    //private $optionsBool = [];
     /** @var int[] */
     private $optionsInt = [];
     /** @var string[] */
@@ -109,7 +109,7 @@ class SeablastConfiguration
         $methods = [
             'getArrayArrayString',
             'getArrayString',
-            'getBool',
+            //'getBool',
             'getInt',
             'getString'
         ];
@@ -160,14 +160,14 @@ class SeablastConfiguration
      * @param string $property
      * @return bool
      */
-    public function getBool(string $property): bool
-    {
-        Assert::string($property);
-        if (!array_key_exists($property, $this->optionsBool)) {
-            throw new SeablastConfigurationException('No bool value for the property ' . $property);
-        }
-        return $this->optionsBool[$property];
-    }
+    //public function getBool(string $property): bool
+    //{
+    //    Assert::string($property);
+    //    if (!array_key_exists($property, $this->optionsBool)) {
+    //        throw new SeablastConfigurationException('No bool value for the property ' . $property);
+    //    }
+    //    return $this->optionsBool[$property];
+    //}
 
     /**
      *
@@ -237,13 +237,13 @@ class SeablastConfiguration
      * @param bool $value
      * @return $this
      */
-    public function setBool(string $property, bool $value): self
-    {
-        Assert::string($property);
-        Assert::boolean($value);
-        $this->optionsBool[$property] = $value;
-        return $this;
-    }
+    //public function setBool(string $property, bool $value): self
+    //{
+    //    Assert::string($property);
+    //    Assert::boolean($value);
+    //    $this->optionsBool[$property] = $value;
+    //    return $this;
+    //}
 
     /**
      *
