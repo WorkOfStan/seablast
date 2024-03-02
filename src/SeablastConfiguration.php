@@ -18,6 +18,8 @@ class SeablastConfiguration
 
     /** @var ?SeablastMysqli */
     private $connection = null;
+    /** @var ?string */
+    private $connectionTablePrefix = null;
     /** @var SeablastFlag */
     public $flag;
     /** @var array<array<string[]>> */
@@ -76,8 +78,23 @@ class SeablastConfiguration
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        $this->connection->set_charset('utf8'); // TODO viz configuration
-        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? ''); // todo SBconstant
+        Assert::true($this->connection->set_charset($this->getString(>setString(SeablastConstant::SB_CHARSET_DATABASE))); // TODO viz configuration - check
+        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? ''); // todo SBconstant or the following dbmsmethod?
+        $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
+    }
+
+    /**
+     * Table prefix from phinx config
+     * TODO experimental - keep only if working well
+     *
+     * @return string
+     */
+    public function dbmsTablePrefix(): string
+    {
+        if(is_null($this->connectionTablePrefix)) {
+            throw new \Exception('Initiate db first.');
+        }
+        return $this->connectionTablePrefix;
     }
 
     /**
