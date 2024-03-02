@@ -44,8 +44,10 @@ class SeablastController
     }
 
     /**
-     * Apply the current configuration to the Seablast environment
-     * The settings not used here can still be used in Models
+     * Apply the current configuration to the Seablast environment.
+     *
+     * The settings not used here can still be used in Models.
+     *
      * @return void
      */
     private function applyConfiguration(): void
@@ -155,7 +157,8 @@ class SeablastController
     }
 
     /**
-     * Getter
+     * Getter.
+     *
      * @return SeablastConfiguration
      */
     public function getConfiguration(): SeablastConfiguration
@@ -164,7 +167,8 @@ class SeablastController
     }
 
     /**
-     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted
+     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted.
+     *
      * @param string $requestUri
      * @return void as uriPath and uriQuery are populated
      */
@@ -209,7 +213,8 @@ class SeablastController
     }
 
     /**
-     * Change mapping because there's an HTTP error (client side)
+     * Change mapping because there's an HTTP error (client side).
+     *
      * @param string $specificMessage that a user will see
      * @param int $httpCode
      * @return void
@@ -229,7 +234,8 @@ class SeablastController
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page
+     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page.
+     *
      * @return void
      */
     private function pageUnderConstruction(): void
@@ -254,7 +260,7 @@ class SeablastController
     }
 
     /**
-     * If string start with prefix, remove it
+     * If string start with prefix, remove it.
      *
      * @param string $string
      * @param string $prefix
@@ -266,7 +272,7 @@ class SeablastController
     }
 
     /**
-     * If string ends with suffix, remove it
+     * If string ends with suffix, remove it.
      *
      * @param string $string
      * @param string $suffix
@@ -279,7 +285,8 @@ class SeablastController
     }
 
     /**
-     * Transform URI to model with parameters and RBAC
+     * Transform URI to model with parameters and RBAC.
+     *
      * @return void
      */
     private function route(): void
@@ -390,10 +397,13 @@ class SeablastController
     }
 
     /**
+     * Start session in the Seablast app.
+     *
      * Starting a session requires more complex initialization, so Tracy was started immediately
      * (so that it could handle any errors that occur).
      * Now initialize the session handler and
      * finally inform Tracy that the session is ready to be used using the dispatch() function.
+     *
      * @return void
      */
     private function startSession(): void
