@@ -10,7 +10,7 @@ use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
 /**
- * Universal data structure with strict data typing
+ * Universal data structure with strict data typing.
  */
 class SeablastConfiguration
 {
@@ -39,7 +39,8 @@ class SeablastConfiguration
     }
 
     /**
-     * Access to database with lazy initialisation
+     * Access to database with lazy initialisation.
+     *
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
@@ -54,6 +55,7 @@ class SeablastConfiguration
 
     /**
      * Creates a database connection and sets up charset.
+     *
      * @return void
      */
     private function dbmsCreate(): void
@@ -79,7 +81,8 @@ class SeablastConfiguration
     }
 
     /**
-     * Read the database connection parameters from an external phinx configuration
+     * Read the database connection parameters from an external phinx configuration.
+     *
      * @return array<mixed>
      * @throws \Exception
      */
@@ -92,8 +95,9 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true on connected, false on not connected
-     * So that SQL Bar Panel is not requested in vain
+     * Returns true on connected, false on not connected:
+     * So that the SQL Bar Panel is not requested in vain.
+     *
      * @return bool
      */
     public function dbmsStatus(): bool
@@ -102,7 +106,8 @@ class SeablastConfiguration
     }
 
     /**
-     * Check existence of a property within configuration
+     * Check existence of a property within configuration.
+     *
      * @param string $property
      * @return bool
      */
