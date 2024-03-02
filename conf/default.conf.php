@@ -31,6 +31,7 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setInt(SeablastConstant::SB_SETLOCALE_CATEGORY, LC_CTYPE)
         ->setString(SeablastConstant::SB_SETLOCALE_LOCALES, 'cs_CZ.UTF-8')
         ->setString(SeablastConstant::SB_ENCODING, 'UTF-8')
+        ->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8')
         ->setString(SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE, '1')
         ->setString(SeablastConstant::SB_INI_SET_DISPLAY_ERRORS, '0') // errors only in the log; override locally
         ->setArrayString(SeablastConstant::DEBUG_IP_LIST, []) // default list with IPs to show Tracy
