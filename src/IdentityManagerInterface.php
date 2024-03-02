@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 /**
- * The minimal interface for an IdentityManager
+ * The minimal interface for an IdentityManager.
  *
  * Usage: class IdentityManager implements IdentityManagerInterface
  */
