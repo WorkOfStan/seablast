@@ -19,6 +19,8 @@ class SeablastConfiguration
     public $flag;
     /** @var array<array<string[]>> */
     private $optionsArrayArrayString = [];
+    /** @var array<int[]> */
+    private $optionsArrayInt = [];
     /** @var array<string[]> */
     private $optionsArrayString = [];
     /** @ var bool[] */
@@ -108,6 +110,7 @@ class SeablastConfiguration
         Assert::string($property);
         $methods = [
             'getArrayArrayString',
+            'getArrayInt',
             'getArrayString',
             //'getBool',
             'getInt',
@@ -136,9 +139,23 @@ class SeablastConfiguration
     {
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayArrayString)) {
-            throw new SeablastConfigurationException('No array string for the property ' . $property);
+            throw new SeablastConfigurationException('No array of string array for the property ' . $property);
         }
         return $this->optionsArrayArrayString[$property];
+    }
+
+    /**
+     *
+     * @param string $property
+     * @return array<int>
+     */
+    public function getArrayInt(string $property): array
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsArrayString)) {
+            throw new SeablastConfigurationException('No array int for the property ' . $property);
+        }
+        return $this->optionsArrayInt[$property];
     }
 
     /**
@@ -212,6 +229,22 @@ class SeablastConfiguration
             Assert::string($row);
         }
         $this->optionsArrayArrayString[$property][$key] = $value;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $property
+     * @param int[] $value
+     * @return $this
+     */
+    public function setArrayInt(string $property, array $value): self
+    {
+        Assert::string($property);
+        foreach ($value as $row) {
+            Assert::int($row);
+        }
+        $this->optionsArrayInt[$property] = $value;
         return $this;
     }
 
