@@ -9,6 +9,9 @@ use Seablast\Seablast\SeablastMysqli;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
+/**
+ * Universal data structure with strict data typing
+ */
 class SeablastConfiguration
 {
     use \Nette\SmartObject;
@@ -77,7 +80,6 @@ class SeablastConfiguration
 
     /**
      * Read the database connection parameters from an external phinx configuration
-     *
      * @return array<mixed>
      * @throws \Exception
      */
@@ -101,7 +103,6 @@ class SeablastConfiguration
 
     /**
      * Check existence of a property within configuration
-     *
      * @param string $property
      * @return bool
      */
@@ -131,7 +132,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return array<array<string>>
      */
@@ -145,7 +145,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return array<int>
      */
@@ -159,7 +158,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return array<string>
      */
@@ -173,7 +171,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return bool
      */
@@ -187,7 +184,6 @@ class SeablastConfiguration
     //}
 
     /**
-     *
      * @param string $property
      * @return int
      */
@@ -201,7 +197,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return string
      */
@@ -215,7 +210,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param string $key
      * @param string[] $value
@@ -233,7 +227,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param int[] $value
      * @return $this
@@ -249,7 +242,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param string[] $value
      * @return $this
@@ -265,7 +257,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param bool $value
      * @return $this
@@ -279,7 +270,6 @@ class SeablastConfiguration
     //}
 
     /**
-     *
      * @param string $property
      * @param int $value
      * @return $this
@@ -293,7 +283,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param string $value
      * @return $this
