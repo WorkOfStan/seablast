@@ -330,7 +330,7 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager($this->configuration->dbms());
+            $this->identity = new $identityManager($this->configuration->dbms(), $this->configuration->dbmsTablePrefix());
             // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
@@ -338,6 +338,8 @@ class SeablastController
                 Assert::methodExists($this->identity, 'getRoleId');
                 // Save the current user's role into the configuration object
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+                // todo get user id
+                // todo get user groups
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
