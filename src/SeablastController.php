@@ -330,7 +330,10 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager($this->configuration->dbms(), $this->configuration->dbmsTablePrefix());
+            $this->identity = new $identityManager($this->configuration->dbms());
+            if (method_exists($this->identity, 'setTablePrefix')) {
+                $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
+            }
             // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
