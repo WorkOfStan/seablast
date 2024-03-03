@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.3] - 2024-03-03
 ### Added
 - table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix()
-- configuration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
+- SeablastConfiguration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
 - SB_CHARSET_DATABASE to mysqli::set_charset
 - IdentityManagerInterface provides also user ID and list of groups
 
