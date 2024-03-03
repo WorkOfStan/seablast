@@ -23,7 +23,6 @@ class SeablastModel
     private $viewParameters;
 
     /**
-     *
      * @param SeablastController $controller
      * @param Superglobals $superglobals
      */
@@ -48,7 +47,6 @@ class SeablastModel
     }
 
     /**
-     *
      * @return SeablastConfiguration
      */
     public function getConfiguration(): SeablastConfiguration
@@ -57,15 +55,12 @@ class SeablastModel
     }
 
     /**
-     * Parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest)
+     * Parameters for Latte render (yes, Latte supports object even for PHP7.2 in 2.x latest).
+     *
      * @return stdClass
      */
     public function getParameters()
     {
-        //if (is_null($this->viewParameters)) {
-        //    // no parameters
-        //    return [];
-        //}
         return $this->viewParameters;
     }
 }

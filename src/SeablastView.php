@@ -19,7 +19,6 @@ class SeablastView
     private $params;
 
     /**
-     *
      * @param \Seablast\Seablast\SeablastModel $model
      * @return void
      */
@@ -69,7 +68,8 @@ class SeablastView
     }
 
     /**
-     * If HTTP error code, show Tracy BarPanel
+     * If HTTP error code, show Tracy BarPanel.
+     *
      * @return void
      */
     private function showHttpErrorPanel(): void
@@ -87,8 +87,9 @@ class SeablastView
     }
 
     /**
-     * Use app version of template, if unavailable use Seablast default version of template
-     * If unavailable throw an Exception
+     * Use app version of template, if unavailable use Seablast default version of template,
+     * If unavailable throw an Exception.
+     *
      * @return string
      * @throws \Exception
      */
@@ -136,7 +137,7 @@ class SeablastView
     }
 
     /**
-     * Render selected latte template with the calculated parameters
+     * Render selected latte template with the calculated parameters.
      *
      * @return void
      */

@@ -18,7 +18,8 @@ class Superglobals
     public $session;
 
     /**
-     * May be setup either with superglobals for production or with arbitrary constants to test variants
+     * May be setup either with superglobals for production or with arbitrary constants to test variants.
+     *
      * @param array<mixed> $get
      * @param array<mixed> $post
      * @param array<mixed> $server
@@ -33,7 +34,8 @@ class Superglobals
     }
 
     /**
-     * Necessary in case of late session start
+     * Injection necessary in case of a late session start.
+     *
      * @param array<mixed> $session
      * @return void
      */

@@ -37,15 +37,17 @@ class SeablastController
         // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
-        Debugger::barDump($this->configuration, 'Configuration at SBController start');
+        Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
         $this->applyConfiguration();
         $this->route();
     }
 
     /**
-     * Apply the current configuration to the Seablast environment
-     * The settings not used here can still be used in Models
+     * Apply the current configuration to the Seablast environment.
+     *
+     * The settings not used here can still be used in Models.
+     *
      * @return void
      */
     private function applyConfiguration(): void
@@ -60,7 +62,7 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            SeablastConstant::SB_PHINX_ENVIRONMENT,
+            //TODO: REMOVE: SeablastConstant::SB_PHINX_ENVIRONMENT,
             SeablastConstant::BACKYARD_LOGGING_LEVEL,
             //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
             SeablastConstant::ADMIN_MAIL_ADDRESS,
@@ -117,7 +119,7 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-//                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
+// TODO: REMOVE                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
 //                        Debugger::barDump($property, 'not coded yet');
 //                        break;
 //                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
@@ -155,7 +157,8 @@ class SeablastController
     }
 
     /**
-     * Getter
+     * Getter.
+     *
      * @return SeablastConfiguration
      */
     public function getConfiguration(): SeablastConfiguration
@@ -164,7 +167,8 @@ class SeablastController
     }
 
     /**
-     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted
+     * Transform URL from friendly URL etc. to a parametric address that may be further interpreted.
+     *
      * @param string $requestUri
      * @return void as uriPath and uriQuery are populated
      */
@@ -178,11 +182,8 @@ class SeablastController
         );
         Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
         Assert::keyExists($parsedUrl, 'path');
-        // so that /products and /products/ and /products/?id=1 are all resolved to /products
-        $this->uriPath = self::removeSuffix(
-            $parsedUrl['path'], // Outputs: /myapp/products
-            '/'
-        );
+        // /app/products and /app/products/ and /app/products/?id=1 are all resolved to /products
+        $this->uriPath = self::removeSuffix($parsedUrl['path'], '/');
         if (empty($this->uriPath)) {
             // so that the homepage has non empty path
             $this->uriPath = '/';
@@ -212,7 +213,8 @@ class SeablastController
     }
 
     /**
-     * Change mapping because there's an HTTP error (client side)
+     * Change mapping because there's an HTTP error (client side).
+     *
      * @param string $specificMessage that a user will see
      * @param int $httpCode
      * @return void
@@ -226,13 +228,14 @@ class SeablastController
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         $this->mapping = $mapping[$this->uriPath];
-        // TODO - is there a more direct way than put it into configuration structure?
+        // TODO - is there a more direct way to propagate it to SeablastView than put it into configuration object?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
     }
 
     /**
-     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page
+     * Identify UNDER CONSTRUCTION situation and eventually return an UNDER CONSTRUCTION page.
+     *
      * @return void
      */
     private function pageUnderConstruction(): void
@@ -257,7 +260,7 @@ class SeablastController
     }
 
     /**
-     * If string start with prefix, remove it
+     * If string start with prefix, remove it.
      *
      * @param string $string
      * @param string $prefix
@@ -269,7 +272,7 @@ class SeablastController
     }
 
     /**
-     * If string ends with suffix, remove it
+     * If string ends with suffix, remove it.
      *
      * @param string $string
      * @param string $suffix
@@ -282,6 +285,7 @@ class SeablastController
     }
 
     /**
+     * Transform URI to model with parameters and RBAC.
      *
      * @return void
      */
@@ -327,13 +331,20 @@ class SeablastController
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
             $this->identity = new $identityManager($this->configuration->dbms());
+            if (method_exists($this->identity, 'setTablePrefix')) {
+                $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
+            }
             // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+                // Save the current user's role, id and group list into the configuration object
                 Assert::methodExists($this->identity, 'getRoleId');
-                // Save the current user's role into the configuration object
+                Assert::methodExists($this->identity, 'getUserId');
+                Assert::methodExists($this->identity, 'getGroups');
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+                $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
+                $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
@@ -393,10 +404,13 @@ class SeablastController
     }
 
     /**
+     * Start session in the Seablast app.
+     *
      * Starting a session requires more complex initialization, so Tracy was started immediately
      * (so that it could handle any errors that occur).
      * Now initialize the session handler and
      * finally inform Tracy that the session is ready to be used using the dispatch() function.
+     *
      * @return void
      */
     private function startSession(): void

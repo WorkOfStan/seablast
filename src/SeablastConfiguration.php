@@ -9,20 +9,27 @@ use Seablast\Seablast\SeablastMysqli;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
+/**
+ * Universal data structure with strict data typing.
+ */
 class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
-    /** @var SeablastMysqli */
+    /** @var ?SeablastMysqli */
     private $connection = null;
+    /** @var ?string */
+    private $connectionTablePrefix = null;
     /** @var SeablastFlag */
     public $flag;
     /** @var array<array<string[]>> */
     private $optionsArrayArrayString = [];
+    /** @var array<int[]> */
+    private $optionsArrayInt = [];
     /** @var array<string[]> */
     private $optionsArrayString = [];
-    /** @var bool[] */
-    private $optionsBool = [];
+    /** @ var bool[] */
+    //private $optionsBool = [];
     /** @var int[] */
     private $optionsInt = [];
     /** @var string[] */
@@ -34,7 +41,8 @@ class SeablastConfiguration
     }
 
     /**
-     * Access to database with lazy initialisation
+     * Access to database with lazy initialisation.
+     *
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
@@ -44,19 +52,21 @@ class SeablastConfiguration
             Debugger::barDump('Creating database connection');
             $this->dbmsCreate();
         }
+        Assert::object($this->connection);
+        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
         return $this->connection;
     }
 
     /**
      * Creates a database connection and sets up charset.
+     *
      * @return void
      */
     private function dbmsCreate(): void
     {
-        $phinx = $this->dbmsReadPhinx();
-        // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
-        $environment = 'development'; // todo config ?? $phinx['environments']['default_environment']
+        $phinx = self::dbmsReadPhinx();
         Assert::isArray($phinx['environments']);
+        $environment = $phinx['environments']['default_environment'] ?? 'development';
         Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
         $port = isset($phinx['environments'][$environment]['port'])
             ? (int) $phinx['environments'][$environment]['port'] : null;
@@ -69,11 +79,32 @@ class SeablastConfiguration
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        $this->connection->set_charset('utf8'); // TODO viz configuration
+        Assert::true(
+            $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
+            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
+        );
+        // todo keep SBconstant or the $this->connectionTablePrefix accessible through dbmsmethod?
+        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? '');
+        $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
     }
 
     /**
-     * Read the database connection parameters from an external phinx configuration
+     * Return the table prefix from phinx config.
+     *
+     * TODO experimental - keep only if working well
+     *
+     * @return string
+     */
+    public function dbmsTablePrefix(): string
+    {
+        if (is_null($this->connectionTablePrefix)) {
+            throw new \Exception('Initiate db first.');
+        }
+        return $this->connectionTablePrefix;
+    }
+
+    /**
+     * Read the database connection parameters from an external phinx configuration.
      *
      * @return array<mixed>
      * @throws \Exception
@@ -87,17 +118,18 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true on connected, false on not connected
-     * So that SQL Bar Panel is not requested in vain
+     * Returns true on connected, false on not connected:
+     * So that the SQL Bar Panel is not requested in vain.
+     *
      * @return bool
      */
     public function dbmsStatus(): bool
     {
-        return is_a($this->connection, '\mysqli');
+        return is_object($this->connection) && is_a($this->connection, '\mysqli');
     }
 
     /**
-     * Check existence of a property within configuration
+     * Check existence of a property within configuration.
      *
      * @param string $property
      * @return bool
@@ -107,8 +139,9 @@ class SeablastConfiguration
         Assert::string($property);
         $methods = [
             'getArrayArrayString',
+            'getArrayInt',
             'getArrayString',
-            'getBool',
+            //'getBool',
             'getInt',
             'getString'
         ];
@@ -127,7 +160,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return array<array<string>>
      */
@@ -135,13 +167,25 @@ class SeablastConfiguration
     {
         Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayArrayString)) {
-            throw new SeablastConfigurationException('No array string for the property ' . $property);
+            throw new SeablastConfigurationException('No array of string array for the property ' . $property);
         }
         return $this->optionsArrayArrayString[$property];
     }
 
     /**
-     *
+     * @param string $property
+     * @return array<int>
+     */
+    public function getArrayInt(string $property): array
+    {
+        Assert::string($property);
+        if (!array_key_exists($property, $this->optionsArrayString)) {
+            throw new SeablastConfigurationException('No array int for the property ' . $property);
+        }
+        return $this->optionsArrayInt[$property];
+    }
+
+    /**
      * @param string $property
      * @return array<string>
      */
@@ -155,21 +199,19 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return bool
      */
-    public function getBool(string $property): bool
-    {
-        Assert::string($property);
-        if (!array_key_exists($property, $this->optionsBool)) {
-            throw new SeablastConfigurationException('No bool value for the property ' . $property);
-        }
-        return $this->optionsBool[$property];
-    }
+    //public function getBool(string $property): bool
+    //{
+    //    Assert::string($property);
+    //    if (!array_key_exists($property, $this->optionsBool)) {
+    //        throw new SeablastConfigurationException('No bool value for the property ' . $property);
+    //    }
+    //    return $this->optionsBool[$property];
+    //}
 
     /**
-     *
      * @param string $property
      * @return int
      */
@@ -183,7 +225,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @return string
      */
@@ -197,7 +238,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param string $key
      * @param string[] $value
@@ -215,7 +255,21 @@ class SeablastConfiguration
     }
 
     /**
-     *
+     * @param string $property
+     * @param int[] $value
+     * @return $this
+     */
+    public function setArrayInt(string $property, array $value): self
+    {
+        Assert::string($property);
+        foreach ($value as $row) {
+            Assert::integer($row);
+        }
+        $this->optionsArrayInt[$property] = $value;
+        return $this;
+    }
+
+    /**
      * @param string $property
      * @param string[] $value
      * @return $this
@@ -231,21 +285,19 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param bool $value
      * @return $this
      */
-    public function setBool(string $property, bool $value): self
-    {
-        Assert::string($property);
-        Assert::boolean($value);
-        $this->optionsBool[$property] = $value;
-        return $this;
-    }
+    //public function setBool(string $property, bool $value): self
+    //{
+    //    Assert::string($property);
+    //    Assert::boolean($value);
+    //    $this->optionsBool[$property] = $value;
+    //    return $this;
+    //}
 
     /**
-     *
      * @param string $property
      * @param int $value
      * @return $this
@@ -259,7 +311,6 @@ class SeablastConfiguration
     }
 
     /**
-     *
      * @param string $property
      * @param string $value
      * @return $this
