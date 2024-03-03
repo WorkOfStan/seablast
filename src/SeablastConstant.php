@@ -65,9 +65,9 @@ class SeablastConstant
     public const SB_INI_SET_DISPLAY_ERRORS = 'SB_INI_SET_DISPLAY_ERRORS';
     /**
      * TODO: make sure this is needed
-     * @var string $phinxEnvironment = 'development'; // use this phinx.yml environment for database connection
+     * @ var string $phinxEnvironment = 'development'; // use this phinx.yml environment for database connection
      */
-    public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
+    //TODO REMOVE public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
     /**
      * TODO: make sure this is needed
      * @var string

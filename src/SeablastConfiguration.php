@@ -66,8 +66,7 @@ class SeablastConfiguration
     {
         $phinx = self::dbmsReadPhinx();
         Assert::isArray($phinx['environments']);
-        // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
-        $environment = $phinx['environments']['default_environment'] ?? 'development'; // todo check
+        $environment = $phinx['environments']['default_environment'] ?? 'development';
         Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
         $port = isset($phinx['environments'][$environment]['port'])
             ? (int) $phinx['environments'][$environment]['port'] : null;
@@ -80,8 +79,10 @@ class SeablastConfiguration
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        // TODO viz configuration - check charset
-        Assert::true($this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)));
+        Assert::true(
+            $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
+            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
+        );
         // todo keep SBconstant or the $this->connectionTablePrefix accessible through dbmsmethod?
         $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? '');
         $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
@@ -96,7 +97,7 @@ class SeablastConfiguration
      */
     public function dbmsTablePrefix(): string
     {
-        if(is_null($this->connectionTablePrefix)) {
+        if (is_null($this->connectionTablePrefix)) {
             throw new \Exception('Initiate db first.');
         }
         return $this->connectionTablePrefix;

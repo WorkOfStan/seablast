@@ -62,7 +62,7 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            SeablastConstant::SB_PHINX_ENVIRONMENT,
+            //TODO: REMOVE: SeablastConstant::SB_PHINX_ENVIRONMENT,
             SeablastConstant::BACKYARD_LOGGING_LEVEL,
             //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
             SeablastConstant::ADMIN_MAIL_ADDRESS,
@@ -119,7 +119,7 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-//                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
+// TODO: REMOVE                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
 //                        Debugger::barDump($property, 'not coded yet');
 //                        break;
 //                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
@@ -338,15 +338,13 @@ class SeablastController
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+                // Save the current user's role, id and group list into the configuration object
                 Assert::methodExists($this->identity, 'getRoleId');
                 Assert::methodExists($this->identity, 'getUserId');
                 Assert::methodExists($this->identity, 'getGroups');
-                // Save the current user's role into the configuration object
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
                 $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
                 $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
-                // todo get user id
-                // todo get user groups
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)

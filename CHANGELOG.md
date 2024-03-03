@@ -7,19 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
-- table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix().
-- configuration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
 
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
-- SeablastConfiguration::optionsBool as redundant (use flag instead)
 
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.3] - 2024-03-03
+### Added
+- table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix()
+- configuration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
+- SB_CHARSET_DATABASE to mysqli::set_charset
+- IdentityManagerInterface provides also user ID and list of groups
+
+### Removed
+- SeablastConfiguration::optionsBool as redundant (use flag instead)
 
 ## [0.2.2] - 2024-02-18
 ### Changed
@@ -96,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1
 [0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2
