@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SB_CHARSET_DATABASE to mysqli::set_charset
 - IdentityManagerInterface provides also user ID and list of groups
 
+### Changed
+- using the documented double pipe `||` as a logical OR operator in composer.json (instead of the older single pipe operator)
+
 ### Removed
 - SeablastConfiguration::optionsBool as redundant (use flag instead)
 
