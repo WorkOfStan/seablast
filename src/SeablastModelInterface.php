@@ -9,7 +9,7 @@ use Seablast\Seablast\Superglobals;
 use stdClass;
 
 /**
- * Definition of a model used by SeablastModel
+ * Definition of a model used by SeablastModel.
  *
  * Usage: class AbcModel implements SeablastModelInterface
  */

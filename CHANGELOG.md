@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
-- SB:phinx:table_prefix
+- table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix().
+- configuration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
 
 ### `Changed` for changes in existing functionality
 

@@ -25,8 +25,7 @@ class UploadException extends Exception
     use \Nette\SmartObject;
 
     /**
-     *
-     * @param int $code
+     * @param int $code of file upload error
      */
     public function __construct(int $code)
     {

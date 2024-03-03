@@ -21,7 +21,6 @@ class ErrorModel implements SeablastModelInterface
     private $configuration;
 
     /**
-     *
      * @param SeablastConfiguration $configuration
      * @param Superglobals $superglobals
      * @throws \Exception
@@ -34,6 +33,7 @@ class ErrorModel implements SeablastModelInterface
 
     /**
      * Return the knowledge calculated in this model.
+     *
      * @return stdClass
      */
     public function knowledge(): stdClass

@@ -336,8 +336,12 @@ class SeablastController
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
                 Assert::methodExists($this->identity, 'getRoleId');
+                Assert::methodExists($this->identity, 'getUserId');
+                Assert::methodExists($this->identity, 'getGroups');
                 // Save the current user's role into the configuration object
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+                $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
+                $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
                 // todo get user id
                 // todo get user groups
             }

@@ -24,7 +24,6 @@ class SeablastMysqli extends mysqli
     private $statementList = [];
 
     /**
-     *
      * @param string $host
      * @param string $username
      * @param string $password
@@ -56,6 +55,7 @@ class SeablastMysqli extends mysqli
     }
 
     /**
+     * Logging wrapper over performing a query on the database.
      *
      * @param string $query
      * @param int $resultmode
@@ -86,7 +86,10 @@ class SeablastMysqli extends mysqli
     }
 
     /**
-     * Identify query that doesn't change data
+     * Identify query that doesn't change data.
+     *
+     * @param string $query
+     * @return bool
      */
     private function isReadDataTypeQuery(string $query): bool
     {
@@ -94,6 +97,7 @@ class SeablastMysqli extends mysqli
     }
 
     /**
+     * Log this query.
      *
      * @param string $query
      * @return void

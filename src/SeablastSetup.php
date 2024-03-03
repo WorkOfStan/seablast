@@ -26,7 +26,8 @@ class SeablastSetup
     }
 
     /**
-     * Getter
+     * Getter.
+     *
      * @return SeablastConfiguration
      */
     public function getConfiguration()
@@ -35,7 +36,8 @@ class SeablastSetup
     }
 
     /**
-     * Process a configuration file, if it exists
+     * Process a configuration file, if it exists.
+     *
      * @param string $configurationFilename
      * @return void
      */

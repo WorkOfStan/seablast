@@ -52,6 +52,8 @@ class SeablastConfiguration
             Debugger::barDump('Creating database connection');
             $this->dbmsCreate();
         }
+        Assert::object($this->connection);
+        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
         return $this->connection;
     }
 
@@ -63,9 +65,9 @@ class SeablastConfiguration
     private function dbmsCreate(): void
     {
         $phinx = self::dbmsReadPhinx();
+        Assert::isArray($phinx['environments']);
         // todo Assert:: environment dle SB_phinx or default environment ... Parametry foreach Assert:: string
         $environment = $phinx['environments']['default_environment'] ?? 'development'; // todo check
-        Assert::isArray($phinx['environments']);
         Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
         $port = isset($phinx['environments'][$environment]['port'])
             ? (int) $phinx['environments'][$environment]['port'] : null;
@@ -78,13 +80,16 @@ class SeablastConfiguration
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        Assert::true($this->connection->set_charset($this->getString(>setString(SeablastConstant::SB_CHARSET_DATABASE))); // TODO viz configuration - check
-        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? ''); // todo SBconstant or the following dbmsmethod?
+        // TODO viz configuration - check charset
+        Assert::true($this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)));
+        // todo keep SBconstant or the $this->connectionTablePrefix accessible through dbmsmethod?
+        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? '');
         $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
     }
 
     /**
-     * Table prefix from phinx config
+     * Return the table prefix from phinx config.
+     *
      * TODO experimental - keep only if working well
      *
      * @return string
@@ -119,7 +124,7 @@ class SeablastConfiguration
      */
     public function dbmsStatus(): bool
     {
-        return is_a($this->connection, '\mysqli');
+        return is_object($this->connection) && is_a($this->connection, '\mysqli');
     }
 
     /**
@@ -257,7 +262,7 @@ class SeablastConfiguration
     {
         Assert::string($property);
         foreach ($value as $row) {
-            Assert::int($row);
+            Assert::integer($row);
         }
         $this->optionsArrayInt[$property] = $value;
         return $this;

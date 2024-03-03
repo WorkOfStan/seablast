@@ -51,6 +51,10 @@ class SeablastConstant
      */
     public const SB_ENCODING = 'SB_ENCODING';
     /**
+     * @var string mysqli::set_charset('utf8');
+     */
+    public const SB_CHARSET_DATABASE = 'SB_CHARSET_DATABASE';
+    /**
      * @var string ini_set('session.use_strict_mode', '1');
      */
     public const SB_INI_SET_SESSION_USE_STRICT_MODE = 'SB_INI_SET_SESSION_USE_STRICT_MODE';
@@ -145,7 +149,15 @@ class SeablastConstant
     /**
      * @var string int roleId
      */
+    public const USER_ID = 'SB:USER_ID';
+    /**
+     * @var string int roleId
+     */
     public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
+    /**
+     * @var string int[] groupId
+     */
+    public const USER_GROUPS = 'SB:USER_GROUPS';
     /**
      * @var string int HTTP code
      */
