@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.3.1] - 2024-03-05
+### Fixed
+- SeablastConfiguration::getArrayInt
+
 ## [0.2.3] - 2024-03-03
 ### Added
 - table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix()
@@ -106,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...HEAD
+[0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1
 [0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1
