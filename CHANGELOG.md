@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix()
 - SeablastConfiguration contains SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS
 - SB_CHARSET_DATABASE to mysqli::set_charset
-- IdentityManagerInterface provides also user ID and list of groups
+- IdentityManagerInterface expects also user ID and list of groups **BREAKING CHANGE**
 
 ### Changed
 - using the documented double pipe `||` as a logical OR operator in composer.json (instead of the older single pipe operator)
