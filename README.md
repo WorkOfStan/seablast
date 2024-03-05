@@ -2,13 +2,12 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 
-This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex web application ONLY by configuration:
+This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex, yet easy to maintain, web application by configuration ONLY:
 - you configure routes for controller,
 - add models for the app business functionality,
 - optionally modify view templates.
 
 The framework takes care of logs, database, multiple languages, user friendly HTTP errors, friendly URL.
-(The future is in an easy to maintain technology.)
 
 - See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repository.
 
@@ -20,7 +19,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 ## Model
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 **Model transforms input into knowledge**, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
-- SeablastModel also expects Superglobals $superglobals argument (instead of injection `$model->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
+- SeablastModel also expects Superglobals $superglobals argument (instead of injection like `$model->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
 
 The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 

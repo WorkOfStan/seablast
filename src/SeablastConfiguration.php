@@ -179,7 +179,7 @@ class SeablastConfiguration
     public function getArrayInt(string $property): array
     {
         Assert::string($property);
-        if (!array_key_exists($property, $this->optionsArrayString)) {
+        if (!array_key_exists($property, $this->optionsArrayInt)) {
             throw new SeablastConfigurationException('No array int for the property ' . $property);
         }
         return $this->optionsArrayInt[$property];
