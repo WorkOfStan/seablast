@@ -38,7 +38,6 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     protected $superglobals;
 
     /**
-     *
      * @param SeablastConfiguration $configuration
      * @param Superglobals $superglobals
      * @throws \Exception
@@ -60,7 +59,8 @@ class GenericRestApiJsonModel implements SeablastModelInterface
 
     /**
      * If the returned status >= 400, then it doesn't make sense to process anymore,
-     * but return the same status to SeablastView
+     * but return the same status to SeablastView.
+     *
      * @return stdClass
      */
     public function knowledge(): stdClass
@@ -86,8 +86,10 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     }
 
     /**
-     * Validates standard PHP input
+     * Validates standard PHP input.
+     *
      * Doesn't output anything, even errors, because output is done by SeablastView which handles Tracy bar etc.
+     *
      * @return void
      */
     private function processInput(): void
