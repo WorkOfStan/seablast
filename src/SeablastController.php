@@ -227,7 +227,7 @@ class SeablastController
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
-        $this->mapping = $mapping[$this->uriPath];
+        $this->mapping = $mapping[$this->uriPath]; // todo is it necessary to redefine uriPath? or just use it here
         // TODO - is there a more direct way to propagate it to SeablastView than put it into configuration object?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
