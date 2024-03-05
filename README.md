@@ -2,13 +2,12 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 
-This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex web application ONLY by configuration:
+This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex, yet easy to maintain, web application by configuration ONLY:
 - you configure routes for controller,
 - add models for the app business functionality,
 - optionally modify view templates.
 
 The framework takes care of logs, database, multiple languages, user friendly HTTP errors, friendly URL.
-(The future is in an easy to maintain technology.)
 
 - See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repository.
 
