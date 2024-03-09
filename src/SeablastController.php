@@ -354,6 +354,15 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
+                try {
+                    if (!empty($this->configuration->getString(SeablastConstant::APP_MAPPING_401))) {
+                        $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
+                        $this->mapping = $mapping[$this->configuration->getString(SeablastConstant::APP_MAPPING_401)];
+                        return;
+                    }
+                } catch (\Exception $ex) {
+                    Debugger::barDump($ex, 'No APP_MAPPING_401 to redirect for authentication');
+                }
                 $this->page40x('401 Unauthorized. Zalogujte se.', 401); // TODO 401 - seamless log in page
                 return;
             }
