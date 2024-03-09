@@ -227,7 +227,7 @@ class SeablastController
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
         $this->uriPath = '/error';
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
-        $this->mapping = $mapping[$this->uriPath];
+        $this->mapping = $mapping[$this->uriPath]; // todo is it necessary to redefine uriPath? or just use it here
         // TODO - is there a more direct way to propagate it to SeablastView than put it into configuration object?
         $this->configuration->setInt(SeablastConstant::ERROR_HTTP_CODE, $httpCode);
         $this->configuration->setString(SeablastConstant::ERROR_MESSAGE, $specificMessage);
@@ -354,7 +354,17 @@ class SeablastController
             }
             // Identity required, if not autheticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
-                $this->page40x('401 Unauthorized. Zalogujte se.', 401); // TODO 401 - seamless log in page
+                try { // Seamless log in page if prepared
+                    if (!empty($this->configuration->getString(SeablastConstant::APP_MAPPING_401))) {
+                        $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
+                        $this->mapping = $mapping[$this->configuration->getString(SeablastConstant::APP_MAPPING_401)];
+                        // todo deeplink to the original place after login
+                        return;
+                    }
+                } catch (SeablastConfigurationException $ex) {
+                    Debugger::barDump($ex, 'No APP_MAPPING_401 to redirect for authentication');
+                }
+                $this->page40x('401 Unauthorized. Zalogujte se.', 401);
                 return;
             }
             Debugger::barDump('User is authenticated');

@@ -95,7 +95,7 @@ class SeablastView
      */
     private function getTemplatePath(): string
     {
-        // todo - check file exists + inheritance
+        // check file exists + inheritance
         $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/'
             . $this->model->mapping['template'] . '.latte';
         // APP

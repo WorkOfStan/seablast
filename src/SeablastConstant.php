@@ -98,6 +98,10 @@ class SeablastConstant
      */
     public const APP_MAPPING = 'SB:APP_MAPPING';
     /**
+     * @var string string mapping to use in case of authentication required
+     */
+    public const APP_MAPPING_401 = 'SB:APP_MAPPING_401';
+    /**
      * @var string string with path to directory with Latte templates
      */
     public const LATTE_TEMPLATE = 'SB:LATTE_TEMPLATE';
