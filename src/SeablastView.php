@@ -77,11 +77,14 @@ class SeablastView
         if (!isset($this->params->httpCode) || ($this->params->httpCode < 400)) {
             return;
         }
-        $httpBarPanelInfo = []; // 'Params' => $this->params
-        if (isset($this->params->rest->message)) {
-            $httpBarPanelInfo['message'] = $this->params->rest->message;
-        }
-        $httpBarPanel = new BarPanelTemplate('HTTP: ' . (int) $this->params->httpCode, $httpBarPanelInfo);
+        //$httpBarPanelInfo = []; // 'Params' => $this->params
+        //if (isset($this->params->rest->message)) {
+        //    $httpBarPanelInfo['message'] = $this->params->rest->message;
+        //}
+        $httpBarPanel = new BarPanelTemplate(
+            'HTTP: ' . (int) $this->params->httpCode,
+            isset($this->params->rest->message) ? ['message' => $this->params->rest->message] : []
+        );
         $httpBarPanel->setError();
         Debugger::getBar()->addPanel($httpBarPanel);
     }
@@ -106,6 +109,7 @@ class SeablastView
         if (file_exists($templatePath)) {
             return $templatePath;
         }
+        // todo MissingTemplateException
         throw new \Exception($this->model->mapping['template'] . ' template is neither in app ' . $templatePath
             . ' nor in library'); // TODO improve the error message
     }
@@ -127,6 +131,7 @@ class SeablastView
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // todo in_array((int),[allowed codes] to replace basic validation below
             if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
+                // todo UnknownHttpCodeException
                 throw new \Exception('Unknown HTTP code: ' . (int) $this->params->httpCode);
             }
             http_response_code((int) $this->params->httpCode); // Send the status code
