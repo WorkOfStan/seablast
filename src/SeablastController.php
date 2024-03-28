@@ -304,7 +304,7 @@ class SeablastController
             [
                 'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
                 'APP_DIR' => APP_DIR,
-                'appPath' => $appPath,
+                'appPath' => $appPath, //todo compare w SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL
                 'path' => $this->uriPath,
                 'query' => $this->uriQuery,
             ],
