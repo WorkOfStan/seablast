@@ -238,22 +238,24 @@ class SeablastController
     private function pageUnderConstruction(): void
     {
         if (
-            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
+            $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
         ) {
+            return; // web is up
+        }
             Debugger::barDump('UNDER_CONSTRUCTION!');
             if (
-                !in_array(
+                in_array(
                     $this->superglobals->server['REMOTE_ADDR'],
                     $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
                 )
             ) {
+                return; // admin can see the web even if it is down
+            }
                 $this->startSession(); // as it couldn't be started before
                 //TODO TEST include from app, pokud tam je, otherwise use this default:
                 include file_exists(APP_DIR . '/under-construction.html')
                     ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
                 exit;
-            }
-        }
     }
 
     /**
