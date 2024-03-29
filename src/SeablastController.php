@@ -62,7 +62,6 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            //TODO: REMOVE: SeablastConstant::SB_PHINX_ENVIRONMENT,
             SeablastConstant::BACKYARD_LOGGING_LEVEL,
             //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
             SeablastConstant::ADMIN_MAIL_ADDRESS,
@@ -81,7 +80,7 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
                         if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
-                            // TODO test this!
+                            // TODO test this! //Todo sbConfException
                             throw new \Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
@@ -101,6 +100,7 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
+                            // todo sbConfException
                             throw new \Exception(SeablastConstant::SB_SETLOCALE_LOCALES
                                 . ' required if following is set: ' . $property);
                         }
@@ -119,9 +119,6 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-// TODO: REMOVE                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
-//                        Debugger::barDump($property, 'not coded yet');
-//                        break;
 //                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
 //                        Debugger::barDump($property, 'not coded yet');
 //                        break;
@@ -174,7 +171,6 @@ class SeablastController
      */
     private function makeSureUrlIsParametric($requestUri): void
     {
-        // Use parse_url to parse the URI
         $parsedUrl = parse_url($requestUri);
         Debugger::barDump(
             ['requestUri' => $requestUri, 'parsedUrl' => $parsedUrl],
@@ -222,6 +218,7 @@ class SeablastController
     private function page40x(string $specificMessage, int $httpCode = 404): void
     {
         if ($httpCode < 400 || $httpCode > 499) {
+            // todo ClientErrorException
             throw new \Exception("{$specificMessage} with HTTP code {$httpCode}");
         }
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
