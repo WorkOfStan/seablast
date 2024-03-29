@@ -98,6 +98,7 @@ class SeablastConfiguration
     public function dbmsTablePrefix(): string
     {
         if (is_null($this->connectionTablePrefix)) {
+            // todo DbmsException
             throw new \Exception('Initiate db first.');
         }
         return $this->connectionTablePrefix;
@@ -112,6 +113,7 @@ class SeablastConfiguration
     private static function dbmsReadPhinx(): array
     {
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
+            // todo DbmsException
             throw new \Exception('Provide credentials to use database');
         }
         return require APP_DIR . '/conf/phinx.local.php';
