@@ -6,11 +6,11 @@ namespace Seablast\Seablast\Exceptions;
 
 use Exception;
 
-final class UnknownHttpCodeException extends Exception
+final class DbmsException extends Exception
 {
 
     /** @api */
-    public function __construct(string $message = 'Unknown internal error.')
+    public function __construct(string $message = 'Unknown database management error.')
     {
         parent::__construct($message);
     }

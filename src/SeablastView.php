@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Exceptions\MissingTemplateException;
+use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use stdClass;
 use Tracy\Debugger;
@@ -110,8 +112,8 @@ class SeablastView
             return $templatePath;
         }
         // todo MissingTemplateException
-        throw new \Exception($this->model->mapping['template'] . ' template is neither in app ' . $templatePath
-            . ' nor in library'); // TODO improve the error message
+        throw new MissingTemplateException($this->model->mapping['template'] . ' template is neither in app '
+            . $templatePath . ' nor in library'); // TODO improve the error message
     }
 
     /**
@@ -132,7 +134,7 @@ class SeablastView
             // todo in_array((int),[allowed codes] to replace basic validation below
             if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
                 // todo UnknownHttpCodeException
-                throw new \Exception('Unknown HTTP code: ' . (int) $this->params->httpCode);
+                throw new UnknownHttpCodeException('Unknown HTTP code: ' . (int) $this->params->httpCode);
             }
             http_response_code((int) $this->params->httpCode); // Send the status code
         }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
+- throw specific Exceptions
 
 ### `Deprecated` for soon-to-be removed features
 

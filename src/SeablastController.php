@@ -80,8 +80,8 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
                         if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
-                            // TODO test this! //Todo sbConfException
-                            throw new \Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
+                            // TODO test this!
+                            throw new SeablastConfigurationException(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
@@ -100,8 +100,7 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
-                            // todo sbConfException
-                            throw new \Exception(SeablastConstant::SB_SETLOCALE_LOCALES
+                            throw new SeablastConfigurationException(SeablastConstant::SB_SETLOCALE_LOCALES
                                 . ' required if following is set: ' . $property);
                         }
                         setlocale(
@@ -242,20 +241,20 @@ class SeablastController
         ) {
             return; // web is up
         }
-            Debugger::barDump('UNDER_CONSTRUCTION!');
-            if (
-                in_array(
-                    $this->superglobals->server['REMOTE_ADDR'],
-                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
-                )
-            ) {
-                return; // admin can see the web even if it is down
-            }
-                $this->startSession(); // as it couldn't be started before
-                //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html')
-                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
-                exit;
+        Debugger::barDump('UNDER_CONSTRUCTION!');
+        if (
+            in_array(
+                $this->superglobals->server['REMOTE_ADDR'],
+                $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
+            )
+        ) {
+            return; // admin can see the web even if it is down
+        }
+        $this->startSession(); // as it couldn't be started before
+        //TODO TEST include from app, pokud tam je, otherwise use this default:
+        include file_exists(APP_DIR . '/under-construction.html')
+            ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+        exit;
     }
 
     /**
