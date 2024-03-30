@@ -60,9 +60,10 @@ class SeablastMysqli extends mysqli
      *
      * @param string $query
      * @param int $resultmode
-     * @return bool|mysqli_result
+     * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
      */
-    public function query($query, $resultmode = MYSQLI_STORE_RESULT): mixed
+    #[\ReturnTypeWillChange]
+    public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
         $trimmedQuery = trim($query);
         // todo what other keywords?
