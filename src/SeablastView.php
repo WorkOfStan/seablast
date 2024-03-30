@@ -133,7 +133,6 @@ class SeablastView
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // todo in_array((int),[allowed codes] to replace basic validation below
             if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
-                // todo UnknownHttpCodeException
                 throw new UnknownHttpCodeException('Unknown HTTP code: ' . (int) $this->params->httpCode);
             }
             http_response_code((int) $this->params->httpCode); // Send the status code
