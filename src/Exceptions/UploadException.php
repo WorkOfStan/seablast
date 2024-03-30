@@ -20,7 +20,7 @@ use Exception;
  * //uploading successfully done - continue with your code
  *
  */
-class UploadException extends Exception
+final class UploadException extends Exception
 {
     use \Nette\SmartObject;
 

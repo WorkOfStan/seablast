@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Exceptions\ClientErrorException;
 use Seablast\Seablast\IdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
@@ -62,7 +63,6 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            //TODO: REMOVE: SeablastConstant::SB_PHINX_ENVIRONMENT,
             SeablastConstant::BACKYARD_LOGGING_LEVEL,
             //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
             SeablastConstant::ADMIN_MAIL_ADDRESS,
@@ -82,7 +82,7 @@ class SeablastController
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
                         if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
                             // TODO test this!
-                            throw new \Exception(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
+                            throw new SeablastConfigurationException(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
@@ -101,7 +101,7 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
-                            throw new \Exception(SeablastConstant::SB_SETLOCALE_LOCALES
+                            throw new SeablastConfigurationException(SeablastConstant::SB_SETLOCALE_LOCALES
                                 . ' required if following is set: ' . $property);
                         }
                         setlocale(
@@ -119,9 +119,6 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-// TODO: REMOVE                    case SeablastConstant::SB_PHINX_ENVIRONMENT:
-//                        Debugger::barDump($property, 'not coded yet');
-//                        break;
 //                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
 //                        Debugger::barDump($property, 'not coded yet');
 //                        break;
@@ -174,7 +171,6 @@ class SeablastController
      */
     private function makeSureUrlIsParametric($requestUri): void
     {
-        // Use parse_url to parse the URI
         $parsedUrl = parse_url($requestUri);
         Debugger::barDump(
             ['requestUri' => $requestUri, 'parsedUrl' => $parsedUrl],
@@ -222,7 +218,7 @@ class SeablastController
     private function page40x(string $specificMessage, int $httpCode = 404): void
     {
         if ($httpCode < 400 || $httpCode > 499) {
-            throw new \Exception("{$specificMessage} with HTTP code {$httpCode}");
+            throw new ClientErrorException("{$specificMessage} with HTTP code {$httpCode}");
         }
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
         $this->uriPath = '/error';
@@ -241,22 +237,25 @@ class SeablastController
     private function pageUnderConstruction(): void
     {
         if (
-            !$this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
+            $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
         ) {
-            Debugger::barDump('UNDER_CONSTRUCTION!');
-            if (
-                !in_array(
-                    $this->superglobals->server['REMOTE_ADDR'],
-                    $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
-                )
-            ) {
-                $this->startSession(); // as it couldn't be started before
-                //TODO TEST include from app, pokud tam je, otherwise use this default:
-                include file_exists(APP_DIR . '/under-construction.html')
-                    ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
-                exit;
-            }
+            return; // web is up
         }
+        Debugger::barDump('UNDER_CONSTRUCTION!');
+        if (
+            in_array($this->superglobals->server['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
+            in_array(
+                $this->superglobals->server['REMOTE_ADDR'],
+                $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
+            )
+        ) {
+            return; // admin can see the web even if it is down
+        }
+        $this->startSession(); // as it couldn't be started before
+        //TODO TEST include from app, pokud tam je, otherwise use this default:
+        include file_exists(APP_DIR . '/under-construction.html')
+            ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+        exit;
     }
 
     /**
@@ -304,7 +303,7 @@ class SeablastController
             [
                 'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
                 'APP_DIR' => APP_DIR,
-                'appPath' => $appPath,
+                'appPath' => $appPath, //todo compare w SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL
                 'path' => $this->uriPath,
                 'query' => $this->uriQuery,
             ],

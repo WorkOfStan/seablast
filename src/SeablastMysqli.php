@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use mysqli;
+use mysqli_result;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
 
@@ -59,8 +60,9 @@ class SeablastMysqli extends mysqli
      *
      * @param string $query
      * @param int $resultmode
-     * @return bool|\mysqli_result
+     * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
      */
+    #[\ReturnTypeWillChange]
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
         $trimmedQuery = trim($query);

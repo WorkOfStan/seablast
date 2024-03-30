@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfigurationException;
 use Seablast\Seablast\SeablastMysqli;
 use Tracy\Debugger;
@@ -98,7 +99,7 @@ class SeablastConfiguration
     public function dbmsTablePrefix(): string
     {
         if (is_null($this->connectionTablePrefix)) {
-            throw new \Exception('Initiate db first.');
+            throw new DbmsException('Initiate db first.');
         }
         return $this->connectionTablePrefix;
     }
@@ -112,7 +113,8 @@ class SeablastConfiguration
     private static function dbmsReadPhinx(): array
     {
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
-            throw new \Exception('Provide credentials to use database');
+            // todo DbmsException
+            throw new DbmsException('Provide credentials to use database');
         }
         return require APP_DIR . '/conf/phinx.local.php';
     }

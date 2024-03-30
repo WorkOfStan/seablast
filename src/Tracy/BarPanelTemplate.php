@@ -32,6 +32,7 @@ class BarPanelTemplate implements IBarPanel
 
     /**
      * Renders HTML code for custom tab.
+     *
      * @return string
      */
     public function getTab(): string
@@ -46,6 +47,7 @@ class BarPanelTemplate implements IBarPanel
 
     /**
      * Renders HTML code for custom panel.
+     *
      * @return string
      */
     public function getPanel(): string
@@ -78,7 +80,7 @@ class BarPanelTemplate implements IBarPanel
 
     /**
      * Set panel to be displayed as error.
-     * If to be set to info again, try calling setError(false)
+     * If to be set to info again, call setError(false)
      *
      * @param bool $error OPTIONAL
      * @return void

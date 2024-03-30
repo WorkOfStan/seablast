@@ -23,7 +23,6 @@ class ErrorModel implements SeablastModelInterface
     /**
      * @param SeablastConfiguration $configuration
      * @param Superglobals $superglobals
-     * @throws \Exception
      */
     public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
