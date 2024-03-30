@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.3.3] - 2024-03-30
 - Changed: throw specific Exceptions
 - Fixed: UNDER_CONSTRUCTION excludes localhost
+- PHP/8.0, PHP/8.1 and PHP/8.2 tested automatically by GitHub for Composer validity and PHPStan
 
 ## [0.2.3.2] - 2024-03-09
 ### Added
