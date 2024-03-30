@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
-- throw specific Exceptions
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -18,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.3.3] - 2024-03-30
+- Changed: throw specific Exceptions
+- Fixed: UNDER_CONSTRUCTION excludes localhost
 
 ## [0.2.3.2] - 2024-03-09
 ### Added
@@ -115,7 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...HEAD
+[0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3
 [0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2
 [0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1
 [0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3

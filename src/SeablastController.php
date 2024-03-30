@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Seablast\Exceptions\ClientErrorException;
 use Seablast\Seablast\IdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
@@ -217,8 +218,7 @@ class SeablastController
     private function page40x(string $specificMessage, int $httpCode = 404): void
     {
         if ($httpCode < 400 || $httpCode > 499) {
-            // todo ClientErrorException
-            throw new \Exception("{$specificMessage} with HTTP code {$httpCode}");
+            throw new ClientErrorException("{$specificMessage} with HTTP code {$httpCode}");
         }
         Debugger::barDump(['httpCode' => $httpCode, 'message' => $specificMessage], 'HTTP error');
         $this->uriPath = '/error';
@@ -243,6 +243,7 @@ class SeablastController
         }
         Debugger::barDump('UNDER_CONSTRUCTION!');
         if (
+            in_array($this->superglobals->server['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
             in_array(
                 $this->superglobals->server['REMOTE_ADDR'],
                 $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
