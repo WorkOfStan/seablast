@@ -62,7 +62,7 @@ class SeablastMysqli extends mysqli
      * @param int $resultmode
      * @return bool|mysqli_result
      */
-    public function query($query, $resultmode = MYSQLI_STORE_RESULT)
+    public function query($query, $resultmode = MYSQLI_STORE_RESULT): mixed
     {
         $trimmedQuery = trim($query);
         // todo what other keywords?

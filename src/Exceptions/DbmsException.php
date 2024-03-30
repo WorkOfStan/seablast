@@ -8,7 +8,6 @@ use Exception;
 
 final class DbmsException extends Exception
 {
-
     /** @api */
     public function __construct(string $message = 'Unknown database management error.')
     {

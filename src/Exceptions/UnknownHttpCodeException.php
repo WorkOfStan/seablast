@@ -8,7 +8,6 @@ use Exception;
 
 final class UnknownHttpCodeException extends Exception
 {
-
     /** @api */
     public function __construct(string $message = 'Unknown internal error.')
     {
