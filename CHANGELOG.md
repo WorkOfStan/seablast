@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
+- use `Seablast\Interfaces\IdentityManagerInterface;` instead of `Seablast\Seablast\IdentityManagerInterface;`
+- GitHub workflows uses uses: WorkOfStan/seablast-actions instead of WorkOfStan/MyCMS
 
 ### `Deprecated` for soon-to-be removed features
 

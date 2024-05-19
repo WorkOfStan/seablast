@@ -24,9 +24,12 @@ on:
       # notest branches to ignore testing of partial online commits
       - 'notest/**'
 
+permissions:
+  contents: read
+
 ###############
 # Set the Job #
 ###############
 jobs:
   call-workflow:
-    uses: WorkOfStan/MyCMS/.github/workflows/linter.yml@main
+    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@main
