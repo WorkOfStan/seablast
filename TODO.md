@@ -13,6 +13,5 @@ All planned changes to this project are documented in this file.
 - 2402010004: Mit.js mit.css with sb const update by sbView
 
 ## Governance
-- 231128, replace `.github/linters/*.yml` and `.github/workflows/*.yml` by Seablast versions, probably `WorkOfStan/Seablast-github/.github/workflows/`
 - 231206, cut Latte out of the core Seablast to be used as Seablast/render-latte
 - 231206, either add PHPUnit tests or remove Test from composer.json
