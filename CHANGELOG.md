@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
-- SeablastConstant::SB_PHINX_ENVIRONMENT to override $phinx['environments']['default_environment']
+- SeablastConstant::SB_PHINX_ENVIRONMENT to override `$phinx['environments']['default_environment']`
 
 ### `Changed` for changes in existing functionality
 - use `Seablast\Interfaces\IdentityManagerInterface;` instead of `Seablast\Seablast\IdentityManagerInterface;`
