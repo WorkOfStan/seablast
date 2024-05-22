@@ -67,8 +67,14 @@ class SeablastConfiguration
     {
         $phinx = self::dbmsReadPhinx();
         Assert::isArray($phinx['environments']);
-        $environment = $phinx['environments']['default_environment'] ?? 'development';
-        Assert::keyExists($phinx['environments'], $environment, "Phinx environment `{$environment}` isn't defined");
+        $environment = $this->exists(SeablastConstant::SB_PHINX_ENVIRONMENT)
+            ? $this->getString(SeablastConstant::SB_PHINX_ENVIRONMENT)
+            : ($phinx['environments']['default_environment'] ?? 'undefined');
+        Assert::keyExists(
+            $phinx['environments'],
+            $environment,
+            "Phinx environment `{$environment}` isn't defined - check SB_PHINX_ENVIRONMENT or default_environment"
+        );
         $port = isset($phinx['environments'][$environment]['port'])
             ? (int) $phinx['environments'][$environment]['port'] : null;
         $this->connection = new SeablastMysqli(
