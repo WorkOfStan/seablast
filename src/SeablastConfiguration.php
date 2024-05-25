@@ -90,8 +90,6 @@ class SeablastConfiguration
             $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
             'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
         );
-        // todo keep SBconstant or the $this->connectionTablePrefix accessible through dbmsmethod?
-        $this->setString('SB:phinx:table_prefix', $phinx['environments'][$environment]['table_prefix'] ?? '');
         $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
     }
 
@@ -207,6 +205,7 @@ class SeablastConfiguration
     }
 
     /**
+     * Use flag instead of bool. So this dead code may be deleted.
      * @param string $property
      * @return bool
      */
@@ -293,6 +292,7 @@ class SeablastConfiguration
     }
 
     /**
+     * Use flag instead of bool. So this dead code may be deleted.
      * @param string $property
      * @param bool $value
      * @return $this

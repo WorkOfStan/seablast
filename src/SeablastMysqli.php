@@ -20,7 +20,7 @@ class SeablastMysqli extends mysqli
     /** @var bool true if any of the SQL statements ended in an error state */
     private $databaseError = false;
     /** @var string */
-    private $logPath = APP_DIR . '/log/query.log';
+    private $logPath;
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
 
@@ -53,6 +53,7 @@ class SeablastMysqli extends mysqli
                 'Connection to database failed with error #' . $this->connect_errno . ' ' . $this->connect_error
             );
         }
+        $this->logPath = APP_DIR . '/log/query_' . date('Y-m') . '.log';
     }
 
     /**
@@ -106,8 +107,12 @@ class SeablastMysqli extends mysqli
      */
     private function logQuery(string $query): void
     {
-        // TODO add timestamp, rotating logs, error_log might be better
-        file_put_contents($this->logPath, $query . PHP_EOL, FILE_APPEND);
+        //mb_ereg_replace does not destroy multi-byte characters such as character Č
+        error_log(
+            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . ']' . PHP_EOL,
+            3,
+            $this->logPath
+        );
     }
 
     /**
