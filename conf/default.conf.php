@@ -36,7 +36,8 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setString(SeablastConstant::SB_INI_SET_DISPLAY_ERRORS, '0') // errors only in the log; override locally
         ->setArrayString(SeablastConstant::DEBUG_IP_LIST, []) // default list with IPs to show Tracy
         // Database
-        ->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing') // so that the automatic GitHub tests work
+        // should be 'testing' so that the automatic GitHub tests work?
+        ->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'development')
         // Latte templates
         ->setString(SeablastConstant::LATTE_TEMPLATE, 'views')
         ->setString(SeablastConstant::LATTE_CACHE, APP_DIR . '/cache')
