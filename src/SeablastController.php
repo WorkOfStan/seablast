@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Seablast\Interfaces\IdentityManagerInterface;
 use Seablast\Seablast\Exceptions\ClientErrorException;
-use Seablast\Seablast\IdentityManagerInterface;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;

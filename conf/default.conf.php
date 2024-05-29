@@ -35,6 +35,10 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setString(SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE, '1')
         ->setString(SeablastConstant::SB_INI_SET_DISPLAY_ERRORS, '0') // errors only in the log; override locally
         ->setArrayString(SeablastConstant::DEBUG_IP_LIST, []) // default list with IPs to show Tracy
+        // Database
+        // Does not have to be 'testing' expected by the automatic GitHub tests as environment is set in the unit tests
+        // like this: `$setup->getConfiguration()->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');`
+        ->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'development')
         // Latte templates
         ->setString(SeablastConstant::LATTE_TEMPLATE, 'views')
         ->setString(SeablastConstant::LATTE_CACHE, APP_DIR . '/cache')
