@@ -83,7 +83,7 @@ class SeablastMysqli extends mysqli
                 'Database error'
             );
             $this->statementList[] = "{$this->errno}: {$this->error}";
-            $this->logQuery("{$trimmedQuery} ... {$this->errno}: {$this->error}");
+            $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
         }
         return $result;
     }
