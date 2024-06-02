@@ -162,11 +162,11 @@ class SeablastConstant
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
     /**
-     * @var string int HTTP code
+     * @var string int error HTTP code
      */
     public const ERROR_HTTP_CODE = 'SB:ERROR_HTTP_CODE';
     /**
-     * @var string string error message
+     * @var string string error message for an HTTP error
      */
     public const ERROR_MESSAGE = 'SB:ERROR_MESSAGE';
     /**
