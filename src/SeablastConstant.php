@@ -169,4 +169,8 @@ class SeablastConstant
      * @var string string error message
      */
     public const ERROR_MESSAGE = 'SB:ERROR_MESSAGE';
+    /**
+     * @var string string JSON handed over directly (for PHPUnit tests) instead of php://input
+     */
+    public const JSON_INPUT = 'SB:JSON_INPUT';
 }
