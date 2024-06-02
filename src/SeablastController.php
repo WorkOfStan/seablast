@@ -333,7 +333,6 @@ class SeablastController
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
-            // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
