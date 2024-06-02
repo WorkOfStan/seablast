@@ -99,8 +99,8 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             ? $this->configuration->getString(SeablastConstant::JSON_INPUT)
             : file_get_contents('php://input');
         if (!is_string($jsonInput)) {
-            Debugger::barDump(["php://input nor JSON_INPUT doesn't contain string", $jsonInput], 'ERROR on input');
-            Debugger::log("php://input nor JSON_INPUT doesn't contain string", ILogger::ERROR);
+            Debugger::barDump(["Either JSON_INPUT or php://input isn't string", $jsonInput], 'ERROR on input');
+            Debugger::log("Either JSON_INPUT or php://input isn't string", ILogger::ERROR);
             $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid input';
             return;
