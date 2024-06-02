@@ -296,8 +296,8 @@ class SeablastController
                 ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
             '/vendor/seablast/seablast'
         );
-        $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
-        $this->makeSureUrlIsParametric($urlToBeProcessed);
+        // process the URL
+        $this->makeSureUrlIsParametric(self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath));
         // uriPath and uriQuery are now populated
         Debugger::barDump(
             [
@@ -333,7 +333,6 @@ class SeablastController
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
-            // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
