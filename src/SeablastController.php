@@ -296,8 +296,8 @@ class SeablastController
                 ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
             '/vendor/seablast/seablast'
         );
-        $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
-        $this->makeSureUrlIsParametric($urlToBeProcessed);
+        // process the URL
+        $this->makeSureUrlIsParametric(self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath));
         // uriPath and uriQuery are now populated
         Debugger::barDump(
             [
