@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 - TableViewModel for admin.latte
 - JSON_INPUT can be populated to simulate php://input PHPUnit test
+- SeablastMysqli::queryStrict throws DbmsException in case of SQL statement failure
 
 ### `Changed` for changes in existing functionality
 

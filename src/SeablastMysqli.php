@@ -6,6 +6,7 @@ namespace Seablast\Seablast;
 
 use mysqli;
 use mysqli_result;
+use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
 
@@ -84,6 +85,24 @@ class SeablastMysqli extends mysqli
             );
             $this->statementList[] = "{$this->errno}: {$this->error}";
             $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
+        }
+        return $result;
+    }
+
+    /**
+     * Logging wrapper over performing a query on the database. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query
+     * @param int $resultmode
+     * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
+     * @throws DbmsException in case of failure
+     */
+    #[\ReturnTypeWillChange]
+    public function queryStrict($query, $resultmode = MYSQLI_STORE_RESULT)
+    {
+        $result = $this->query($query, $resultmode);
+        if ($result === false) {
+            throw new DbmsException("{$this->errno}: {$this->error}");
         }
         return $result;
     }
