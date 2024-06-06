@@ -23,8 +23,7 @@ class SeablastUtil
     public static function handleUserAuthentication(
         SeablastConfiguration $configuration,
         IdentityManagerInterface $identity
-    ): void
-    {
+    ): void {
         $configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
         // Save the current user's role, id and group list into the configuration object
         Assert::methodExists($identity, 'getRoleId');
