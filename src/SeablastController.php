@@ -245,7 +245,9 @@ class SeablastController
      */
     private function pageUnderConstruction(): void
     {
-        $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING) && return; // web is up
+        if ($this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)) {
+            return; // web is up
+        }
         Debugger::barDump('UNDER_CONSTRUCTION!');
         if (
             in_array($this->superglobals->server['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
