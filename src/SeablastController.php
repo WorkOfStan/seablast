@@ -51,7 +51,7 @@ class SeablastController
     }
 
     /**
-     * Apply the current configuration to the Seablast environment.
+     * Apply the current configuration to the Seablast environment once.
      *
      * The settings not used here can still be used in Models.
      *
@@ -139,11 +139,19 @@ class SeablastController
         }
         $this->startSession();
     }
+
+    /**
+     * Addition to configuration with info derived from superglobals.
+     *
+     * The settings not used here can still be used in Models.
+     *
+     * @return void
+     */
     private function applyConfigurationWithSession(): void
     {
-        // Addition to configuration with info derived from superglobals
-        $this->scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
-        Assert::string($this->scriptName);
+        $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
+        Assert::string($scriptName);
+        $this->scriptName = $scriptName;
         // more ways to identify HTTPS
         $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
             && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
@@ -151,9 +159,7 @@ class SeablastController
             (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
-            'http' .
-            ($isHttps ? 's' : '') .
-            '://' .
+            'http' . ($isHttps ? 's' : '') . '://' .
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix(
                 $this->scriptName,
@@ -258,7 +264,7 @@ class SeablastController
         ) {
             return; // admin can see the web even if it is down
         }
-        $this->startSession(); // as it couldn't be started before
+        $this->startSession(); // because it couldn't be started sooner
         //TODO TEST include from app, pokud tam je, otherwise use this default:
         include file_exists(APP_DIR . '/under-construction.html')
             ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
