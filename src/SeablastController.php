@@ -42,9 +42,12 @@ class SeablastController
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
-        if (!$this->configuration->flag->status(SeablastConstant::FLAG_SESSION_STARTED)) {
+        //if (!$this->configuration->flag->status(SeablastConstant::FLAG_SESSION_STARTED)) {
+        if (session_status() === PHP_SESSION_NONE) {
             // Controller can be fired up multiple times in PHPUnit, but this part may run only once
             $this->applyConfigurationBeforeSession();
+        } else {
+            Debugger::log('Session already started:not invoking applyConfigurationBeforeSession', \Tracy\ILogger::INFO);
         }
         $this->applyConfigurationWithSession();
         $this->route();
@@ -314,7 +317,10 @@ class SeablastController
      */
     private function route(): void
     {
-        Assert::string($this->superglobals->server['REQUEST_URI']);
+        Assert::string(
+            $this->superglobals->server['REQUEST_URI'],
+            '$_SERVER[REQUEST_URI] expected a string. Got: ' . gettype($this->superglobals->server['REQUEST_URI'])
+        );
         $appPath = self::removeSuffix(
             (pathinfo($this->scriptName, PATHINFO_DIRNAME) === '/')
                 ? '' : pathinfo($this->scriptName, PATHINFO_DIRNAME),
@@ -450,6 +456,6 @@ class SeablastController
         session_start() || error_log('session_start failed');
         Debugger::dispatch();
         $this->superglobals->setSession($_SESSION); // as only now the session started
-        $this->configuration->flag->activate(SeablastConstant::FLAG_SESSION_STARTED);
+        //$this->configuration->flag->activate(SeablastConstant::FLAG_SESSION_STARTED);
     }
 }
