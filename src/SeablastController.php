@@ -21,6 +21,8 @@ class SeablastController
     private $identity = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
+    /** @var string */
+    private $scriptName;
     /** @var Superglobals */
     private $superglobals;
     /** @var string */
@@ -40,7 +42,11 @@ class SeablastController
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
-        $this->applyConfiguration();
+        if (!$this->configuration->flag->status(SeablastConstant::FLAG_SESSION_STARTED)) {
+            // Controller can be fired up multiple times in PHPUnit, but this part may run only once
+            $this->applyConfigurationBeforeSession();
+        }
+        $this->applyConfigurationWithSession();
         $this->route();
     }
 
@@ -51,7 +57,7 @@ class SeablastController
      *
      * @return void
      */
-    private function applyConfiguration(): void
+    private function applyConfigurationBeforeSession(): void
     {
         $configurationOrder = [
             SeablastConstant::SB_ERROR_REPORTING,
@@ -132,9 +138,12 @@ class SeablastController
             }
         }
         $this->startSession();
+    }
+    private function applyConfigurationWithSession(): void
+    {
         // Addition to configuration with info derived from superglobals
-        $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
-        Assert::string($scriptName);
+        $this->scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
+        Assert::string($this->scriptName);
         // more ways to identify HTTPS
         $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
             && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
@@ -147,7 +156,7 @@ class SeablastController
             '://' .
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix(
-                $scriptName,
+                $this->scriptName,
                 '/vendor/seablast/seablast/index.php'
             ) // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
         );
@@ -236,11 +245,7 @@ class SeablastController
      */
     private function pageUnderConstruction(): void
     {
-        if (
-            $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-        ) {
-            return; // web is up
-        }
+        $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING) && return; // web is up
         Debugger::barDump('UNDER_CONSTRUCTION!');
         if (
             in_array($this->superglobals->server['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
@@ -292,8 +297,8 @@ class SeablastController
     {
         Assert::string($this->superglobals->server['REQUEST_URI']);
         $appPath = self::removeSuffix(
-            (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
-                ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
+            (pathinfo($this->scriptName, PATHINFO_DIRNAME) === '/')
+                ? '' : pathinfo($this->scriptName, PATHINFO_DIRNAME),
             '/vendor/seablast/seablast'
         );
         // process the URL
@@ -426,5 +431,6 @@ class SeablastController
         session_start() || error_log('session_start failed');
         Debugger::dispatch();
         $this->superglobals->setSession($_SESSION); // as only now the session started
+        $this->configuration->flag->activate(SeablastConstant::FLAG_SESSION_STARTED);
     }
 }
