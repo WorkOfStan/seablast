@@ -9,8 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 - JSON_INPUT can be populated to simulate php://input PHPUnit test
 - SeablastMysqli::queryStrict throws DbmsException in case of SQL statement failure
+- SeablastController::getIdentity to provide access to user identity
 
 ### `Changed` for changes in existing functionality
+- SeablastController::applyConfiguration divided to part called only once before session starts, and part that can be called repeatedly (e.g. for PHPUnit)
 
 ### `Deprecated` for soon-to-be removed features
 

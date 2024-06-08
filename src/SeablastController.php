@@ -179,6 +179,17 @@ class SeablastController
     }
 
     /**
+     * Getter.
+     *
+     * @return IdentityManagerInterface
+     */
+    public function getIdentity(): IdentityManagerInterface
+    {
+        Assert::notNull($this->identity, 'Called too soon.');
+        return $this->identity;
+    }
+
+    /**
      * Transform URL from friendly URL etc. to a parametric address that may be further interpreted.
      *
      * @param string $requestUri
