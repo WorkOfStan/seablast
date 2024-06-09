@@ -7,12 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
-- JSON_INPUT can be populated to simulate php://input PHPUnit test
-- SeablastMysqli::queryStrict throws DbmsException in case of SQL statement failure
-- SeablastController::getIdentity to provide access to user identity
 
 ### `Changed` for changes in existing functionality
-- SeablastController::applyConfiguration divided to part called only once before session starts, and part that can be called repeatedly (e.g. for PHPUnit)
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -21,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.3.5] - 2024-06-09
+PHPUnit tests ready
+### Added
+- JSON_INPUT can be populated to simulate php://input PHPUnit test
+- SeablastMysqli::queryStrict throws DbmsException in case of SQL statement failure
+- SeablastController::getIdentity to provide access to user identity
+
+### Changed
+- SeablastController::applyConfiguration divided to part called only once before session starts, and part that can be called repeatedly (e.g. for PHPUnit)
 
 ## [0.2.3.4] - 2024-05-30
 ### Added
@@ -135,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...HEAD
+[0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5
 [0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4
 [0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3
 [0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2

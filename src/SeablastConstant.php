@@ -23,10 +23,6 @@ class SeablastConstant
      */
     public const FLAG_DEBUG_JSON = 'SB:debug:json';
     /**
-     * @//var string When session is started, there's no need to run applyConfBeforeSession again
-     */
-    //public const FLAG_SESSION_STARTED = 'SB:session:started';
-    /**
      * @var string Level of PHP built-in error_reporting
      */
     public const SB_ERROR_REPORTING = 'SB:error_reporting';
