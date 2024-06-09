@@ -21,6 +21,8 @@ class SeablastController
     private $identity = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
+    /** @var string */
+    private $scriptName;
     /** @var Superglobals */
     private $superglobals;
     /** @var string */
@@ -40,18 +42,27 @@ class SeablastController
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
-        $this->applyConfiguration();
+        if (session_status() === PHP_SESSION_NONE) {
+            // Controller can be fired up multiple times in PHPUnit, but this part may run only once
+            $this->applyConfigurationBeforeSession();
+        } else {
+            Debugger::log(
+                'Session already started: not invoking applyConfigurationBeforeSession by ' . $_SERVER['PHP_SELF'],
+                \Tracy\ILogger::INFO
+            );
+        }
+        $this->applyConfigurationWithSession();
         $this->route();
     }
 
     /**
-     * Apply the current configuration to the Seablast environment.
+     * Apply the current configuration to the Seablast environment once.
      *
      * The settings not used here can still be used in Models.
      *
      * @return void
      */
-    private function applyConfiguration(): void
+    private function applyConfigurationBeforeSession(): void
     {
         $configurationOrder = [
             SeablastConstant::SB_ERROR_REPORTING,
@@ -132,9 +143,20 @@ class SeablastController
             }
         }
         $this->startSession();
-        // Addition to configuration with info derived from superglobals
+    }
+
+    /**
+     * Addition to configuration with info derived from superglobals.
+     *
+     * The settings not used here can still be used in Models.
+     *
+     * @return void
+     */
+    private function applyConfigurationWithSession(): void
+    {
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
+        $this->scriptName = $scriptName;
         // more ways to identify HTTPS
         $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
             && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
@@ -142,12 +164,10 @@ class SeablastController
             (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
-            'http' .
-            ($isHttps ? 's' : '') .
-            '://' .
+            'http' . ($isHttps ? 's' : '') . '://' .
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix(
-                $scriptName,
+                $this->scriptName,
                 '/vendor/seablast/seablast/index.php'
             ) // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
         );
@@ -161,6 +181,17 @@ class SeablastController
     public function getConfiguration(): SeablastConfiguration
     {
         return $this->configuration;
+    }
+
+    /**
+     * Getter.
+     *
+     * @return IdentityManagerInterface
+     */
+    public function getIdentity(): IdentityManagerInterface
+    {
+        Assert::notNull($this->identity, 'Called too soon.');
+        return $this->identity;
     }
 
     /**
@@ -236,9 +267,7 @@ class SeablastController
      */
     private function pageUnderConstruction(): void
     {
-        if (
-            $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)
-        ) {
+        if ($this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING)) {
             return; // web is up
         }
         Debugger::barDump('UNDER_CONSTRUCTION!');
@@ -251,7 +280,7 @@ class SeablastController
         ) {
             return; // admin can see the web even if it is down
         }
-        $this->startSession(); // as it couldn't be started before
+        $this->startSession(); // because it couldn't be started sooner
         //TODO TEST include from app, pokud tam je, otherwise use this default:
         include file_exists(APP_DIR . '/under-construction.html')
             ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
@@ -290,14 +319,17 @@ class SeablastController
      */
     private function route(): void
     {
-        Assert::string($this->superglobals->server['REQUEST_URI']);
+        Assert::string(
+            $this->superglobals->server['REQUEST_URI'],
+            '$_SERVER[REQUEST_URI] expected a string. Got: ' . gettype($this->superglobals->server['REQUEST_URI'])
+        );
         $appPath = self::removeSuffix(
-            (pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME) === '/')
-                ? '' : pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME),
+            (pathinfo($this->scriptName, PATHINFO_DIRNAME) === '/')
+                ? '' : pathinfo($this->scriptName, PATHINFO_DIRNAME),
             '/vendor/seablast/seablast'
         );
-        $urlToBeProcessed = self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath);
-        $this->makeSureUrlIsParametric($urlToBeProcessed);
+        // process the URL
+        $this->makeSureUrlIsParametric(self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath));
         // uriPath and uriQuery are now populated
         Debugger::barDump(
             [
@@ -333,7 +365,6 @@ class SeablastController
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
-            // TODO consider decoupling dbms from identity
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);

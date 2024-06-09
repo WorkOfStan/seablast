@@ -24,7 +24,7 @@ SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 
 - If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `httpCode` property is used as the response HTTP code.
-- If model replies with `redirection` property, then its sub-property `url` and optionally property `httpCode` (301, 302 or 303) trigger redirection (instead of HTML UI).
+- If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302 or 303 by the `httpCode` property.
 
 ```php
 SeablastConstant::APP_MAPPING = route => [
@@ -34,13 +34,11 @@ SeablastConstant::APP_MAPPING = route => [
 ```
 
 ## Authentication and authorisation
-Roles are for access.
-Routes can only be allowed for roles (never denied).
-Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
-Groups are on top of it, e.g. for promotions etc.
-
-- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in IdentityManagerInterface, these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
-- Access to a Route can be restricted to certain roles.
+- Roles are for access.
+- Routes can only be allowed for roles (never denied). I.e. access to a route can be restricted to certain roles.
+- Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
+- Groups are on top of it, e.g. for promotions etc.
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
 
 ## Security
 All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` string latte variable.
