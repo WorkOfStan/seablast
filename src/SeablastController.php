@@ -25,6 +25,8 @@ class SeablastController
     private $scriptName;
     /** @var Superglobals */
     private $superglobals;
+    /** @var ?\Tracy\ILogger */
+    private $tracyLogger = null;
     /** @var string */
     private $uriPath = '';
     /** @var string */
@@ -79,6 +81,14 @@ class SeablastController
             SeablastConstant::ADMIN_MAIL_ADDRESS,
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
+
+        $logger = new Seablast\Logger\Logger();
+        $this->tracyLogger = new Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
+        //Debugger::setLogger($tracyLogger);
+        //Debugger::enable();
+        // todo move into backyardLoggingLevel and inject admin_email; mail_for_admim null not false!!
+        // todo di of user/log level later - does it change anything?
+
         foreach ($configurationOrder as $property) {
             if ($this->configuration->exists($property)) {
                 switch ($property) {
@@ -456,6 +466,9 @@ class SeablastController
     private function startSession(): void
     {
         session_start() || error_log('session_start failed');
+        if (!is_null($tracyLogger)) {
+            Debugger::setLogger($this->tracyLogger);
+        }
         Debugger::dispatch();
         $this->superglobals->setSession($_SESSION); // as only now the session started
     }
