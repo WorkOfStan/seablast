@@ -82,8 +82,8 @@ class SeablastController
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
 
-        $logger = new Seablast\Logger\Logger();
-        $this->tracyLogger = new Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
+        $logger = new \Seablast\Logger\Logger();
+        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
         //Debugger::setLogger($tracyLogger);
         //Debugger::enable();
         // todo move into backyardLoggingLevel and inject admin_email; mail_for_admim null not false!!
@@ -466,7 +466,7 @@ class SeablastController
     private function startSession(): void
     {
         session_start() || error_log('session_start failed');
-        if (!is_null($tracyLogger)) {
+        if (!is_null($this->tracyLogger)) {
             Debugger::setLogger($this->tracyLogger);
         }
         Debugger::dispatch();
