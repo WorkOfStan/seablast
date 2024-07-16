@@ -76,8 +76,9 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            SeablastConstant::BACKYARD_LOGGING_LEVEL,
+            SeablastConstant::SB_LOGGING_LEVEL,
             //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
+            // todo describe both above
             SeablastConstant::ADMIN_MAIL_ADDRESS,
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
@@ -140,9 +141,12 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-//                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
-//                        Debugger::barDump($property, 'not coded yet');
-//                        break;
+                    case SeablastConstant::SB_LOGGING_LEVEL:
+                        $logger = new \Seablast\Logger\Logger(['logging_level' => $this->configuration->getString($property))]);
+                        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
+                        // todo inject admin_email; mail_for_admim null not false!!
+                        // todo di of user/log level later - does it change anything?
+                        break;
                     case SeablastConstant::ADMIN_MAIL_ADDRESS:
                         if ($this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)) {
                             // set here the admin email address to all debug tools
