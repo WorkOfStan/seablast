@@ -142,7 +142,7 @@ class SeablastController
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
                     case SeablastConstant::SB_LOGGING_LEVEL:
-                        $logger = new \Seablast\Logger\Logger(['logging_level' => $this->configuration->getString($property))]);
+                        $logger = new \Seablast\Logger\Logger(['logging_level' => $this->configuration->getString($property)]);
                         $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
                         // todo inject admin_email; mail_for_admim null not false!!
                         // todo di of user/log level later - does it change anything?
