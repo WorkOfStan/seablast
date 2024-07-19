@@ -83,14 +83,6 @@ class SeablastController
             SeablastConstant::ADMIN_MAIL_ADDRESS,
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
-
-        $logger = new \Seablast\Logger\Logger();
-        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
-        //Debugger::setLogger($tracyLogger);
-        //Debugger::enable();
-        // todo move into backyardLoggingLevel and inject admin_email; mail_for_admim null not false!!
-        // todo di of user/log level later - does it change anything?
-
         foreach ($configurationOrder as $property) {
             if ($this->configuration->exists($property)) {
                 switch ($property) {
@@ -144,10 +136,10 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_LOGGING_LEVEL:
                         $logger = new \Seablast\Logger\Logger([
-                                'logging_level' => $this->configuration->getString($property),
+                                'logging_level' => $this->configuration->getInt($property),
                         ]);
                         $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
-                        // todo inject admin_email; mail_for_admim null not false!!
+                        // todo inject admin_email; mail_for_admin null not false!!
                         // todo di of user/log level later - does it change anything?
                         break;
                     case SeablastConstant::ADMIN_MAIL_ADDRESS:
@@ -180,13 +172,11 @@ class SeablastController
             (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
             (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
+            // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
             'http' . ($isHttps ? 's' : '') . '://' .
             $this->superglobals->server['HTTP_HOST'] .
-            $this->removeSuffix(
-                $this->scriptName,
-                '/vendor/seablast/seablast/index.php'
-            ) // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
+            $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php') 
         );
     }
 
