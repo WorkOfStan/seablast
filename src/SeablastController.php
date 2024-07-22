@@ -78,9 +78,8 @@ class SeablastController
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
             SeablastConstant::SB_LOGGING_LEVEL,
-            //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
-            // todo describe both above
-            SeablastConstant::ADMIN_MAIL_ADDRESS,
+            //SeablastConstant::ADMIN_MAIL_ENABLED, // activate flag if ADMIN_MAIL_ADDRESS is populated
+            SeablastConstant::ADMIN_MAIL_ADDRESS, // used if ADMIN_MAIL_ENABLED activated
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
         foreach ($configurationOrder as $property) {
@@ -176,7 +175,7 @@ class SeablastController
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
             'http' . ($isHttps ? 's' : '') . '://' .
             $this->superglobals->server['HTTP_HOST'] .
-            $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php') 
+            $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')
         );
     }
 
