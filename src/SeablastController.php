@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use Seablast\Interfaces\IdentityManagerInterface;
+use Seablast\Logger\Logger;
 use Seablast\Seablast\Exceptions\ClientErrorException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
@@ -20,6 +21,8 @@ class SeablastController
     private $configuration;
     /** @var ?IdentityManagerInterface */
     private $identity = null;
+    /** @var ?Logger */
+    private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
     /** @var string */
@@ -134,16 +137,16 @@ class SeablastController
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
                     case SeablastConstant::SB_LOGGING_LEVEL:
-                        $logger = new \Seablast\Logger\Logger([
+                        $this->logger = new Logger([
                                 'logging_level' => $this->configuration->getInt($property),
                                 'error_log_message_type' => 3,
                                 'logging_file' => APP_DIR . '/log/seablast',
                                 'mail_for_admin_enabled' => ((
                                     $this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)
                                     && $this->configuration->exists(SeablastConstant::ADMIN_MAIL_ADDRESS)
-                                ) ? $this->configuration->getString(SeablastConstant::ADMIN_MAIL_ADDRESS) : false),
+                                ) ? $this->configuration->getString(SeablastConstant::ADMIN_MAIL_ADDRESS) : null),
                         ]);
-                        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
+                        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($this->logger);
                         // todo inject admin_email; mail_for_admin null not false!!
                         // todo di of user/log level later - does it change anything?
                         break;
@@ -387,6 +390,7 @@ class SeablastController
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
                 $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
                 $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
+                $this->logger->setUser($this->identity->getUserId());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
