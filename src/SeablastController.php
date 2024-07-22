@@ -136,6 +136,12 @@ class SeablastController
                     case SeablastConstant::SB_LOGGING_LEVEL:
                         $logger = new \Seablast\Logger\Logger([
                                 'logging_level' => $this->configuration->getInt($property),
+                                'error_log_message_type' => 3,
+                                'logging_file' => APP_DIR . '/log/seablast',
+                                'mail_for_admin_enabled' => ((
+                                    $this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)
+                                    && $this->configuration->exists(SeablastConstant::ADMIN_MAIL_ADDRESS)
+                                ) ? $this->configuration->getString(SeablastConstant::ADMIN_MAIL_ADDRESS) : false),
                         ]);
                         $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
                         // todo inject admin_email; mail_for_admin null not false!!
