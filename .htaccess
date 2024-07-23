@@ -1,10 +1,8 @@
 # If mod_alias is not enabled, the Apache should fail to show anything in order to always hide the files in the section below
 # nothing starting .git, i.e. also .github or .gitignore
 RedirectMatch 404 /\.git
-#TODO check phpstan.neon.dist below
 RedirectMatch 404 phpstan\.neon\.dist
 RedirectMatch 404 phpunit\.xml
-#RedirectMatch 404 \.gitignore #TODO check whether it is covered by /\.git above
 RedirectMatch 404 \.md$
 RedirectMatch 404 \.neon$
 RedirectMatch 404 \.sh$

@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
+- use [seablast/logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
 ### `Fixed` for any bugfixes
+- `.htaccess` checked
 
 ### `Security` in case of vulnerabilities
 

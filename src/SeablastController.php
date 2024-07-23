@@ -390,7 +390,9 @@ class SeablastController
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
                 $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
                 $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
-                $this->logger->setUser($this->identity->getUserId());
+                if (!is_null($this->logger)) {
+                    $this->logger->setUser($this->identity->getUserId());
+                }
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
