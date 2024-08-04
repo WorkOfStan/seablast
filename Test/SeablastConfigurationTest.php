@@ -13,7 +13,7 @@ class SeablastConfigurationTest extends TestCase
     public function testDbmsReturnsSeablastMysqliInstance()
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->setMethods(['dbmsStatus', 'dbmsCreate', 'getString'])
+            ->onlyMethods(['dbmsStatus', 'dbmsCreate', 'getString'])
             ->getMock();
 
         $config->expects($this->once())
@@ -42,7 +42,7 @@ class SeablastConfigurationTest extends TestCase
         $this->expectException(DbmsException::class);
 
         $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->setMethods(['dbmsStatus'])
+            ->onlyMethods(['dbmsStatus'])
             ->getMock();
 
         $config->expects($this->once())
@@ -56,7 +56,7 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
-            ->setMethods(null)
+            //->setMethods(null)
             ->getMock();
 
         $reflection = new \ReflectionClass($config);
@@ -79,7 +79,7 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getArrayArrayString', 'getArrayInt', 'getArrayString', 'getInt', 'getString'])
+            ->onlyMethods(['getArrayArrayString', 'getArrayInt', 'getArrayString', 'getInt', 'getString'])
             ->getMock();
 
         $config->expects($this->any())
