@@ -22,7 +22,7 @@ class SeablastModelTest extends TestCase
         $configurationMock = $this->createMock(SeablastConfiguration::class);
 
         $modelMock = $this->getMockBuilder(stdClass::class)
-            ->onlyMethods(['knowledge'])
+            ->addMethods(['knowledge'])
             ->getMock();
         $modelMock->expects($this->once())
             ->method('knowledge')
@@ -86,7 +86,7 @@ class SeablastModelTest extends TestCase
         $model = new SeablastModel($controllerMock, $superglobalsMock);
         $params = $model->getParameters();
 
-        $this->assertObjectHasAttribute('csrfToken', $params);
+        $this->assertTrue(property_exists('csrfToken', $params));
         $this->assertEquals('csrf_token_value', $params->csrfToken);
     }
 
