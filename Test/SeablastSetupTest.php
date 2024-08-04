@@ -10,20 +10,20 @@ use Seablast\Seablast\SeablastConfiguration;
 
 class SeablastSetupTest extends TestCase
 {
-    private $appDirBackup;
+    //private $appDirBackup;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->appDirBackup = APP_DIR;
+        //$this->appDirBackup = APP_DIR;
 
         // Mock APP_DIR constant
         if (!defined('APP_DIR')) {
             define('APP_DIR', __DIR__ . '/../..');
-        } else {
+        }/* else {
             $this->appDirBackup = APP_DIR;
             define('APP_DIR', __DIR__ . '/../..');
-        }
+        }*/
     }
 
     protected function tearDown(): void
@@ -31,9 +31,9 @@ class SeablastSetupTest extends TestCase
         parent::tearDown();
 
         // Restore the original APP_DIR constant
-        if (isset($this->appDirBackup)) {
+        /*if (isset($this->appDirBackup)) {
             define('APP_DIR', $this->appDirBackup);
-        }
+        }*/
     }
 
     public function testConfigurationIsInitialized()
@@ -50,9 +50,15 @@ class SeablastSetupTest extends TestCase
         $localConfig = APP_DIR . '/conf/app.conf.local.php';
 
         // Create temporary config files for testing
-        file_put_contents($defaultConfig, "<?php return function (\$config) { \$config->setString('default', 'defaultValue'); };");
+        file_put_contents(
+            $defaultConfig,
+            "<?php return function (\$config) { \$config->setString('default', 'defaultValue'); };"
+        );
         file_put_contents($appConfig, "<?php return function (\$config) { \$config->setString('app', 'appValue'); };");
-        file_put_contents($localConfig, "<?php return function (\$config) { \$config->setString('local', 'localValue'); };");
+        file_put_contents(
+            $localConfig,
+            "<?php return function (\$config) { \$config->setString('local', 'localValue'); };"
+        );
 
         $setup = new SeablastSetup();
         $config = $setup->getConfiguration();
