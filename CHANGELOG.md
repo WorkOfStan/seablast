@@ -9,16 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 
 ### `Changed` for changes in existing functionality
-- use [seablast/logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
 ### `Fixed` for any bugfixes
-- `.htaccess` checked
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.4] - 2024-08-04
+### Changed
+- use [seablast/logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
+- following SQL statements are not logged: DESCRIB, DO, EXPLAIN as they do not change the table data
+
+### Fixed
+- `.htaccess` checked
 
 ## [0.2.3.5] - 2024-06-09
 PHPUnit tests ready

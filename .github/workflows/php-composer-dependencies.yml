@@ -21,5 +21,4 @@ jobs:
     uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@main
     with:
       # JSON
-      php-version: '["7.2", "7.3", "7.4"]'
-      #, "8.0", "8.1", "8.2", "8.3"]'
+      php-version: '["7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3"]'

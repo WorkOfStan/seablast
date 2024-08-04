@@ -68,7 +68,6 @@ class SeablastMysqli extends mysqli
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
         $trimmedQuery = trim($query);
-        // todo what other keywords?
         if (!$this->isReadDataTypeQuery($trimmedQuery)) {
             // Log queries that may change data
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
@@ -115,7 +114,8 @@ class SeablastMysqli extends mysqli
      */
     private function isReadDataTypeQuery(string $query): bool
     {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0;
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0
+            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'DO ') === 0 || stripos($query, 'EXPLAIN ') === 0;
     }
 
     /**
