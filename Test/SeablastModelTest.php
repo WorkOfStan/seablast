@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Seablast\Seablast\Test;
+
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastController;
@@ -20,7 +22,7 @@ class SeablastModelTest extends TestCase
         $configurationMock = $this->createMock(SeablastConfiguration::class);
 
         $modelMock = $this->getMockBuilder(stdClass::class)
-            ->setMethods(['knowledge'])
+            ->onlyMethods(['knowledge'])
             ->getMock();
         $modelMock->expects($this->once())
             ->method('knowledge')
