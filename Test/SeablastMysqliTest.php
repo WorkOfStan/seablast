@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Seablast\Seablast\Test;
+
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\Exceptions\DbmsException;
@@ -15,7 +17,8 @@ class SeablastMysqliTest extends TestCase
     {
         $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
                              ->setConstructorArgs(['localhost', 'user', 'password', 'database'])
-                             ->onlyMethods(['query', 'connect_error', 'errno', 'error'])
+                             ->onlyMethods(['query', 'errno', 'error'])
+                             ->addMethods(['connect_error'])
                              ->getMock();
     }
 
