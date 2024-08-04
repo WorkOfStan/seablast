@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.4] - 2024-08-04
+### Added
+- redirection HTTP code allows for 307 and 308
+
+### Changed
+- use [seablast/logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
+- following SQL statements are not logged: DESCRIB, DO, EXPLAIN as they do not change the table data
+
+### Fixed
+- `.htaccess` checked
+
 ## [0.2.3.5] - 2024-06-09
 PHPUnit tests ready
 ### Added
@@ -141,7 +152,8 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4
 [0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5
 [0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4
 [0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3

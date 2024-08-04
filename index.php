@@ -1,8 +1,6 @@
 <?php
 
-// Load Composer contents for the app if this library is called from within the app
-require_once __DIR__ . '/defineAppDir.php';
-require_once APP_DIR . '/vendor/autoload.php';
+declare(strict_types=1);
 
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastController;
@@ -11,6 +9,10 @@ use Seablast\Seablast\SeablastSetup;
 use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
+
+// Load Composer contents for the app if this library is called from within the app
+require_once __DIR__ . '/defineAppDir.php';
+require_once APP_DIR . '/vendor/autoload.php';
 
 //Tracy is able to show Debug bar and Bluescreens for Ajax and redirected requests.
 //You just have to start session before Tracy

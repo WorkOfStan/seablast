@@ -68,10 +68,9 @@ class SeablastConstant
      */
     public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
     /**
-     * TODO: make sure this is needed
-     * @var string
+     * @var string trigger and verbosity control for seablast/logger
      */
-    public const BACKYARD_LOGGING_LEVEL = 'SB:BACKYARD_LOGGING_LEVEL';
+    public const SB_LOGGING_LEVEL = 'SB:SB_LOGGING_LEVEL';
     /**
      * @var string flag whether to send emails to admin
      */

@@ -56,7 +56,7 @@ class SeablastView
             if (isset($this->params->httpCode)) {
                 Assert::inArray(
                     $this->params->httpCode,
-                    [301, 302, 303],
+                    [301, 302, 303, 307, 308],
                     'Unauthorized redirect HTTP code %s'
                 );
             } else {
@@ -131,7 +131,7 @@ class SeablastView
             throw new \Exception('not status but httpCode is wanted'); // debug deprecated
         }
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
-            // todo in_array((int),[allowed codes] to replace basic validation below
+            // accepts HTTP codes 100-599 even though some of them might not be defined
             if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
                 throw new UnknownHttpCodeException('Unknown HTTP code: ' . (int) $this->params->httpCode);
             }

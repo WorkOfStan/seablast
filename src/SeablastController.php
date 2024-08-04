@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use Seablast\Interfaces\IdentityManagerInterface;
+use Seablast\Logger\Logger;
 use Seablast\Seablast\Exceptions\ClientErrorException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
+use Tracy\ILogger;
 use Webmozart\Assert\Assert;
 
 class SeablastController
@@ -19,12 +21,16 @@ class SeablastController
     private $configuration;
     /** @var ?IdentityManagerInterface */
     private $identity = null;
+    /** @var ?Logger */
+    private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
     /** @var string */
     private $scriptName;
     /** @var Superglobals */
     private $superglobals;
+    /** @var ?ILogger */
+    private $tracyLogger = null;
     /** @var string */
     private $uriPath = '';
     /** @var string */
@@ -48,7 +54,7 @@ class SeablastController
         } else {
             Debugger::log(
                 'Session already started: not invoking applyConfigurationBeforeSession by ' . $_SERVER['PHP_SELF'],
-                \Tracy\ILogger::INFO
+                ILogger::INFO
             );
         }
         $this->applyConfigurationWithSession();
@@ -74,9 +80,9 @@ class SeablastController
             SeablastConstant::SB_ENCODING,
             SeablastConstant::SB_INI_SET_SESSION_USE_STRICT_MODE,
             SeablastConstant::SB_INI_SET_DISPLAY_ERRORS,
-            SeablastConstant::BACKYARD_LOGGING_LEVEL,
-            //SeablastConstant::ADMIN_MAIL_ENABLED, // flag checked if ADMIN_MAIL_ADDRESS is populated
-            SeablastConstant::ADMIN_MAIL_ADDRESS,
+            SeablastConstant::SB_LOGGING_LEVEL,
+            //SeablastConstant::ADMIN_MAIL_ENABLED, // activate flag if ADMIN_MAIL_ADDRESS is populated
+            SeablastConstant::ADMIN_MAIL_ADDRESS, // used if ADMIN_MAIL_ENABLED activated
             //SeablastConstant::DEBUG_IP_LIST, // already used in index.php
         ];
         foreach ($configurationOrder as $property) {
@@ -130,9 +136,20 @@ class SeablastController
                     case SeablastConstant::SB_INI_SET_DISPLAY_ERRORS:
                         ini_set('display_errors', $this->configuration->getString($property));
                         break;
-//                    case SeablastConstant::BACKYARD_LOGGING_LEVEL:
-//                        Debugger::barDump($property, 'not coded yet');
-//                        break;
+                    case SeablastConstant::SB_LOGGING_LEVEL:
+                        $this->logger = new Logger([
+                                'logging_level' => $this->configuration->getInt($property),
+                                'error_log_message_type' => 3,
+                                'logging_file' => APP_DIR . '/log/seablast',
+                                'mail_for_admin_enabled' => ((
+                                    $this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)
+                                    && $this->configuration->exists(SeablastConstant::ADMIN_MAIL_ADDRESS)
+                                ) ? $this->configuration->getString(SeablastConstant::ADMIN_MAIL_ADDRESS) : null),
+                        ]);
+                        $this->tracyLogger = new \Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($this->logger);
+                        // todo inject admin_email; mail_for_admin null not false!!
+                        // todo di of user/log level later - does it change anything?
+                        break;
                     case SeablastConstant::ADMIN_MAIL_ADDRESS:
                         if ($this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)) {
                             // set here the admin email address to all debug tools
@@ -163,13 +180,11 @@ class SeablastController
             (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
             (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
+            // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
             'http' . ($isHttps ? 's' : '') . '://' .
             $this->superglobals->server['HTTP_HOST'] .
-            $this->removeSuffix(
-                $this->scriptName,
-                '/vendor/seablast/seablast/index.php'
-            ) // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
+            $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')
         );
     }
 
@@ -375,6 +390,9 @@ class SeablastController
                 $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
                 $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
                 $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
+                if (!is_null($this->logger)) {
+                    $this->logger->setUser($this->identity->getUserId());
+                }
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
@@ -456,6 +474,9 @@ class SeablastController
     private function startSession(): void
     {
         session_start() || error_log('session_start failed');
+        if (!is_null($this->tracyLogger)) {
+            Debugger::setLogger($this->tracyLogger);
+        }
         Debugger::dispatch();
         $this->superglobals->setSession($_SESSION); // as only now the session started
     }
