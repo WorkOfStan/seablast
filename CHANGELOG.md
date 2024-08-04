@@ -152,7 +152,8 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4
 [0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5
 [0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4
 [0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3
