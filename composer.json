@@ -13,7 +13,7 @@
         "webmozart/assert": "^1.9.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6 || ^7 || ^8 || ^9 || ^10 || ^11"
+        "phpunit/phpunit": "^8.4 || ^9 || ^10 || ^11"
     },
     "suggest": {
         "seablast/auth": "No-password authentication and authorisation extension for Seablast for PHP"
