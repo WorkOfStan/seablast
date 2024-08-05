@@ -96,7 +96,7 @@ class SeablastView
      * If unavailable throw an Exception.
      *
      * @return string
-     * @throws \Exception
+     * @throws MissingTemplateException
      */
     private function getTemplatePath(): string
     {
@@ -111,7 +111,6 @@ class SeablastView
         if (file_exists($templatePath)) {
             return $templatePath;
         }
-        // todo MissingTemplateException
         throw new MissingTemplateException($this->model->mapping['template'] . ' template is neither in app '
             . $templatePath . ' nor in library'); // TODO improve the error message
     }
@@ -121,6 +120,7 @@ class SeablastView
      *
      * @param array<mixed>|object $data2json The data to be encoded as JSON.
      * @return void Outputs JSON
+     * @throws UnknownHttpCodeException
      */
     private function renderJson($data2json): void
     {
@@ -128,7 +128,7 @@ class SeablastView
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
         if (isset($this->params->status)) {
-            throw new \Exception('not status but httpCode is wanted'); // debug deprecated
+            throw new \Exception('not status but httpCode is wanted'); // debug deprecated remove >0.2.x
         }
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // accepts HTTP codes 100-599 even though some of them might not be defined
