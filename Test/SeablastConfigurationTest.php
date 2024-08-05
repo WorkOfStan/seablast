@@ -23,7 +23,7 @@ class SeablastConfigurationTest extends TestCase
     public function testDbmsReturnsSeablastMysqliInstance()
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->onlyMethods(['dbmsStatus', 'getString'])
+            ->onlyMethods(['dbmsStatus', 'getString', 'dbmsCreate'])
             ->getMock();
 
         $config->expects($this->once())
@@ -34,33 +34,14 @@ class SeablastConfigurationTest extends TestCase
             ->method('getString')
             ->willReturn('utf8');
 
-        // Mock the dbmsReadPhinx to return a predefined configuration
-        $reflection = new \ReflectionClass($config);
-        $method = $reflection->getMethod('dbmsReadPhinx');
-        $method->setAccessible(true);
-        $method->invokeArgs(null, []);
-        $mockedConfig = [
-            'environments' => [
-                'default_environment' => 'testing',
-                'testing' => [
-                    'host' => 'localhost',
-                    'user' => 'test',
-                    'pass' => 'test',
-                    'name' => 'test_db',
-                    'port' => 3306,
-                    'table_prefix' => 'test_'
-                ]
-            ]
-        ];
-        $property = $reflection->getParentClass()->getProperty('connection');
-        $property->setAccessible(true);
-        $property->setValue($config, new SeablastMysqli(
-            $mockedConfig['environments']['testing']['host'],
-            $mockedConfig['environments']['testing']['user'],
-            $mockedConfig['environments']['testing']['pass'],
-            $mockedConfig['environments']['testing']['name'],
-            $mockedConfig['environments']['testing']['port']
-        ));
+        $config->expects($this->once())
+            ->method('dbmsCreate')
+            ->will($this->returnCallback(function () use ($config) {
+                $reflection = new \ReflectionClass($config);
+                $property = $reflection->getProperty('connection');
+                $property->setAccessible(true);
+                $property->setValue($config, $this->createMock(SeablastMysqli::class));
+            }));
 
         $this->assertInstanceOf(SeablastMysqli::class, $config->dbms());
     }
@@ -86,7 +67,6 @@ class SeablastConfigurationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        // Make sure the property exists and is accessible
         $reflection = new \ReflectionClass($config);
         $property = $reflection->getProperty('connectionTablePrefix');
         $property->setAccessible(true);
