@@ -30,8 +30,9 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
         $this->modelMock->method('getParameters')->willReturn($params);
 
+        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
+        $this->configMock->flag = $flagMock;
         $this->configMock->method('dbmsStatus')->willReturn(false);
-        $this->configMock->method('flag')->willReturn($this->createMock(\Seablast\Seablast\SeablastFlag::class));
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -48,7 +49,11 @@ class SeablastViewTest extends TestCase
 
     public function testGetTemplatePathReturnsCorrectPath()
     {
-        $this->modelMock->mapping['template'] = 'exampleTemplate';
+        $params = new stdClass();
+        $params->configuration = $this->configMock;
+        $this->modelMock->method('getParameters')->willReturn($params);
+
+        $this->modelMock->mapping = ['template' => 'exampleTemplate'];
         $this->configMock->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
@@ -69,7 +74,11 @@ class SeablastViewTest extends TestCase
     {
         $this->expectException(MissingTemplateException::class);
 
-        $this->modelMock->mapping['template'] = 'nonExistentTemplate';
+        $params = new stdClass();
+        $params->configuration = $this->configMock;
+        $this->modelMock->method('getParameters')->willReturn($params);
+
+        $this->modelMock->mapping = ['template' => 'nonExistentTemplate'];
         $this->configMock->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
@@ -91,7 +100,8 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configMock->flag = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
+        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
+        $this->configMock->flag = $flagMock;
         $this->configMock->flag->method('status')->willReturn(false);
 
         $view = $this->getMockBuilder(SeablastView::class)
@@ -119,7 +129,8 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 999; // Invalid HTTP code
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configMock->flag = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
+        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
+        $this->configMock->flag = $flagMock;
         $this->configMock->flag->method('status')->willReturn(false);
 
         $view = $this->getMockBuilder(SeablastView::class)
