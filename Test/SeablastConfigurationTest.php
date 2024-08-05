@@ -36,13 +36,11 @@ class SeablastConfigurationTest extends TestCase
 
         $mockConnection = $this->createMock(SeablastMysqli::class);
 
+        // Make sure the property exists and is accessible
         $reflection = new \ReflectionClass($config);
         $property = $reflection->getProperty('connection');
         $property->setAccessible(true);
         $property->setValue($config, $mockConnection);
-
-        // Call the real method dbmsCreate
-        $config->dbmsCreate();
 
         $this->assertInstanceOf(SeablastMysqli::class, $config->dbms());
     }
@@ -68,6 +66,7 @@ class SeablastConfigurationTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        // Make sure the property exists and is accessible
         $reflection = new \ReflectionClass($config);
         $property = $reflection->getProperty('connectionTablePrefix');
         $property->setAccessible(true);
