@@ -24,7 +24,7 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->onlyMethods(['dbmsStatus', 'getString'])
-            ->getMock();
+            ->getMockForAbstractClass();
 
         $config->expects($this->once())
             ->method('dbmsStatus')
@@ -36,9 +36,8 @@ class SeablastConfigurationTest extends TestCase
 
         $mockConnection = $this->createMock(SeablastMysqli::class);
 
-        // Make sure the property exists and is accessible
         $reflection = new \ReflectionClass($config);
-        $property = $reflection->getProperty('connection');
+        $property = $reflection->getParentClass()->getProperty('connection');
         $property->setAccessible(true);
         $property->setValue($config, $mockConnection);
 
@@ -51,7 +50,7 @@ class SeablastConfigurationTest extends TestCase
 
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->onlyMethods(['dbmsStatus'])
-            ->getMock();
+            ->getMockForAbstractClass();
 
         $config->expects($this->once())
             ->method('dbmsStatus')
@@ -64,11 +63,10 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMockForAbstractClass();
 
-        // Make sure the property exists and is accessible
         $reflection = new \ReflectionClass($config);
-        $property = $reflection->getProperty('connectionTablePrefix');
+        $property = $reflection->getParentClass()->getProperty('connectionTablePrefix');
         $property->setAccessible(true);
         $property->setValue($config, 'test_prefix');
 
@@ -88,7 +86,7 @@ class SeablastConfigurationTest extends TestCase
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getArrayArrayString', 'getArrayInt', 'getArrayString', 'getInt', 'getString'])
-            ->getMock();
+            ->getMockForAbstractClass();
 
         $config->expects($this->any())
             ->method('getArrayArrayString')
