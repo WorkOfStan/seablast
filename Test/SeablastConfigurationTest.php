@@ -23,8 +23,8 @@ class SeablastConfigurationTest extends TestCase
     public function testDbmsReturnsSeablastMysqliInstance()
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->onlyMethods(['dbmsStatus', 'getString'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['dbmsStatus', 'getString', 'dbmsReadPhinx'])
+            ->getMock();
 
         $config->expects($this->once())
             ->method('dbmsStatus')
@@ -34,10 +34,26 @@ class SeablastConfigurationTest extends TestCase
             ->method('getString')
             ->willReturn('utf8');
 
+        $config->expects($this->any())
+            ->method('dbmsReadPhinx')
+            ->willReturn([
+                'environments' => [
+                    'default_environment' => 'testing',
+                    'testing' => [
+                        'host' => 'localhost',
+                        'user' => 'test',
+                        'pass' => 'test',
+                        'name' => 'test_db',
+                        'port' => 3306,
+                        'table_prefix' => 'test_'
+                    ]
+                ]
+            ]);
+
         $mockConnection = $this->createMock(SeablastMysqli::class);
 
         $reflection = new \ReflectionClass($config);
-        $property = $reflection->getParentClass()->getProperty('connection');
+        $property = $reflection->getProperty('connection');
         $property->setAccessible(true);
         $property->setValue($config, $mockConnection);
 
@@ -50,7 +66,7 @@ class SeablastConfigurationTest extends TestCase
 
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->onlyMethods(['dbmsStatus'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $config->expects($this->once())
             ->method('dbmsStatus')
@@ -63,10 +79,10 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $reflection = new \ReflectionClass($config);
-        $property = $reflection->getParentClass()->getProperty('connectionTablePrefix');
+        $property = $reflection->getProperty('connectionTablePrefix');
         $property->setAccessible(true);
         $property->setValue($config, 'test_prefix');
 
@@ -86,7 +102,7 @@ class SeablastConfigurationTest extends TestCase
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getArrayArrayString', 'getArrayInt', 'getArrayString', 'getInt', 'getString'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $config->expects($this->any())
             ->method('getArrayArrayString')
