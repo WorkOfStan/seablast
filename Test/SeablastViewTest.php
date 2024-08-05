@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastFlag;
 use Seablast\Seablast\Exceptions\MissingTemplateException;
 use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use stdClass;
@@ -30,8 +31,7 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
         $this->modelMock->method('getParameters')->willReturn($params);
 
-        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
-        $this->configMock->flag = $flagMock;
+        $this->configMock->flag = new SeablastFlag();
         $this->configMock->method('dbmsStatus')->willReturn(false);
 
         $view = $this->getMockBuilder(SeablastView::class)
@@ -58,14 +58,15 @@ class SeablastViewTest extends TestCase
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte'])
+            ->onlyMethods(['renderLatte', 'fileExists'])
             ->getMock();
+
+        $view->method('fileExists')->willReturn(true);
 
         $reflection = new \ReflectionClass($view);
         $method = $reflection->getMethod('getTemplatePath');
         $method->setAccessible(true);
 
-        // Mock the file_exists function
         $filePath = 'templates/path/exampleTemplate.latte';
         $this->assertEquals($filePath, $method->invoke($view));
     }
@@ -83,8 +84,10 @@ class SeablastViewTest extends TestCase
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte'])
+            ->onlyMethods(['renderLatte', 'fileExists'])
             ->getMock();
+
+        $view->method('fileExists')->willReturn(false);
 
         $reflection = new \ReflectionClass($view);
         $method = $reflection->getMethod('getTemplatePath');
@@ -100,9 +103,8 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
-        $this->configMock->flag = $flagMock;
-        $this->configMock->flag->method('status')->willReturn(false);
+        $this->configMock->flag = new SeablastFlag();
+        $this->configMock->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -129,9 +131,7 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 999; // Invalid HTTP code
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $flagMock = $this->createMock(\Seablast\Seablast\SeablastFlag::class);
-        $this->configMock->flag = $flagMock;
-        $this->configMock->flag->method('status')->willReturn(false);
+        $this->configMock->flag = new SeablastFlag();
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
