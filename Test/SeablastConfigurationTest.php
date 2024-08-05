@@ -9,21 +9,26 @@ use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\SeablastFlag;
+use Seablast\Seablast\SeablastConfigurationException;
 
 class SeablastConfigurationTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        if (!defined('APP_DIR')) {
+            define('APP_DIR', __DIR__ . '/..');
+        }
+    }
+
     public function testDbmsReturnsSeablastMysqliInstance()
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->onlyMethods(['dbmsStatus', 'dbmsCreate', 'getString'])
+            ->onlyMethods(['dbmsStatus', 'getString'])
             ->getMock();
 
         $config->expects($this->once())
             ->method('dbmsStatus')
             ->willReturn(false);
-
-        $config->expects($this->once())
-            ->method('dbmsCreate');
 
         $config->expects($this->any())
             ->method('getString')
@@ -35,6 +40,9 @@ class SeablastConfigurationTest extends TestCase
         $property = $reflection->getProperty('connection');
         $property->setAccessible(true);
         $property->setValue($config, $mockConnection);
+
+        // Call the real method dbmsCreate
+        $config->dbmsCreate();
 
         $this->assertInstanceOf(SeablastMysqli::class, $config->dbms());
     }
@@ -58,7 +66,6 @@ class SeablastConfigurationTest extends TestCase
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
-            //->setMethods(null)
             ->getMock();
 
         $reflection = new \ReflectionClass($config);
