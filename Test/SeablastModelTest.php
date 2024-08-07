@@ -86,7 +86,7 @@ class SeablastModelTest extends TestCase
         $model = new SeablastModel($controllerMock, $superglobalsMock);
         $params = $model->getParameters();
 
-        $this->assertTrue(property_exists('csrfToken', $params));
+        $this->assertTrue(property_exists($params, 'csrfToken'));
         $this->assertEquals('csrf_token_value', $params->csrfToken);
     }
 

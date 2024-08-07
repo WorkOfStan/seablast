@@ -124,11 +124,11 @@ class SeablastView
      */
     private function renderJson($data2json): void
     {
-        if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
-            header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
-        }
         if (isset($this->params->status)) {
             throw new \Exception('not status but httpCode is wanted'); // debug deprecated remove >0.2.x
+        }
+        if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
+            header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // accepts HTTP codes 100-599 even though some of them might not be defined

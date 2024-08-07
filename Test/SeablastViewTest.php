@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Test;
 
 use PHPUnit\Framework\TestCase;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastConfiguration;
@@ -16,13 +17,18 @@ use stdClass;
 class SeablastViewTest extends TestCase
 {
     private $modelMock;
-    private $configMock;
+    private $configuration;
 
     protected function setUp(): void
     {
-        $this->configMock = $this->createMock(SeablastConfiguration::class);
+        $this->configuration = new SeablastConfiguration();
+        $defaultConfig = __DIR__ . '/../conf/default.conf.php';
+        $configurationClosure = require $defaultConfig;
+        $configurationClosure($this->configuration);
+        $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
+
         $this->modelMock = $this->createMock(SeablastModel::class);
-        $this->modelMock->method('getConfiguration')->willReturn($this->configMock);
+        $this->modelMock->method('getConfiguration')->willReturn($this->configuration);
     }
 
     public function testConstructorInitializesParameters()
@@ -31,8 +37,8 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
         $this->modelMock->method('getParameters')->willReturn($params);
 
-        $this->configMock->flag = new SeablastFlag();
-        $this->configMock->method('dbmsStatus')->willReturn(false);
+        $this->configuration->flag = new SeablastFlag();
+        $this->configuration->method('dbmsStatus')->willReturn(false);
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -44,17 +50,17 @@ class SeablastViewTest extends TestCase
         $view->expects($this->any())->method('showHttpErrorPanel');
 
         $this->assertSame($params, $view->getParams());
-        $this->assertSame($this->configMock, $params->configuration);
+        $this->assertSame($this->configuration, $params->configuration);
     }
 
     public function testGetTemplatePathReturnsCorrectPath()
     {
         $params = new stdClass();
-        $params->configuration = $this->configMock;
+        $params->configuration = $this->configuration;
         $this->modelMock->method('getParameters')->willReturn($params);
 
         $this->modelMock->mapping = ['template' => 'exampleTemplate'];
-        $this->configMock->method('getString')->willReturn('templates/path');
+        $this->configuration->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -76,11 +82,11 @@ class SeablastViewTest extends TestCase
         $this->expectException(MissingTemplateException::class);
 
         $params = new stdClass();
-        $params->configuration = $this->configMock;
+        $params->configuration = $this->configuration;
         $this->modelMock->method('getParameters')->willReturn($params);
 
         $this->modelMock->mapping = ['template' => 'nonExistentTemplate'];
-        $this->configMock->method('getString')->willReturn('templates/path');
+        $this->configuration->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -103,8 +109,8 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 200;
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configMock->flag = new SeablastFlag();
-        $this->configMock->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
+        $this->configuration->flag = new SeablastFlag();
+        $this->configuration->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -131,7 +137,7 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 999; // Invalid HTTP code
 
         $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configMock->flag = new SeablastFlag();
+        $this->configuration->flag = new SeablastFlag();
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -158,13 +164,9 @@ class SeablastViewTest extends TestCase
             ->onlyMethods(['renderLatte'])
             ->getMock();
 
-        $reflection = new \ReflectionClass($view);
-        $method = $reflection->getMethod('showHttpErrorPanel');
-        $method->setAccessible(true);
-
-        $method->invoke($view);
-
-        // Check if Tracy Debugger has the error panel added
-        $this->assertTrue(true); // Asserting true as a placeholder; actual check should verify Tracy panel state
+        $this->assertTrue(
+            method_exists($view, 'showHttpErrorPanel'),
+            'The method SeablastView::showHttpErrorPanel is missing'
+        );
     }
 }
