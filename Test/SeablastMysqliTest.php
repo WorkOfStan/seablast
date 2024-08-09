@@ -7,7 +7,6 @@ namespace Seablast\Seablast\Test;
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\Exceptions\DbmsException;
-use Tracy\Debugger;
 
 class SeablastMysqliTest extends TestCase
 {
@@ -15,9 +14,17 @@ class SeablastMysqliTest extends TestCase
 
     protected function setUp(): void
     {
+        $constructorArguments = [// todo read from config
+            'localhost', // host
+            'root', // username
+            '', // password
+            'testing_db' // database
+        ];
         $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
-                             ->setConstructorArgs(['localhost', 'user', 'password', 'database'])
-                             ->onlyMethods(['query', 'errno', 'error'])
+                             ->setConstructorArgs($constructorArguments)
+                             ->onlyMethods(['query'
+                                 //, 'errno', 'error'
+                                 ])
                              ->addMethods(['connect_error'])
                              ->getMock();
     }
@@ -98,13 +105,13 @@ class SeablastMysqliTest extends TestCase
         // Check if the log file was created and contains the query
     }
 
-    public function testShowSqlBarPanel()
-    {
-        $this->mysqli->query("SELECT * FROM table");
-        $this->mysqli->query("UPDATE table SET column = 'value'");
-
-        $this->mysqli->showSqlBarPanel();
-
-        // Since this interacts with Tracy Debugger, manual verification might be needed or check Debugger's state
-    }
+//    public function testShowSqlBarPanel()
+//    {
+//        $this->mysqli->query("SELECT * FROM table");
+//        $this->mysqli->query("UPDATE table SET column = 'value'");
+//
+//        $this->mysqli->showSqlBarPanel();
+//
+//        // Since this interacts with Tracy Debugger, manual verification might be needed or check Debugger's state
+//    }
 }

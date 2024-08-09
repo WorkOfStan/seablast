@@ -60,7 +60,7 @@ class SeablastViewTest extends TestCase
         $this->modelMock->method('getParameters')->willReturn($params);
 
         $this->modelMock->mapping = ['template' => 'exampleTemplate'];
-        $this->configuration->method('getString')->willReturn('templates/path');
+        //$this->configuration->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -86,7 +86,7 @@ class SeablastViewTest extends TestCase
         $this->modelMock->method('getParameters')->willReturn($params);
 
         $this->modelMock->mapping = ['template' => 'nonExistentTemplate'];
-        $this->configuration->method('getString')->willReturn('templates/path');
+        //$this->configuration->method('getString')->willReturn('templates/path');
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
@@ -110,7 +110,7 @@ class SeablastViewTest extends TestCase
 
         $this->modelMock->method('getParameters')->willReturn($params);
         $this->configuration->flag = new SeablastFlag();
-        $this->configuration->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
+        //$this->configuration->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])

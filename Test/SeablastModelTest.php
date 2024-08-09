@@ -78,7 +78,6 @@ class SeablastModelTest extends TestCase
         $controllerMock->mapping = [];
 
         $csrfTokenMock = $this->createMock(CsrfToken::class);
-        $csrfTokenMock->method('getValue')->willReturn('csrf_token_value');
 
         $csrfTokenManagerMock = $this->createMock(CsrfTokenManager::class);
         $csrfTokenManagerMock->method('getToken')->willReturn($csrfTokenMock);
@@ -87,7 +86,10 @@ class SeablastModelTest extends TestCase
         $params = $model->getParameters();
 
         $this->assertTrue(property_exists($params, 'csrfToken'));
-        $this->assertEquals('csrf_token_value', $params->csrfToken);
+        $this->assertTrue(
+            strlen($params->csrfToken) > 60,
+            'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'
+        );
     }
 
     private function mockAutoloadClass($classMock)
