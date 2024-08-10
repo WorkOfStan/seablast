@@ -13,52 +13,63 @@ use Seablast\Seablast\SeablastConfigurationException;
 
 class SeablastConfigurationTest extends TestCase
 {
+    private $configuration;
+
     protected function setUp(): void
     {
         if (!defined('APP_DIR')) {
             define('APP_DIR', __DIR__ . '/..');
         }
+        $this->configuration = new SeablastConfiguration();
+        $defaultConfig = APP_DIR . '/conf/default.conf.php';
+        $configurationClosure = require $defaultConfig;
+        $configurationClosure($this->configuration);
+
     }
 
     public function testDbmsReturnsSeablastMysqliInstance()
     {
-        $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->onlyMethods(['dbmsStatus', 'getString', 'dbmsCreate'])
-            ->getMock();
+//        $config = $this->getMockBuilder(SeablastConfiguration::class)
+//            ->onlyMethods([
+//                //'dbmsStatus',
+//                'getString',
+//                //'dbmsCreate'
+//                ])
+//            ->getMock();
 
-        $config->expects($this->once())
-            ->method('dbmsStatus')
-            ->willReturn(false);
+//        $config->expects($this->once())
+//            ->method('dbmsStatus')
+//            ->willReturn(false);
 
-        $config->expects($this->any())
-            ->method('getString')
-            ->willReturn('utf8');
+//        $config->expects($this->any())
+//            ->method('getString')
+//            ->willReturn('utf8');
 
-        $config->expects($this->once())
-            ->method('dbmsCreate')
-            ->will($this->returnCallback(function () use ($config) {
-                $reflection = new \ReflectionClass($config);
-                $property = $reflection->getProperty('connection');
-                $property->setAccessible(true);
-                $property->setValue($config, $this->createMock(SeablastMysqli::class));
-            }));
+//        $config->expects($this->once())
+//            ->method('dbmsCreate')
+//            ->will($this->returnCallback(function () use ($config) {
+//                $reflection = new \ReflectionClass($config);
+//                $property = $reflection->getProperty('connection');
+//                $property->setAccessible(true);
+//                $property->setValue($config, $this->createMock(SeablastMysqli::class));
+//            }));
 
-        $this->assertInstanceOf(SeablastMysqli::class, $config->dbms());
+        $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->dbms());
     }
 
     public function testDbmsThrowsExceptionIfNoConnection()
     {
         $this->expectException(DbmsException::class);
 
-        $config = $this->getMockBuilder(SeablastConfiguration::class)
-            ->onlyMethods(['dbmsStatus'])
-            ->getMock();
+//        $config = $this->getMockBuilder(SeablastConfiguration::class)
+//            ->onlyMethods(['dbmsStatus'])
+//            ->getMock();
+//
+//        $config->expects($this->once())
+//            ->method('dbmsStatus')
+//            ->willReturn(false);
 
-        $config->expects($this->once())
-            ->method('dbmsStatus')
-            ->willReturn(false);
-
-        $config->dbms();
+        $this->configuration->dbms();
     }
 
 //    public function testDbmsTablePrefix()

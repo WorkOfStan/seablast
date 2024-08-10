@@ -100,6 +100,7 @@ class SeablastView
      */
     private function getTemplatePath(): string
     {
+        Assert::notEmpty($this->model->mapping['template'], 'model->mapping[template] MUST be defined');
         // check file exists + inheritance
         $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/'
             . $this->model->mapping['template'] . '.latte';

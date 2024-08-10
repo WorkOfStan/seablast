@@ -116,7 +116,7 @@ class SeablastConfiguration
     {
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
             // todo DbmsException
-            throw new DbmsException('Provide credentials to use database');
+            throw new DbmsException('Provide credentials in conf/phinx.local.php to use database');
         }
         return require APP_DIR . '/conf/phinx.local.php';
     }

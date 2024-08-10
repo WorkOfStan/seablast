@@ -20,13 +20,19 @@ class SeablastMysqliTest extends TestCase
             '', // password
             'testing_db' // database
         ];
-        $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
-                             ->setConstructorArgs($constructorArguments)
-                             ->onlyMethods(['query'
-                                 //, 'errno', 'error'
-                                 ])
-                             ->addMethods(['connect_error'])
-                             ->getMock();
+        $this->mysqli = new SeablastMysqli(// todo read from config
+            'localhost', // host
+            'root', // username
+            '', // password
+            'testing_db' // database
+            );
+//        $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
+//                             ->setConstructorArgs($constructorArguments)
+//                             ->onlyMethods(['query'
+//                                 //, 'errno', 'error'
+//                                 ])
+//                             ->addMethods(['connect_error'])
+//                             ->getMock();
     }
 
     public function testConstructorSuccess()
@@ -48,7 +54,7 @@ class SeablastMysqliTest extends TestCase
     {
         $query = "UPDATE table SET column = 'value'";
 
-        $this->mysqli->method('query')->willReturn(true);
+//        $this->mysqli->method('query')->willReturn(true);
 
         $result = $this->mysqli->query($query);
 
@@ -59,9 +65,9 @@ class SeablastMysqliTest extends TestCase
     {
         $query = "UPDATE table SET column = 'value'";
         $errorMessage = "Some error message";
-        $this->mysqli->method('query')->willReturn(false);
-        $this->mysqli->errno = 1234;
-        $this->mysqli->error = $errorMessage;
+//        $this->mysqli->method('query')->willReturn(false);
+//        $this->mysqli->errno = 1234;
+//        $this->mysqli->error = $errorMessage;
 
         $result = $this->mysqli->query($query);
 
@@ -75,9 +81,9 @@ class SeablastMysqliTest extends TestCase
 
         $query = "UPDATE table SET column = 'value'";
 
-        $this->mysqli->method('query')->willReturn(false);
-        $this->mysqli->errno = 1234;
-        $this->mysqli->error = "Some error message";
+//        $this->mysqli->method('query')->willReturn(false);
+//        $this->mysqli->errno = 1234;
+//        $this->mysqli->error = "Some error message";
 
         $this->mysqli->queryStrict($query);
     }
