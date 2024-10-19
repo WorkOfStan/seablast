@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### `Added` for new features
 - TableViewModel for admin.latte
+- PHPUnit tests
 
 ### `Changed` for changes in existing functionality
 
@@ -83,7 +84,7 @@ PHPUnit tests ready
 
 ## [0.2.1] - 2024-02-03
 ### Added
-- SeablastConstant::SB_SMTP_ default parameters
+- `SeablastConstant::SB_SMTP_` default parameters
 - RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in IdentityManagerInterface, these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
 - Access to a Route can be restricted to certain roles.
 - httpCode>=400 in the model response triggers views/error.latte

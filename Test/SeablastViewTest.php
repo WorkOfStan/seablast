@@ -40,7 +40,7 @@ class SeablastViewTest extends TestCase
 
         // TODO instead of $this->modelMock use $this->model
         $model = new SeablastModel();
-        
+
         $this->modelMock = $this->createMock(SeablastModel::class);
         $this->modelMock->method('getConfiguration')->willReturn($this->configuration);
         $this->modelMock->method('getParameters')->willReturn($viewParameters);
@@ -60,13 +60,13 @@ class SeablastViewTest extends TestCase
         ];
 //        var_dump($params);
 
-        $this->modelMock->method('getParameters')->willReturn($params);        
+        $this->modelMock->method('getParameters')->willReturn($params);
         //$this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
         // Using Reflection to Set Protected/Private Properties - this one is public but not defined for mock
         $reflection = new \ReflectionClass($this->modelMock);
         $property = $reflection->getProperty('mapping');
         $property->setAccessible(true);
-        $property->setValue($this->modelMock, ['template' => 'item']);                
+        $property->setValue($this->modelMock, ['template' => 'item']);
         //var_dump($this->modelMock->mapping);
         //var_dump($this->modelMock->getParameters());
 

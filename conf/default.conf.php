@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * SeablastConfiguration structure accepts all values, however only the expected ones are processed.
  * The usage of constants defined in the SeablastConstant class is encouraged for the sake of hinting within IDE.
  */
+
+declare(strict_types=1);
 
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
