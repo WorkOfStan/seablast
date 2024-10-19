@@ -26,7 +26,7 @@ class SeablastMysqliTest extends TestCase
             'root', // username
             '', // password
             'testing_db' // database
-            );
+        );
 //        $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
 //                             ->setConstructorArgs($constructorArguments)
 //                             ->onlyMethods(['query'

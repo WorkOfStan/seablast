@@ -8,7 +8,8 @@
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 
-return static function (SeablastConfiguration $SBConfig): void {
+return static function (SeablastConfiguration $SBConfig): void
+{
     $SBConfig->flag
         ->activate(SeablastConstant::FLAG_WEB_RUNNING) // debug
         ->deactivate(SeablastConstant::ADMIN_MAIL_ENABLED) // default is not sending emails to admin

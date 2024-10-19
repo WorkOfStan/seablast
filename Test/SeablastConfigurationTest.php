@@ -25,7 +25,6 @@ class SeablastConfigurationTest extends TestCase
         $defaultConfig = APP_DIR . '/conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
         $configurationClosure($this->configuration);
-
     }
 
     public function testDbmsReturnsSeablastMysqliInstance(): void
