@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast\Test;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastConstant;
+use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastFlag;
+use Seablast\Seablast\Superglobals;
 use Seablast\Seablast\Exceptions\MissingTemplateException;
 use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use stdClass;
@@ -19,7 +20,7 @@ class SeablastViewTest extends TestCase
 {
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var MockObject */
+    /** @var SeablastModel */
     private $modelMock;
 
     protected function setUp(): void
@@ -38,12 +39,11 @@ class SeablastViewTest extends TestCase
             'csrfToken' => 'mockCsrfToken',
         ];
 
-        // TODO instead of $this->modelMock use $this->model
-        $model = new SeablastModel();
-
-        $this->modelMock = $this->createMock(SeablastModel::class);
-        $this->modelMock->method('getConfiguration')->willReturn($this->configuration);
-        $this->modelMock->method('getParameters')->willReturn($viewParameters);
+        $controllerMock = $this->createMock(SeablastController::class);
+        $controllerMock->method('getConfiguration')->willReturn($this->configuration);
+        $superglobalsMock = $this->createMock(Superglobals::class);        
+        $this->modelMock = new SeablastModel($controllerMock, $superglobalsMock);
+        //TODO!: $this->modelMock->method('getParameters')->willReturn($viewParameters);
     }
 
     public function testConstructorInitializesParameters(): void
@@ -60,13 +60,8 @@ class SeablastViewTest extends TestCase
         ];
 //        var_dump($params);
 
-        $this->modelMock->method('getParameters')->willReturn($params);
-        //$this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
-        // Using Reflection to Set Protected/Private Properties - this one is public but not defined for mock
-        $reflection = new \ReflectionClass($this->modelMock);
-        $property = $reflection->getProperty('mapping');
-        $property->setAccessible(true);
-        $property->setValue($this->modelMock, ['template' => 'item']);
+        //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
+        $this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
         //var_dump($this->modelMock->mapping);
         //var_dump($this->modelMock->getParameters());
 
@@ -191,7 +186,7 @@ class SeablastViewTest extends TestCase
             'rest' => '{"a" => "b"}',
         ];
 
-        $this->modelMock->method('getParameters')->willReturn($params);
+        //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
         $this->configuration->flag = new SeablastFlag();
 
         $view = $this->getMockBuilder(SeablastView::class)
@@ -212,7 +207,7 @@ class SeablastViewTest extends TestCase
         $params->httpCode = 404;
         $params->rest = (object) ['message' => 'Not Found'];
 
-        $this->modelMock->method('getParameters')->willReturn($params);
+        //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
 
         $view = $this->getMockBuilder(SeablastView::class)
             ->setConstructorArgs([$this->modelMock])
