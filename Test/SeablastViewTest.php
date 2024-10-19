@@ -41,7 +41,7 @@ class SeablastViewTest extends TestCase
 
         $controllerMock = $this->createMock(SeablastController::class);
         $controllerMock->method('getConfiguration')->willReturn($this->configuration);
-        $superglobalsMock = $this->createMock(Superglobals::class);        
+        $superglobalsMock = $this->createMock(Superglobals::class);
         $this->modelMock = new SeablastModel($controllerMock, $superglobalsMock);
         //TODO!: $this->modelMock->method('getParameters')->willReturn($viewParameters);
     }
