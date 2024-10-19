@@ -9,6 +9,7 @@ use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use stdClass;
 use Tracy\Debugger;
+use Tracy\ILogger;
 use Webmozart\Assert\Assert;
 
 class SeablastView
@@ -30,6 +31,8 @@ class SeablastView
         Debugger::barDump($this->model, 'Model passed to SeablastView'); // debug
         $this->params = $this->model->getParameters();
         Debugger::barDump($this->params, 'Params for SeablastView'); // debug
+        Debugger::log('Params for SeablastView: ' . print_r($this->params, true), ILogger::DEBUG);
+        error_log('Params for SeablastView: ' . print_r($this->params, true)); // debug
         $this->params->configuration = $this->model->getConfiguration();
         if (isset($this->params->redirection)) { // TODO remove this condition in higher version than 0.2
             throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated

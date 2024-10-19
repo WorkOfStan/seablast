@@ -37,14 +37,14 @@ class SeablastSetupTest extends TestCase
         }*/
     }
 
-    public function testConfigurationIsInitialized()
+    public function testConfigurationIsInitialized(): void
     {
         $setup = new SeablastSetup();
 
         $this->assertInstanceOf(SeablastConfiguration::class, $setup->getConfiguration());
     }
 
-    public function testConfigurationFilesAreProcessed()
+    public function testConfigurationFilesAreProcessed(): void
     {
         //$defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $appConfig = APP_DIR . '/conf/app.conf.php';
@@ -75,7 +75,7 @@ class SeablastSetupTest extends TestCase
         unlink($localConfig);
     }
 
-    public function testMissingConfigurationFilesAreHandledGracefully()
+    public function testMissingConfigurationFilesAreHandledGracefully(): void
     {
         // Ensure the config files do not exist
         //@unlink(__DIR__ . '/../conf/default.conf.php'); // this one actually exists!

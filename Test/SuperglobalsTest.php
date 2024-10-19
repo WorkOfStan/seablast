@@ -9,7 +9,7 @@ use Seablast\Seablast\Superglobals;
 
 class SuperglobalsTest extends TestCase
 {
-    public function testConstructorInitializesSuperglobals()
+    public function testConstructorInitializesSuperglobals(): void
     {
         $get = ['key1' => 'value1'];
         $post = ['key2' => 'value2'];
@@ -24,7 +24,7 @@ class SuperglobalsTest extends TestCase
         $this->assertSame($session, $superglobals->session);
     }
 
-    public function testConstructorInitializesEmptyArrays()
+    public function testConstructorInitializesEmptyArrays(): void
     {
         $superglobals = new Superglobals();
 
@@ -34,7 +34,7 @@ class SuperglobalsTest extends TestCase
         $this->assertEmpty($superglobals->session);
     }
 
-    public function testSetSessionUpdatesSession()
+    public function testSetSessionUpdatesSession(): void
     {
         $initialSession = ['key1' => 'value1'];
         $superglobals = new Superglobals([], [], [], $initialSession);
@@ -47,7 +47,7 @@ class SuperglobalsTest extends TestCase
         $this->assertSame($newSession, $superglobals->session);
     }
 
-    public function testSetSessionWithEmptyArray()
+    public function testSetSessionWithEmptyArray(): void
     {
         $initialSession = ['key1' => 'value1'];
         $superglobals = new Superglobals([], [], [], $initialSession);

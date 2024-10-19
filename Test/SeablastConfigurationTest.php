@@ -13,6 +13,7 @@ use Seablast\Seablast\SeablastConfigurationException;
 
 class SeablastConfigurationTest extends TestCase
 {
+    /** @var SeablastConfiguration */
     private $configuration;
 
     protected function setUp(): void
@@ -27,7 +28,7 @@ class SeablastConfigurationTest extends TestCase
 
     }
 
-    public function testDbmsReturnsSeablastMysqliInstance()
+    public function testDbmsReturnsSeablastMysqliInstance(): void
     {
 //        $config = $this->getMockBuilder(SeablastConfiguration::class)
 //            ->onlyMethods([
@@ -57,7 +58,7 @@ class SeablastConfigurationTest extends TestCase
         $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->dbms());
     }
 
-    public function testDbmsThrowsExceptionIfNoConnection()
+    public function testDbmsThrowsExceptionIfNoConnection(): void
     {
         $this->expectException(DbmsException::class);
 
@@ -86,7 +87,7 @@ class SeablastConfigurationTest extends TestCase
 //        $this->assertEquals('test_prefix', $config->dbmsTablePrefix());
 //    }
 
-    public function testDbmsTablePrefixThrowsExceptionIfNotInitialized()
+    public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
         $this->expectException(DbmsException::class);
 
@@ -94,7 +95,7 @@ class SeablastConfigurationTest extends TestCase
         $config->dbmsTablePrefix();
     }
 
-    public function testExists()
+    public function testExists(): void
     {
         $config = $this->getMockBuilder(SeablastConfiguration::class)
             ->disableOriginalConstructor()
@@ -124,7 +125,7 @@ class SeablastConfigurationTest extends TestCase
         $this->assertTrue($config->exists('some_property'));
     }
 
-    public function testGetString()
+    public function testGetString(): void
     {
         $config = new SeablastConfiguration();
         $config->setString('test_property', 'test_value');
@@ -132,7 +133,7 @@ class SeablastConfigurationTest extends TestCase
         $this->assertEquals('test_value', $config->getString('test_property'));
     }
 
-    public function testGetStringThrowsExceptionIfPropertyNotFound()
+    public function testGetStringThrowsExceptionIfPropertyNotFound(): void
     {
         $this->expectException(SeablastConfigurationException::class);
 
@@ -140,7 +141,7 @@ class SeablastConfigurationTest extends TestCase
         $config->getString('non_existent_property');
     }
 
-    public function testSetAndGetArrayInt()
+    public function testSetAndGetArrayInt(): void
     {
         $config = new SeablastConfiguration();
         $config->setArrayInt('test_property', [1, 2, 3]);

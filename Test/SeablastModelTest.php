@@ -15,7 +15,7 @@ use stdClass;
 
 class SeablastModelTest extends TestCase
 {
-    public function testConstructWithModelMapping()
+    public function testConstructWithModelMapping(): void
     {
         $controllerMock = $this->createMock(SeablastController::class);
         $superglobalsMock = $this->createMock(Superglobals::class);
@@ -40,7 +40,7 @@ class SeablastModelTest extends TestCase
         $this->assertEquals('value', $params->data);
     }
 
-    public function testConstructWithoutModelMapping()
+    public function testConstructWithoutModelMapping(): void
     {
         $controllerMock = $this->createMock(SeablastController::class);
         $superglobalsMock = $this->createMock(Superglobals::class);
@@ -55,7 +55,7 @@ class SeablastModelTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $params);
     }
 
-    public function testGetConfiguration()
+    public function testGetConfiguration(): void
     {
         $controllerMock = $this->createMock(SeablastController::class);
         $superglobalsMock = $this->createMock(Superglobals::class);
@@ -68,7 +68,7 @@ class SeablastModelTest extends TestCase
         $this->assertSame($configurationMock, $model->getConfiguration());
     }
 
-    public function testCsrfTokenIsSet()
+    public function testCsrfTokenIsSet(): void
     {
         $controllerMock = $this->createMock(SeablastController::class);
         $superglobalsMock = $this->createMock(Superglobals::class);
@@ -92,7 +92,7 @@ class SeablastModelTest extends TestCase
         );
     }
 
-    private function mockAutoloadClass($classMock)
+    private function mockAutoloadClass(object $classMock): void
     {
         $class = get_class($classMock);
         if (!class_exists($class, false)) {

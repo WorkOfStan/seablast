@@ -10,6 +10,7 @@ use Seablast\Seablast\Exceptions\DbmsException;
 
 class SeablastMysqliTest extends TestCase
 {
+    /** @var SeablastMysqli */
     private $mysqli;
 
     protected function setUp(): void
@@ -35,12 +36,12 @@ class SeablastMysqliTest extends TestCase
 //                             ->getMock();
     }
 
-    public function testConstructorSuccess()
+    public function testConstructorSuccess(): void
     {
         $this->assertInstanceOf(SeablastMysqli::class, $this->mysqli);
     }
 
-    public function testConstructorThrowsExceptionOnConnectError()
+    public function testConstructorThrowsExceptionOnConnectError(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Connection to database failed with error');
@@ -50,7 +51,7 @@ class SeablastMysqliTest extends TestCase
              ->getMock();
     }
 
-    public function testQueryLogging()
+    public function testQueryLogging(): void
     {
         $query = "UPDATE table SET column = 'value'";
 
@@ -61,7 +62,7 @@ class SeablastMysqliTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testQueryFailureLogsError()
+    public function testQueryFailureLogsError(): void
     {
         $query = "UPDATE table SET column = 'value'";
         $errorMessage = "Some error message";
@@ -75,7 +76,7 @@ class SeablastMysqliTest extends TestCase
         // Check if the query was logged with the error
     }
 
-    public function testQueryStrictThrowsExceptionOnFailure()
+    public function testQueryStrictThrowsExceptionOnFailure(): void
     {
         $this->expectException(DbmsException::class);
 
@@ -88,7 +89,7 @@ class SeablastMysqliTest extends TestCase
         $this->mysqli->queryStrict($query);
     }
 
-    public function testIsReadDataTypeQuery()
+    public function testIsReadDataTypeQuery(): void
     {
         $reflection = new \ReflectionClass($this->mysqli);
         $method = $reflection->getMethod('isReadDataTypeQuery');
@@ -99,7 +100,7 @@ class SeablastMysqliTest extends TestCase
         $this->assertFalse($method->invoke($this->mysqli, 'INSERT INTO table (column) VALUES (value)'));
     }
 
-    public function testLogQuery()
+    public function testLogQuery(): void
     {
         $reflection = new \ReflectionClass($this->mysqli);
         $method = $reflection->getMethod('logQuery');
