@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast\Test;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastView;
@@ -18,7 +19,7 @@ class SeablastViewTest extends TestCase
 {
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var SeablastModel */
+    /** @var MockObject */
     private $modelMock;
 
     protected function setUp(): void
@@ -33,10 +34,13 @@ class SeablastViewTest extends TestCase
         // todo Contoller must apply this settings -- but SeablastView is not invoked at all?!?!?!?!?
 
         $viewParameters = (object) [
-                        'httpCode' => 200,
+            'httpCode' => 200,
             'csrfToken' => 'mockCsrfToken',
         ];
 
+        // TODO instead of $this->modelMock use $this->model
+        $model = new SeablastModel();
+        
         $this->modelMock = $this->createMock(SeablastModel::class);
         $this->modelMock->method('getConfiguration')->willReturn($this->configuration);
         $this->modelMock->method('getParameters')->willReturn($viewParameters);
@@ -56,8 +60,13 @@ class SeablastViewTest extends TestCase
         ];
 //        var_dump($params);
 
-        $this->modelMock->method('getParameters')->willReturn($params);
-        $this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
+        $this->modelMock->method('getParameters')->willReturn($params);        
+        //$this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
+        // Using Reflection to Set Protected/Private Properties - this one is public but not defined for mock
+        $reflection = new \ReflectionClass($this->modelMock);
+        $property = $reflection->getProperty('mapping');
+        $property->setAccessible(true);
+        $property->setValue($this->modelMock, ['template' => 'item']);                
         //var_dump($this->modelMock->mapping);
         //var_dump($this->modelMock->getParameters());
 
