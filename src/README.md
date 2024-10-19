@@ -9,7 +9,7 @@
    - Passes the results through `getParameters()` to standardize output.
    - If no model is set, it returns a CSRF token via `getParameters()`.
 
-4. **SeablastView**: 
+4. **SeablastView**:
    - Uses data from `SeablastModel::getParameters()` to render the final output as JSON (if `rest` is present) or HTML (using a template).
 
 ```mermaid
