@@ -65,29 +65,35 @@ class SeablastMysqli extends mysqli
      * @param string $query
      * @param int $resultmode
      * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
+     * @throws DbmsException in case of failure instead of mysqli_sql_exception
      */
     #[\ReturnTypeWillChange]
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        $trimmedQuery = trim($query);
-        if (!$this->isReadDataTypeQuery($trimmedQuery)) {
-            // Log queries that may change data
-            // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
-            $this->logQuery($query);
+        try {
+            $trimmedQuery = trim($query);
+            if (!$this->isReadDataTypeQuery($trimmedQuery)) {
+                // Log queries that may change data
+                // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
+                $this->logQuery($query);
+            }
+            $result = parent::query($query, $resultmode);
+            $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
+            if ($result === false) {
+                $this->databaseError = true;
+                // TODO optimize error logging
+                Debugger::barDump(
+                        ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
+                        'Database error'
+                );
+                $this->statementList[] = "{$this->errno}: {$this->error}";
+                $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
+            }
+            return $result;
+        } catch (mysqli_sql_exception $e) {
+            // Catch any mysqli_sql_exception and throw it as DbmsException
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
         }
-        $result = parent::query($query, $resultmode);
-        $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
-        if ($result === false) {
-            $this->databaseError = true;
-            // TODO optimize error logging
-            Debugger::barDump(
-                ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
-                'Database error'
-            );
-            $this->statementList[] = "{$this->errno}: {$this->error}";
-            $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
-        }
-        return $result;
     }
 
     /**
@@ -101,16 +107,16 @@ class SeablastMysqli extends mysqli
     #[\ReturnTypeWillChange]
     public function queryStrict($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        try {
+        //try {
             $result = $this->query($query, $resultmode);
             if ($result === false) {
                 throw new DbmsException("{$this->errno}: {$this->error}");
             }
             return $result;
-        } catch (mysqli_sql_exception $e) {
-            // Catch any mysqli_sql_exception and throw it as DbmsException
-            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
-        }
+//        } catch (mysqli_sql_exception $e) {
+//            // Catch any mysqli_sql_exception and throw it as DbmsException
+//            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
+//        }
     }
 
     /**

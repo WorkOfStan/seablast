@@ -11,7 +11,6 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\SeablastConfigurationException;
 use Tracy\Debugger;
-use Tracy\ILogger;
 
 class SeablastConfigurationTest extends TestCase
 {

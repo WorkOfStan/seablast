@@ -49,8 +49,8 @@ class SeablastMysqliTest extends TestCase
 
     public function testQueryLogging(): void
     {
-        $query1 = 'CREATE TABLE IF NOT EXISTS testTable (    id INT AUTO_INCREMENT PRIMARY KEY,'
-                . '    name VARCHAR(255) NOT NULL,    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);';
+        $query1 = 'CREATE TABLE IF NOT EXISTS testTable (id INT AUTO_INCREMENT PRIMARY KEY, '
+                . 'name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);';
         $result1 = $this->mysqli->query($query1);
         $this->assertTrue($result1);
 
