@@ -13,7 +13,7 @@ use Tracy\Debugger;
 
 /**
  * Basic tests of MySQLi connection.
- * 
+ *
  * Note: since PHPUnit 10 the method `expectWarning()` is removed without direct replacement,
  * so there's no straightforward way to test the connection error behavior. I.e. failure of
  * `$this->mysqli = new SeablastMysqli('invalid_host', 'user', 'password', 'database');`
