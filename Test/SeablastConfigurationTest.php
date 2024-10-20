@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
-use Seablast\Seablast\SeablastFlag;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\SeablastConfigurationException;
 use Tracy\Debugger;
@@ -35,31 +34,6 @@ class SeablastConfigurationTest extends TestCase
 
     public function testDbmsReturnsSeablastMysqliInstance(): void
     {
-//        $config = $this->getMockBuilder(SeablastConfiguration::class)
-//            ->onlyMethods([
-//                //'dbmsStatus',
-//                'getString',
-//                //'dbmsCreate'
-//                ])
-//            ->getMock();
-
-//        $config->expects($this->once())
-//            ->method('dbmsStatus')
-//            ->willReturn(false);
-
-//        $config->expects($this->any())
-//            ->method('getString')
-//            ->willReturn('utf8');
-
-//        $config->expects($this->once())
-//            ->method('dbmsCreate')
-//            ->will($this->returnCallback(function () use ($config) {
-//                $reflection = new \ReflectionClass($config);
-//                $property = $reflection->getProperty('connection');
-//                $property->setAccessible(true);
-//                $property->setValue($config, $this->createMock(SeablastMysqli::class));
-//            }));
-
         $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->dbms());
     }
 
@@ -93,7 +67,7 @@ class SeablastConfigurationTest extends TestCase
 //    }
 
     /**
-     * if not initialized or if no connection
+     * if not initialized or if no connection TODO really?
      * @return void
      */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
