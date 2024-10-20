@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- PHPUnit tests
+- PHPUnit tests. The relevant `Test.php` script copies `./conf/phinx.dist.php` to `./conf/phinx.local.php`, ensuring PHPUnit works on GitHub as well.
 
 ### `Changed` for changes in existing functionality
 

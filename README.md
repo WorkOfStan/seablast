@@ -77,3 +77,8 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
 | src/      | Seablast classes                                                                                                     |
 | views/    | Latte templates to be inherited                                                                                      |
+
+## Testing
+
+The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, even thoug the library doesn't include Phinx.
+If this file is not already present after a local update of the testing environment, the relevant `Test.php` script copies `./conf/phinx.dist.php` to `./conf/phinx.local.php`, ensuring it works on GitHub as well.

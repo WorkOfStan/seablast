@@ -38,7 +38,8 @@ class SeablastModelTest extends TestCase
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
         $this->controller = new SeablastController(
             $this->configuration,
-            new Superglobals([],
+            new Superglobals(
+                [],
                 [],
                 [
                     'REQUEST_URI' => 'testView',

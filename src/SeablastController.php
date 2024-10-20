@@ -205,7 +205,7 @@ class SeablastController
      */
     public function getIdentity(): IdentityManagerInterface
     {
-        Assert::notNull($this->identity, 'Called too soon.');
+        Assert::notNull($this->identity, 'SeablastController::getIdentity() called too soon.');
         return $this->identity;
     }
 
@@ -296,7 +296,7 @@ class SeablastController
             return; // admin can see the web even if it is down
         }
         $this->startSession(); // because it couldn't be started sooner
-        //TODO TEST include from app, pokud tam je, otherwise use this default:
+        //TODO TEST include from app, if it is present, otherwise use this default:
         include file_exists(APP_DIR . '/under-construction.html')
             ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
         exit;

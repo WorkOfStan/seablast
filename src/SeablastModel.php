@@ -40,9 +40,9 @@ class SeablastModel
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
             Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
-            Assert::isAOf($this->viewParameters, 'stdClass', "Knowledge of {$className} MUST be an object of stdClass.");
+            Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be of stdClass type.");
         } else {
-            Debugger::log('no model, no knowledge', ILogger::DEBUG); // debug
+            Debugger::log('No model, no knowledge.', ILogger::DEBUG);
             // so that csrfToken can be added
             $this->viewParameters = new stdClass();
         }
