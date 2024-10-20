@@ -15,7 +15,7 @@ use Tracy\Debugger;
  * Basic tests of MySQLi connection.
  *
  * Note: since PHPUnit 10 the method `expectWarning()` is removed without direct replacement,
- * so there's no straightforward way to test the connection error behavior. I.e. failure of
+ * so there's no straightforward way to test the connection error behavior. E.g. failure of
  * `$this->mysqli = new SeablastMysqli('invalid_host', 'user', 'password', 'database');`
  */
 class SeablastMysqliTest extends TestCase
@@ -67,8 +67,6 @@ class SeablastMysqliTest extends TestCase
             $this->assertFalse($result);
         } catch (DbmsException $e) {
             // that's how it should be
-//        } catch (\mysqli_sql_exception $e) {
-//            $this->assertTrue(false, 'Failure was caught but as a mysqli_sql_exception, not DbmsException');
         } catch (\Exception $e) {
             // Handle any other exceptions (fallback)
             $this->assertTrue(
