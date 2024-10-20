@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPUnit tests
 
 ### `Changed` for changes in existing functionality
+xx- If mysqli operation fails, a mysqli_sql_exception is thrown - not just a warning.
 
 ### `Deprecated` for soon-to-be removed features
 

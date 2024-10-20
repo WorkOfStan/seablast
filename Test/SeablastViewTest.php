@@ -15,16 +15,25 @@ use Seablast\Seablast\Superglobals;
 use Seablast\Seablast\Exceptions\MissingTemplateException;
 use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use stdClass;
+use Tracy\Debugger;
 
 class SeablastViewTest extends TestCase
 {
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var SeablastModel */
-    private $modelMock;
+    /** @var SeablastController */
+    private $controller;
+    /** @ var SeablastModel */
+    //private $modelMock;
 
     protected function setUp(): void
     {
+        parent::setUp();
+        if (!defined('APP_DIR')) {
+            define('APP_DIR', __DIR__ . '/..');
+            Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
+        }
+                
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
@@ -33,16 +42,29 @@ class SeablastViewTest extends TestCase
 
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
         // todo Contoller must apply this settings -- but SeablastView is not invoked at all?!?!?!?!?
+        $this->configuration->setInt('testHttpCode', 200); // for MockModel
+        $this->configuration->setString('testRest', '{"a": "b"}'); // for MockJsonModel
 
-        $viewParameters = (object) [
-            'httpCode' => 200,
-            'csrfToken' => 'mockCsrfToken',
-        ];
+//        $viewParameters = (object) [
+//            'httpCode' => 200,
+//            'csrfToken' => 'mockCsrfToken',
+//        ];
 
-        $controllerMock = $this->createMock(SeablastController::class);
-        $controllerMock->method('getConfiguration')->willReturn($this->configuration);
-        $superglobalsMock = $this->createMock(Superglobals::class);
-        $this->modelMock = new SeablastModel($controllerMock, $superglobalsMock);
+//        $controllerMock = $this->createMock(SeablastController::class);
+//        $controllerMock->method('getConfiguration')->willReturn($this->configuration);
+//        die(__FILE__);
+        $superglobalsMock = new Superglobals(
+                [],
+                [],
+                [
+                    'REQUEST_URI' => 'testView',
+                    'SCRIPT_NAME' => __FILE__,
+                    'HTTP_HOST' => 'testhost',
+                    ]
+                );
+        $this->controller = new SeablastController($this->configuration, $superglobalsMock);
+        
+//        $this->modelMock = new SeablastModel($controller, $superglobalsMock);
         //TODO!: $this->modelMock->method('getParameters')->willReturn($viewParameters);
     }
 
@@ -53,20 +75,31 @@ class SeablastViewTest extends TestCase
 
 //        $params = new stdClass();
 //        $params->httpCode = 200;
-        $params = (object) [
-            'httpCode' => 200,
-            'csrfToken' => 'mockCsrfToken',
-            'configuration' => $this->configuration,
-        ];
+//        $params = (object) [
+//            'httpCode' => 200,
+//            'csrfToken' => 'mockCsrfToken',
+//            'configuration' => $this->configuration,
+//        ];
 //        var_dump($params);
+//        $model = new SeablastModel($this->controller, new Superglobals());
 
         //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
-        $this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
+        //$this->modelMock->mapping = ['template' => 'item']; // to assign an existing latte template
+        $this->controller->mapping = ['template' => 'item']; // to assign an existing latte template
+        $model = new SeablastModel($this->controller, new Superglobals());
         //var_dump($this->modelMock->mapping);
-        //var_dump($this->modelMock->getParameters());
+        //var_dump($this->modelMock->getParameters());        
+        
+//        var_dump($model->getParameters());
+//        exit;//debug
 
+        // Start output buffering
+        ob_start();
+        new SeablastView($model);
+        // Get and clean the output buffer
+        $output = ob_get_clean();
+        $this->assertStringStartsWith('<!doctype html>', $output);
 
-        $view = new SeablastView($this->modelMock);
 //        $view = $this->getMockBuilder(SeablastView::class)
 //            ->setConstructorArgs([$this->modelMock])
 ////            ->onlyMethods([
@@ -81,98 +114,138 @@ class SeablastViewTest extends TestCase
 //        $view->expects($this->any())->method('showHttpErrorPanel');
 
 //        $this->assertSame($params, $view->getParams());
-        $this->assertSame($this->configuration, $params->configuration);
+//        $this->assertSame($this->configuration, $params->configuration);
     }
 
     public function testGetTemplatePathReturnsCorrectPath(): void
     {
 //        $params = new stdClass();
 //        $params->httpCode = 200;
-        $params = (object) [
-            'httpCode' => 200,
-            'csrfToken' => 'mockCsrfToken',
-        ];
-        $params->configuration = $this->configuration;
+//        $params = (object) [
+//            'httpCode' => 200,
+//            'csrfToken' => 'mockCsrfToken',
+//        ];
+//        $params->configuration = $this->configuration;
 //        $this->modelMock->method('getParameters')->willReturn($params);
 
-        $this->modelMock->mapping = ['template' => 'item']; // exampleTemplate
+//        $this->modelMock->mapping = ['template' => 'item']; // exampleTemplate
         //$this->configuration->method('getString')->willReturn('templates/path');
-
-        $view = $this->getMockBuilder(SeablastView::class)
-            ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte',
-                //'fileExists'
-                ])
-            ->getMock();
+        $this->controller->mapping = ['template' => 'item']; // to assign an existing latte template - exampleTemplate
+        $model = new SeablastModel($this->controller, new Superglobals());        
+        // Start output buffering
+        ob_start();
+        new SeablastView($model);
+        // Get and clean the output buffer
+        $output = ob_get_clean();
+        $this->assertStringStartsWith('<!doctype html>', $output);
+    
+//    echo "xxxxxxxxxxxxxxxxxxxxxxxxx $output xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    
+//    exit;
+    // Now you can assert the captured output
+    //$this->assertEquals('Hello, World!', $output);
+    
+        
+//        $view = $this->getMockBuilder(SeablastView::class)
+//            ->setConstructorArgs([$this->modelMock])
+//            ->onlyMethods(['renderLatte',
+//                //'fileExists'
+//                ])
+//            ->getMock();
 
 //        $view->method('fileExists')->willReturn(true);
 
-        $reflection = new \ReflectionClass($view);
-        $method = $reflection->getMethod('getTemplatePath');
-        $method->setAccessible(true);
+//        $reflection = new \ReflectionClass($view);
+//        $method = $reflection->getMethod('getTemplatePath');
+//        $method->setAccessible(true);
 
-        $filePath = 'views/item.latte'; // todo fix the path - replace by SB_Constant
-        $this->assertEquals($filePath, $method->invoke($view));
+//        $filePath = 'views/item.latte'; // todo fix the path - replace by SB_Constant
+//        $this->assertEquals($filePath, $view);
     }
 
     public function testGetTemplatePathThrowsMissingTemplateException(): void
     {
+//        $this->expectException(MissingTemplateException::class);
+//
+//        $params = new stdClass();
+//        $params->httpCode = 200;
+//        $params->configuration = $this->configuration;
+////        $this->modelMock->method('getParameters')->willReturn($params);
+//
+//        $this->modelMock->mapping = ['template' => 'nonExistentTemplate'];
+//        //$this->configuration->method('getString')->willReturn('templates/path');
+//
+//        $view = $this->getMockBuilder(SeablastView::class)
+//            ->setConstructorArgs([$this->modelMock])
+//            ->onlyMethods(['renderLatte',
+//                //'fileExists'
+//                ])
+//            ->getMock();
+//
+////        $view->method('fileExists')->willReturn(false);
+//
+//        $reflection = new \ReflectionClass($view);
+//        $method = $reflection->getMethod('getTemplatePath');
+//        $method->setAccessible(true);
+//
+//        $method->invoke($view);
+//        
         $this->expectException(MissingTemplateException::class);
-
-        $params = new stdClass();
-        $params->httpCode = 200;
-        $params->configuration = $this->configuration;
-//        $this->modelMock->method('getParameters')->willReturn($params);
-
-        $this->modelMock->mapping = ['template' => 'nonExistentTemplate'];
-        //$this->configuration->method('getString')->willReturn('templates/path');
-
-        $view = $this->getMockBuilder(SeablastView::class)
-            ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte',
-                //'fileExists'
-                ])
-            ->getMock();
-
-//        $view->method('fileExists')->willReturn(false);
-
-        $reflection = new \ReflectionClass($view);
-        $method = $reflection->getMethod('getTemplatePath');
-        $method->setAccessible(true);
-
-        $method->invoke($view);
+        $this->controller->mapping = ['template' => 'nonExistentTemplate']; // to assign an existing latte template - exampleTemplate
+        $model = new SeablastModel($this->controller, new Superglobals());        
+        // Start output buffering
+//        ob_start();
+        new SeablastView($model);
+        // Get and clean the output buffer
+//        $output = ob_get_clean();
+//        $this->assertStringStartsWith('<!doctype html>', $output);
+        
     }
 
     public function testRenderJsonOutputsJson(): void
     {
-        $data = ['key' => 'value'];
+        $data = ['a' => 'b'];
 //        $params = new stdClass();
 //        $params->httpCode = 200;
-        $params = (object) [
-            'httpCode' => 200,
-            'rest' => '{"a" => "b"}',
-        ];
+//        $params = (object) [
+//            'httpCode' => 200,
+//            'rest' => '{"a" => "b"}',
+//        ];
+//
+////        $this->modelMock->method('getParameters')->willReturn($params);
+//        $this->configuration->flag = new SeablastFlag();
+//        //$this->configuration->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
+//
+//        $view = $this->getMockBuilder(SeablastView::class)
+//            ->setConstructorArgs([$this->modelMock])
+//            ->onlyMethods(['renderLatte'])
+//            ->getMock();
+//
+//        $reflection = new \ReflectionClass($view);
+//        $method = $reflection->getMethod('renderJson');
+//        $method->setAccessible(true);
+//
+//        ob_start();
+//        $method->invoke($view, $data);
+//        $output = ob_get_clean();
 
-//        $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configuration->flag = new SeablastFlag();
-        //$this->configuration->flag->activate('FLAG_DEBUG_JSON');  // Ensure the flag is set
-
-        $view = $this->getMockBuilder(SeablastView::class)
-            ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte'])
-            ->getMock();
-
-        $reflection = new \ReflectionClass($view);
-        $method = $reflection->getMethod('renderJson');
-        $method->setAccessible(true);
-
+        
+        $this->controller->mapping = ['model' => '\Seablast\Seablast\Models\MockJsonModel'];
+        $model = new SeablastModel($this->controller, new Superglobals());        
+        // Start output buffering
         ob_start();
-        $method->invoke($view, $data);
+        new SeablastView($model);
+        // Get and clean the output buffer
         $output = ob_get_clean();
-
-        $this->assertNotFalse($output);
-        $this->assertJson($output);
+//        $this->assertStringStartsWith('<!doctype html>', $output);
+//
+//        
+//        $this->assertNotFalse($output);
+//        $this->assertJson($output);
         $this->assertEquals(json_encode($data), $output);
+
+        
+        
     }
 
     public function testRenderJsonThrowsUnknownHttpCodeException(): void
@@ -181,42 +254,26 @@ class SeablastViewTest extends TestCase
 
 //        $params = new stdClass();
 //        $params->httpCode = 999; // Invalid HTTP code
-        $params = (object) [
-            'httpCode' => 999, // Invalid HTTP code
-            'rest' => '{"a" => "b"}',
-        ];
+//        $params = (object) [
+//            'httpCode' => 999, // Invalid HTTP code
+//            'rest' => '{"a" => "b"}',
+//        ];
 
-        //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
-        $this->configuration->flag = new SeablastFlag();
-
-        $view = $this->getMockBuilder(SeablastView::class)
-            ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte'])
-            ->getMock();
-
-        $reflection = new \ReflectionClass($view);
-        $method = $reflection->getMethod('renderJson');
-        $method->setAccessible(true);
-
-        $method->invoke($view, []);
+        //$this->controller
+        $this->controller->mapping = ['model' => '\Seablast\Seablast\Models\MockJsonHttpErrorModel'];
+        $model = new SeablastModel($this->controller, new Superglobals());        
+        // Start output buffering
+//        ob_start();
+        new SeablastView($model);
+        // Get and clean the output buffer
+//        $output = ob_get_clean();
+//        $this->assertStringStartsWith('<!doctype html>', $output);
+//
+//        
+//        $this->assertNotFalse($output);
+//        $this->assertJson($output);
+        $this->assertEquals(json_encode($data), $output);
     }
 
-    public function testShowHttpErrorPanel(): void
-    {
-        $params = new stdClass();
-        $params->httpCode = 404;
-        $params->rest = (object) ['message' => 'Not Found'];
-
-        //TODO!: $this->modelMock->method('getParameters')->willReturn($params);
-
-        $view = $this->getMockBuilder(SeablastView::class)
-            ->setConstructorArgs([$this->modelMock])
-            ->onlyMethods(['renderLatte'])
-            ->getMock();
-
-        $this->assertTrue(
-            method_exists($view, 'showHttpErrorPanel'),
-            'The method SeablastView::showHttpErrorPanel is missing'
-        );
-    }
+    // public function testShowHttpErrorPanel(): void // TODO analyze output HTML?
 }

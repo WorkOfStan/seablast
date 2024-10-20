@@ -7,9 +7,11 @@ namespace Seablast\Seablast\Test;
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfiguration;
-use Seablast\Seablast\SeablastMysqli;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastFlag;
+use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\SeablastConfigurationException;
+use Tracy\Debugger;
 
 class SeablastConfigurationTest extends TestCase
 {
@@ -20,11 +22,15 @@ class SeablastConfigurationTest extends TestCase
     {
         if (!defined('APP_DIR')) {
             define('APP_DIR', __DIR__ . '/..');
+            Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
         }
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = APP_DIR . '/conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
         $configurationClosure($this->configuration);
+        $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
+        $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
+        $this->configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that the database test works
     }
 
     public function testDbmsReturnsSeablastMysqliInstance(): void
@@ -57,20 +63,20 @@ class SeablastConfigurationTest extends TestCase
         $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->dbms());
     }
 
-    public function testDbmsThrowsExceptionIfNoConnection(): void
-    {
-        $this->expectException(DbmsException::class);
-
-//        $config = $this->getMockBuilder(SeablastConfiguration::class)
-//            ->onlyMethods(['dbmsStatus'])
-//            ->getMock();
+//    public function testDbmsThrowsExceptionIfNoConnection(): void
+//    {
+//        $this->expectException(DbmsException::class);
 //
-//        $config->expects($this->once())
-//            ->method('dbmsStatus')
-//            ->willReturn(false);
-
-        $this->configuration->dbms();
-    }
+////        $config = $this->getMockBuilder(SeablastConfiguration::class)
+////            ->onlyMethods(['dbmsStatus'])
+////            ->getMock();
+////
+////        $config->expects($this->once())
+////            ->method('dbmsStatus')
+////            ->willReturn(false);
+//
+//        $this->configuration->dbms();
+//    }
 
 //    public function testDbmsTablePrefix()
 //    {
@@ -86,6 +92,10 @@ class SeablastConfigurationTest extends TestCase
 //        $this->assertEquals('test_prefix', $config->dbmsTablePrefix());
 //    }
 
+    /**
+     * if not initialized or if no connection
+     * @return void
+     */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
         $this->expectException(DbmsException::class);

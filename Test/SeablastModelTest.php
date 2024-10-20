@@ -6,50 +6,74 @@ namespace Seablast\Seablast\Test;
 
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastModel;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\Superglobals;
 use Seablast\Seablast\SeablastConfiguration;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use stdClass;
+use Tracy\Debugger;
 
 class SeablastModelTest extends TestCase
-{
+{ 
+        /** @var SeablastConfiguration */
+    private $configuration;
+    /** @var SeablastController */
+    private $controller;
+
+    /**/
+    protected function setUp(): void
+    {
+        parent::setUp();
+        if (!defined('APP_DIR')) {
+            define('APP_DIR', __DIR__ . '/..');
+            Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
+        }       
+                $this->configuration = new SeablastConfiguration();
+        $defaultConfig = __DIR__ . '/../conf/default.conf.php';
+        $configurationClosure = require $defaultConfig;
+        $configurationClosure($this->configuration);
+        $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
+        
+        $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
+        $this->controller = new SeablastController($this->configuration, new Superglobals([],
+                [],
+                [
+                    'REQUEST_URI' => 'testView',]));
+        
+    }
+
     public function testConstructWithModelMapping(): void
     {
-        $controllerMock = $this->createMock(SeablastController::class);
-        $superglobalsMock = $this->createMock(Superglobals::class);
-        $configurationMock = $this->createMock(SeablastConfiguration::class);
+        
+//        $controllerMock = $this->createMock(SeablastController::class);
+//        $superglobalsMock = new Superglobals();
+//        $configurationMock = $this->createMock(SeablastConfiguration::class);
+//
+//        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
+//        $controllerMock->mapping = 
+                $this->controller->mapping =['model' => '\Seablast\Seablast\Models\MockModel'];
 
-        $modelMock = $this->getMockBuilder(stdClass::class)
-            ->addMethods(['knowledge'])
-            ->getMock();
-        $modelMock->expects($this->any()) // No limit on the number of times it can be called
-            ->method('knowledge')
-            ->willReturn((object)['data' => 'value']);
-
-        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
-        $controllerMock->mapping = ['model' => get_class($modelMock)];
-
-        $this->mockAutoloadClass($modelMock);
-
-        $model = new SeablastModel($controllerMock, $superglobalsMock);
-
+        $model = new SeablastModel($this->controller, new Superglobals());
         $params = $model->getParameters();
-        $this->assertObjectHasAttribute('data', $params);
+        //$this->assertObjectHasAttribute('data', $params);//deprecated in favor is assertObjectHasProperty
+        $this->assertObjectHasProperty('data', $params);
         $this->assertEquals('value', $params->data);
     }
 
     public function testConstructWithoutModelMapping(): void
     {
-        $controllerMock = $this->createMock(SeablastController::class);
-        $superglobalsMock = $this->createMock(Superglobals::class);
-        $configurationMock = $this->createMock(SeablastConfiguration::class);
+//        $controllerMock = $this->createMock(SeablastController::class);
+//        $superglobalsMock = $this->createMock(Superglobals::class);
+//        $configurationMock = $this->createMock(SeablastConfiguration::class);
+//
+//        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
+//        $controllerMock->mapping = [];
 
-        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
-        $controllerMock->mapping = [];
+                $this->controller->mapping =[];
 
-        $model = new SeablastModel($controllerMock, $superglobalsMock);
+        $model = new SeablastModel($this->controller, new Superglobals());
 
         $params = $model->getParameters();
         $this->assertInstanceOf(stdClass::class, $params);
@@ -57,15 +81,16 @@ class SeablastModelTest extends TestCase
 
     public function testGetConfiguration(): void
     {
-        $controllerMock = $this->createMock(SeablastController::class);
-        $superglobalsMock = $this->createMock(Superglobals::class);
-        $configurationMock = $this->createMock(SeablastConfiguration::class);
+//        $controllerMock = $this->createMock(SeablastController::class);
+//        $superglobalsMock = $this->createMock(Superglobals::class);
+//        $configurationMock = $this->createMock(SeablastConfiguration::class);
+//
+//        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
+//
+//        $model = new SeablastModel($controllerMock, $superglobalsMock);
+        $model = new SeablastModel($this->controller, new Superglobals());
 
-        $controllerMock->method('getConfiguration')->willReturn($configurationMock);
-
-        $model = new SeablastModel($controllerMock, $superglobalsMock);
-
-        $this->assertSame($configurationMock, $model->getConfiguration());
+        $this->assertSame($this->configuration, $model->getConfiguration());
     }
 
     public function testCsrfTokenIsSet(): void
@@ -92,11 +117,11 @@ class SeablastModelTest extends TestCase
         );
     }
 
-    private function mockAutoloadClass(object $classMock): void
-    {
-        $class = get_class($classMock);
-        if (!class_exists($class, false)) {
-            eval('namespace ' . __NAMESPACE__ . '; class ' . $class . ' extends \stdClass {}');
-        }
-    }
+//    private function mockAutoloadClass(object $classMock): void
+//    {
+//        $class = get_class($classMock);
+//        if (!class_exists($class, false)) {
+//            eval('namespace ' . __NAMESPACE__ . '; class ' . $class . ' extends \stdClass {}');
+//        }
+//    }
 }

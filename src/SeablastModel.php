@@ -33,11 +33,15 @@ class SeablastModel
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
+            Assert::string($className);
+            Assert::true(class_exists($className), "Class {$className} does not exist.");
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
-            Assert::object($this->viewParameters, '$this->viewParameters MUST be an object');
+            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), \Tracy\ILogger::DEBUG); // debug
+            Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be an object of stdClass.");
         } else {
+            Debugger::log('no model, no knowledge', \Tracy\ILogger::DEBUG); // debug
             // so that csrfToken can be added
             $this->viewParameters = new stdClass();
         }

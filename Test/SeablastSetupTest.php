@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastSetup;
 use Seablast\Seablast\SeablastConfiguration;
+use Tracy\Debugger;
 
 class SeablastSetupTest extends TestCase
 {
@@ -21,6 +22,7 @@ class SeablastSetupTest extends TestCase
         // Mock APP_DIR constant
         if (!defined('APP_DIR')) {
             define('APP_DIR', __DIR__ . '/../..');
+            Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
         }/* else {
             $this->appDirBackup = APP_DIR;
             define('APP_DIR', __DIR__ . '/../..');

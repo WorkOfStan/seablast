@@ -145,7 +145,6 @@ class SeablastConfiguration
             'getArrayArrayString',
             'getArrayInt',
             'getArrayString',
-            //'getBool',
             'getInt',
             'getString'
         ];

@@ -29,4 +29,4 @@ Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRO
 $superglobals = new Superglobals($_GET, $_POST, $_SERVER); // $_SESSION hasn't started, yet
 $controller = new SeablastController($setup->getConfiguration(), $superglobals);
 $superglobals->setSession($_SESSION); // as only now the session started
-$view = new SeablastView(new SeablastModel($controller, $superglobals));
+new SeablastView(new SeablastModel($controller, $superglobals));

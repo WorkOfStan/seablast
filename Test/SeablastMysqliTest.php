@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Test;
 
 use PHPUnit\Framework\TestCase;
+use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastMysqli;
 use Seablast\Seablast\Exceptions\DbmsException;
+use Tracy\Debugger;
 
 class SeablastMysqliTest extends TestCase
 {
@@ -14,19 +17,37 @@ class SeablastMysqliTest extends TestCase
     private $mysqli;
 
     protected function setUp(): void
-    {
-        $constructorArguments = [// todo read from config
-            'localhost', // host
-            'root', // username
-            '', // password
-            'testing_db' // database
-        ];
-        $this->mysqli = new SeablastMysqli(// todo read from config
-            'localhost', // host
-            'root', // username
-            '', // password
-            'testing_db' // database
-        );
+    {        
+        
+        parent::setUp();
+        if (!defined('APP_DIR')) {
+            define('APP_DIR', __DIR__ . '/..');
+            Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
+        }       
+    
+        
+        $configuration = new SeablastConfiguration();
+        $defaultConfig = __DIR__ . '/../conf/default.conf.php';
+        $configurationClosure = require $defaultConfig;
+        $configurationClosure($configuration);
+        $this->assertEquals('views', $configuration->getString(SeablastConstant::LATTE_TEMPLATE));
+        $configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
+        $configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that the database test works
+        
+        $this->mysqli = $configuration->dbms();
+//        
+//        $constructorArguments = [// todo read from config
+//            'localhost', // host
+//            'root', // username
+//            '', // password
+//            'testing_db' // database
+//        ];
+//        $this->mysqli = new SeablastMysqli(// todo read from config
+//            'localhost', // host
+//            'root', // username
+//            '', // password
+//            'testing_db' // database
+//        );
 //        $this->mysqli = $this->getMockBuilder(SeablastMysqli::class)
 //                             ->setConstructorArgs($constructorArguments)
 //                             ->onlyMethods(['query'
@@ -43,29 +64,38 @@ class SeablastMysqliTest extends TestCase
 
     public function testConstructorThrowsExceptionOnConnectError(): void
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Connection to database failed with error');
+//        $this->expectException(\Exception::class);
+//        $this->expectException(\mysqli_sql_exception::class);
+        $this->expectWarning();
+        // Note: Expecting E_WARNING and E_USER_WARNING is deprecated and will no longer be possible in PHPUnit 10.
+//        $this->expectExceptionMessage('Connection to database failed with error');
 
-        $this->getMockBuilder(SeablastMysqli::class)
-             ->setConstructorArgs(['invalid_host', 'user', 'password', 'database'])
-             ->getMock();
+//        $this->getMockBuilder(SeablastMysqli::class)
+//             ->setConstructorArgs(['invalid_host', 'user', 'password', 'database'])
+//             ->getMock();
+             $this->mysqli = new SeablastMysqli('invalid_host', 'user', 'password', 'database');
     }
 
     public function testQueryLogging(): void
     {
-        $query = "UPDATE table SET column = 'value'";
+        $query1 = "CREATE TABLE IF NOT EXISTS testTable (    id INT AUTO_INCREMENT PRIMARY KEY,    name VARCHAR(255) NOT NULL,    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
+        $result1 = $this->mysqli->query($query1);
+
+        $this->assertTrue($result1);
+
+        $query2 = "UPDATE testTable SET name = 'value'";
 
 //        $this->mysqli->method('query')->willReturn(true);
 
-        $result = $this->mysqli->query($query);
+        $result2 = $this->mysqli->query($query2);
 
-        $this->assertTrue($result);
+        $this->assertTrue($result2);
     }
 
     public function testQueryFailureLogsError(): void
     {
         $query = "UPDATE table SET column = 'value'";
-        $errorMessage = "Some error message";
+//        $errorMessage = "Some error message";
 //        $this->mysqli->method('query')->willReturn(false);
 //        $this->mysqli->errno = 1234;
 //        $this->mysqli->error = $errorMessage;

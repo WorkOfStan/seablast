@@ -42,6 +42,8 @@ class SeablastMysqli extends mysqli
         ?int $port = null,
         ?string $socket = null
     ) {
+        // TODO consider enable error reporting for mysqli before attempting to make a connection
+        //mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         if (is_null($port)) {
             parent::__construct($host, $username, $password, $dbname);
         } elseif (is_null($socket)) {
