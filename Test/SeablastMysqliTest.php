@@ -67,9 +67,9 @@ class SeablastMysqliTest extends TestCase
             $this->assertFalse($result);
         } catch (DbmsException $e) {
             // that's how it should be
-        } catch (mysqli_sql_exception $e) {
+        } catch (\mysqli_sql_exception $e) {
             $this->assertTrue(false, 'Failure was caught but as a mysqli_sql_exception, not DbmsException');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Handle any other exceptions (fallback)
             $this->assertTrue(
                     false,

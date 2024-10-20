@@ -90,7 +90,7 @@ class SeablastMysqli extends mysqli
                 $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
             }
             return $result;
-        } catch (mysqli_sql_exception $e) {
+        } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
             throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
@@ -113,7 +113,7 @@ class SeablastMysqli extends mysqli
                 throw new DbmsException("{$this->errno}: {$this->error}");
             }
             return $result;
-        } catch (mysqli_sql_exception $e) {
+        } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
             throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
