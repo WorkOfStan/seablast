@@ -36,6 +36,7 @@ class SeablastModel
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
+            Assert::object($this->viewParameters, '$this->viewParameters MUST be an object');
         } else {
             // so that csrfToken can be added
             $this->viewParameters = new stdClass();

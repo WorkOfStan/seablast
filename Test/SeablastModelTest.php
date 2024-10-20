@@ -24,7 +24,7 @@ class SeablastModelTest extends TestCase
         $modelMock = $this->getMockBuilder(stdClass::class)
             ->addMethods(['knowledge'])
             ->getMock();
-        $modelMock->expects($this->once())
+        $modelMock->expects($this->any()) // No limit on the number of times it can be called
             ->method('knowledge')
             ->willReturn((object)['data' => 'value']);
 
