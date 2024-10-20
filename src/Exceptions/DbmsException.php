@@ -9,8 +9,11 @@ use Exception;
 final class DbmsException extends Exception
 {
     /** @api */
-    public function __construct(string $message = 'Unknown database management error.')
-    {
-        parent::__construct($message);
+    public function __construct(
+        string $message = 'Unknown database management error.',
+        int $code = 0,
+        ?\Throwable $previous = null
+    ) {
+        parent::__construct($message, $code, $previous);
     }
 }

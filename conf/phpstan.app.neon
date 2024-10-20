@@ -5,5 +5,7 @@ parameters:
             - ../cache/*
         analyse:
           - ../vendor
+    bootstrapFiles:
+      - ../defineAppDir.php
     scanDirectories:
       - ../src

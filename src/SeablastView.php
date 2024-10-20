@@ -9,6 +9,7 @@ use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use stdClass;
 use Tracy\Debugger;
+use Tracy\ILogger;
 use Webmozart\Assert\Assert;
 
 class SeablastView
@@ -30,6 +31,8 @@ class SeablastView
         Debugger::barDump($this->model, 'Model passed to SeablastView'); // debug
         $this->params = $this->model->getParameters();
         Debugger::barDump($this->params, 'Params for SeablastView'); // debug
+        Debugger::log('Params for SeablastView: ' . print_r($this->params, true), ILogger::DEBUG);
+        error_log('Params for SeablastView: ' . print_r($this->params, true)); // debug
         $this->params->configuration = $this->model->getConfiguration();
         if (isset($this->params->redirection)) { // TODO remove this condition in higher version than 0.2
             throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated
@@ -96,10 +99,11 @@ class SeablastView
      * If unavailable throw an Exception.
      *
      * @return string
-     * @throws \Exception
+     * @throws MissingTemplateException
      */
     private function getTemplatePath(): string
     {
+        Assert::notEmpty($this->model->mapping['template'], 'model->mapping[template] MUST be defined');
         // check file exists + inheritance
         $templatePath = $this->model->getConfiguration()->getString(SeablastConstant::LATTE_TEMPLATE) . '/'
             . $this->model->mapping['template'] . '.latte';
@@ -111,7 +115,6 @@ class SeablastView
         if (file_exists($templatePath)) {
             return $templatePath;
         }
-        // todo MissingTemplateException
         throw new MissingTemplateException($this->model->mapping['template'] . ' template is neither in app '
             . $templatePath . ' nor in library'); // TODO improve the error message
     }
@@ -121,14 +124,15 @@ class SeablastView
      *
      * @param array<mixed>|object $data2json The data to be encoded as JSON.
      * @return void Outputs JSON
+     * @throws UnknownHttpCodeException
      */
     private function renderJson($data2json): void
     {
+        if (isset($this->params->status)) {
+            throw new \Exception('not status but httpCode is wanted'); // debug deprecated remove >0.2.x
+        }
         if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
-        }
-        if (isset($this->params->status)) {
-            throw new \Exception('not status but httpCode is wanted'); // debug deprecated
         }
         if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
             // accepts HTTP codes 100-599 even though some of them might not be defined

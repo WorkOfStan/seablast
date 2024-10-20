@@ -42,6 +42,8 @@ class SeablastMysqli extends mysqli
         ?int $port = null,
         ?string $socket = null
     ) {
+        // TODO consider enable error reporting for mysqli before attempting to make a connection
+        //mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         if (is_null($port)) {
             parent::__construct($host, $username, $password, $dbname);
         } elseif (is_null($socket)) {
@@ -63,29 +65,35 @@ class SeablastMysqli extends mysqli
      * @param string $query
      * @param int $resultmode
      * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
+     * @throws DbmsException in case of failure instead of mysqli_sql_exception
      */
     #[\ReturnTypeWillChange]
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        $trimmedQuery = trim($query);
-        if (!$this->isReadDataTypeQuery($trimmedQuery)) {
-            // Log queries that may change data
-            // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
-            $this->logQuery($query);
+        try {
+            $trimmedQuery = trim($query);
+            if (!$this->isReadDataTypeQuery($trimmedQuery)) {
+                // Log queries that may change data
+                // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
+                $this->logQuery($query);
+            }
+            $result = parent::query($query, $resultmode);
+            $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
+            if ($result === false) {
+                $this->databaseError = true;
+                // TODO optimize error logging
+                Debugger::barDump(
+                    ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
+                    'Database error'
+                );
+                $this->statementList[] = "{$this->errno}: {$this->error}";
+                $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
+            }
+            return $result;
+        } catch (\mysqli_sql_exception $e) {
+            // Catch any mysqli_sql_exception and throw it as DbmsException
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
-        $result = parent::query($query, $resultmode);
-        $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
-        if ($result === false) {
-            $this->databaseError = true;
-            // TODO optimize error logging
-            Debugger::barDump(
-                ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
-                'Database error'
-            );
-            $this->statementList[] = "{$this->errno}: {$this->error}";
-            $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
-        }
-        return $result;
     }
 
     /**
