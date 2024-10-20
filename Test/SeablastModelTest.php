@@ -43,6 +43,8 @@ class SeablastModelTest extends TestCase
                 [],
                 [
                     'REQUEST_URI' => 'testView',
+                    'SCRIPT_NAME' => __FILE__,
+                    'HTTP_HOST' => 'testhost',
                 ]
             )
         );
@@ -54,10 +56,10 @@ class SeablastModelTest extends TestCase
 
         $model = new SeablastModel($this->controller, new Superglobals());
         $params = $model->getParameters();
-        if (method_exists($this, 'assertObjectHasAttribute')) {
-            $this->assertObjectHasAttribute('data', $params); //deprecated in favor is assertObjectHasProperty
-        } elseif (method_exists($this, 'assertObjectHasProperty')) {
+        if (method_exists($this, 'assertObjectHasProperty')) {
             $this->assertObjectHasProperty('data', $params);
+        } elseif (method_exists($this, 'assertObjectHasAttribute')) {
+            $this->assertObjectHasAttribute('data', $params); //deprecated in favor is assertObjectHasProperty
         } else {
             $this->assertTrue(false, 'Cannot make sure that data has params attribute/property');
         }
