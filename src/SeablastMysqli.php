@@ -92,7 +92,7 @@ class SeablastMysqli extends mysqli
             return $result;
         } catch (mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
-            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -115,7 +115,7 @@ class SeablastMysqli extends mysqli
             return $result;
         } catch (mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
-            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
     }
 

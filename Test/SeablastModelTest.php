@@ -54,8 +54,13 @@ class SeablastModelTest extends TestCase
 
         $model = new SeablastModel($this->controller, new Superglobals());
         $params = $model->getParameters();
-        //$this->assertObjectHasAttribute('data', $params);//deprecated in favor is assertObjectHasProperty
-        $this->assertObjectHasProperty('data', $params);
+        if (method_exists($this, 'assertObjectHasAttribute')) {
+            $this->assertObjectHasAttribute('data', $params); //deprecated in favor is assertObjectHasProperty
+        } elseif (method_exists($this, 'assertObjectHasProperty')) {
+            $this->assertObjectHasProperty('data', $params);
+        } else {
+            $this->assertTrue(false, 'Cannot make sure that data has params attribute/property');
+        }
         $this->assertEquals('value', $params->data);
     }
 
