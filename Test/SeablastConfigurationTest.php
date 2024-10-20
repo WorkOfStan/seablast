@@ -32,14 +32,6 @@ class SeablastConfigurationTest extends TestCase
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
         // so that the database test works on GitHub
         $this->configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');
-//        // Create local phinx configuration, so that it works on GitHub, yet can be adapted locally
-//        if (!file_exists('./conf/phinx.local.php') && file_exists('./conf/phinx.dist.php')) {
-//            if (copy('./conf/phinx.dist.php', './conf/phinx.local.php')) {
-//                Debugger::log('./conf/phinx.dist.php copied to ./conf/phinx.local.php', ILogger::INFO);
-//            } else {
-//                Debugger::log('./conf/phinx.dist.php failed to be copied to ./conf/phinx.local.php', ILogger::ERROR);
-//            }
-//        }
     }
 
     public function testDbmsReturnsSeablastMysqliInstance(): void

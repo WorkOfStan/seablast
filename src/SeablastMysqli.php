@@ -101,11 +101,16 @@ class SeablastMysqli extends mysqli
     #[\ReturnTypeWillChange]
     public function queryStrict($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        $result = $this->query($query, $resultmode);
-        if ($result === false) {
-            throw new DbmsException("{$this->errno}: {$this->error}");
+        try {
+            $result = $this->query($query, $resultmode);
+            if ($result === false) {
+                throw new DbmsException("{$this->errno}: {$this->error}");
+            }
+            return $result;
+        } catch (mysqli_sql_exception $e) {
+            // Catch any mysqli_sql_exception and throw it as DbmsException
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage()); //, $e->getCode(), $e);
         }
-        return $result;
     }
 
     /**
