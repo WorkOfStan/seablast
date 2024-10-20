@@ -80,5 +80,4 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 
 ## Testing
 
-The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, even thoug the library doesn't include Phinx.
-If this file is not already present after a local update of the testing environment, the relevant `Test.php` script copies `./conf/phinx.dist.php` to `./conf/phinx.local.php`, ensuring it works on GitHub as well.
+The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
