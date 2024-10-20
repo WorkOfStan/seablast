@@ -83,8 +83,8 @@ class SeablastMysqli extends mysqli
                 $this->databaseError = true;
                 // TODO optimize error logging
                 Debugger::barDump(
-                        ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
-                        'Database error'
+                    ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
+                    'Database error'
                 );
                 $this->statementList[] = "{$this->errno}: {$this->error}";
                 $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
@@ -107,16 +107,16 @@ class SeablastMysqli extends mysqli
     #[\ReturnTypeWillChange]
     public function queryStrict($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        try {
+        //try {
             $result = $this->query($query, $resultmode);
             if ($result === false) {
                 throw new DbmsException("{$this->errno}: {$this->error}");
             }
             return $result;
-        } catch (\mysqli_sql_exception $e) {
-            // Catch any mysqli_sql_exception and throw it as DbmsException
-            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
-        }
+//        } catch (\mysqli_sql_exception $e) {
+//            // Catch any mysqli_sql_exception and throw it as DbmsException
+//            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
+//        }
     }
 
     /**

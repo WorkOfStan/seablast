@@ -3,7 +3,7 @@
   "description": "Seablast for PHP - a minimalist MVC framework added by composer",
   "type": "library",
   "require": {
-    "php": "^7.2 || ^8.0",
+    "php": "^7.2 || ^8.1",
     "latte/latte": ">=2.4.6 <2.11.3",
     "nette/utils": "^2.4.8 || ^3.2.2",
     "seablast/interfaces": "^0.1",

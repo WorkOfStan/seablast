@@ -52,7 +52,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 
 ## Stack
 
-- PHP7.2+
+- PHP ^7.2 || ^8.1
 - [Latte](http://latte.nette.org/): for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
 - [Tracy](https://github.com/nette/tracy): for debugging
