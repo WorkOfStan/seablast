@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
-use Tracy\Debugger;
-use Webmozart\Assert\Assert;
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\Superglobals;
 use stdClass;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
+use Tracy\Debugger;
+use Tracy\ILogger;
+use Webmozart\Assert\Assert;
 
 class SeablastModel
 {
@@ -38,10 +39,10 @@ class SeablastModel
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             $this->viewParameters = $model->knowledge();
-            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), \Tracy\ILogger::DEBUG); // debug
-            Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be an object of stdClass.");
+            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
+            Assert::isAOf($this->viewParameters, 'stdClass', "Knowledge of {$className} MUST be an object of stdClass.");
         } else {
-            Debugger::log('no model, no knowledge', \Tracy\ILogger::DEBUG); // debug
+            Debugger::log('no model, no knowledge', ILogger::DEBUG); // debug
             // so that csrfToken can be added
             $this->viewParameters = new stdClass();
         }

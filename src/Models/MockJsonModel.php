@@ -41,11 +41,11 @@ class MockJsonModel implements SeablastModelInterface
     public function knowledge(): stdClass
     {
         Assert::true($this->configuration->exists('testRest'), 'testRest for JSON test is missing');
-  
+
         Debugger::log('testRest: ' . $this->configuration->getString('testRest'), ILogger::DEBUG);
         $result = ['rest' => json_decode($this->configuration->getString('testRest'), false)];
-        
-        if($this->configuration->exists('testHttpCode')) {
+
+        if ($this->configuration->exists('testHttpCode')) {
             $result['httpCode'] = $this->configuration->getInt('testHttpCode');
         }
 

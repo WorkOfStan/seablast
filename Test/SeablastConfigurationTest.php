@@ -29,7 +29,8 @@ class SeablastConfigurationTest extends TestCase
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
-        $this->configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that the database test works
+        // so that the database test works on GitHub
+        $this->configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');
     }
 
     public function testDbmsReturnsSeablastMysqliInstance(): void

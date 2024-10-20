@@ -30,7 +30,7 @@ class SeablastViewTest extends TestCase
             define('APP_DIR', __DIR__ . '/..');
             Debugger::enable(Debugger::DEVELOPMENT, APP_DIR . '/log');
         }
-                
+
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
@@ -71,7 +71,8 @@ class SeablastViewTest extends TestCase
 
     public function testGetTemplatePathReturnsCorrectPath(): void
     {
-        $this->controller->mapping = ['template' => 'item']; // to assign an existing latte template - exampleTemplate
+        // to assign an existing latte template - exampleTemplate
+        $this->controller->mapping = ['template' => 'item'];
         $model = new SeablastModel($this->controller, new Superglobals());
         // Start output buffering
         ob_start();
@@ -85,7 +86,7 @@ class SeablastViewTest extends TestCase
     public function testGetTemplatePathThrowsMissingTemplateException(): void
     {
         $this->expectException(MissingTemplateException::class);
-        $this->controller->mapping = ['template' => 'nonExistentTemplate']; // to assign an existing latte template - exampleTemplate
+        $this->controller->mapping = ['template' => 'nonExistentTemplate'];
         $model = new SeablastModel($this->controller, new Superglobals());
         new SeablastView($model);
     }

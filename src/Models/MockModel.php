@@ -36,19 +36,18 @@ class MockModel implements SeablastModelInterface
      * @return stdClass
      */
     public function knowledge(): stdClass
-    {
-        
+    {        
         $result = [
             'data' => 'value',
         ];
-        
-        if($this->configuration->exists('testHttpCode')) {
-//            echo 'httpCode: ' . $this->configuration->getInt('testHttpCode');
+
+        if ($this->configuration->exists('testHttpCode')) {
+            //echo 'httpCode: ' . $this->configuration->getInt('testHttpCode');
             $result['httpCode'] = $this->configuration->getInt('testHttpCode');
-//        } else {
-//            echo 'httpCode: NOPE';
+        //} else {
+        //    echo 'httpCode: NOPE';
         }
-        
+
         return (object) $result;
     }
 }

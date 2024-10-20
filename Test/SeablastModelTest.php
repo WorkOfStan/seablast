@@ -36,10 +36,15 @@ class SeablastModelTest extends TestCase
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
 
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
-        $this->controller = new SeablastController($this->configuration, new Superglobals([],
-                        [],
-                        [
-                    'REQUEST_URI' => 'testView',]));
+        $this->controller = new SeablastController(
+            $this->configuration,
+            new Superglobals([],
+                [],
+                [
+                    'REQUEST_URI' => 'testView',
+                ]
+            )
+        );
     }
 
     public function testConstructWithModelMapping(): void
@@ -88,8 +93,8 @@ class SeablastModelTest extends TestCase
 
         $this->assertTrue(property_exists($params, 'csrfToken'));
         $this->assertTrue(
-                strlen($params->csrfToken) > 60,
-                'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'
+            strlen($params->csrfToken) > 60,
+            'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'
         );
     }
 }
