@@ -30,17 +30,16 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     protected $configuration;
     /** @var object input JSON transformed to the data */
     protected $data;
-    /** @var string API response message */
-    protected $message = 'Input ready for processing.';
     /** @var int HTTP status to be used as a default response */
     protected $httpCode = 200;
+    /** @var string API response message */
+    protected $message = 'Input ready for processing.';
     /** @var Superglobals */
     protected $superglobals;
 
     /**
      * @param SeablastConfiguration $configuration
      * @param Superglobals $superglobals
-     * @throws \Exception
      */
     public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
@@ -112,8 +111,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid JSON input'; // TODO be more specific by https://www.php.net/json_last_error
             return;
-        }
-        if (!is_object($jsonDecoded)) { // maybe this is redundant vs json_last_error above
+        } elseif (!is_object($jsonDecoded)) { // maybe this is redundant vs json_last_error above
             Debugger::barDump("Decoded JSON doesn't translate to an object", 'ERROR on input');
             Debugger::log("Decoded JSON doesn't translate to an object", ILogger::ERROR);
             $this->httpCode = 400; // Bad Request
