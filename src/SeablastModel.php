@@ -65,7 +65,7 @@ class SeablastModel
      *
      * @return stdClass
      */
-    public function getParameters()
+    public function getParameters(): stdClass
     {
         return $this->viewParameters;
     }
