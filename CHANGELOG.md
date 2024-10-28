@@ -138,7 +138,7 @@ PHPUnit tests ready
 ### Added
 
 - show HTTP code error Tracy BarPanel
-- /api/error for is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
+- /api/error is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
 
 ### Changed **BREAKING**
 
@@ -196,16 +196,16 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD
-[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4
-[0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5
-[0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4
-[0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3
-[0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2
-[0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1
-[0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1
-[0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2
-[0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD?w=1
+[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4?w=1
+[0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5?w=1
+[0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4?w=1
+[0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3?w=1
+[0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2?w=1
+[0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1?w=1
+[0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3?w=1
+[0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2?w=1
+[0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1?w=1
+[0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2?w=1
+[0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1?w=1
 [0.1]: https://github.com/WorkOfStan/seablast/releases/tag/v0.1
