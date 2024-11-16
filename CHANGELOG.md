@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TableViewModel for admin.latte
 - PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
 - SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
+- [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
 
 ### `Changed` for changes in existing functionality
 

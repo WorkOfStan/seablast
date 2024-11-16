@@ -9,7 +9,5 @@ parameters:
       - ../defineAppDir.php
     scanDirectories:
       - ../src
-    # as PHPStan 2.0 reports other things than 1.x
+    # as PHPStan 2.0 reports other things than 1.x (and 1.x is still needed to support PHP/7.2 and 7.3
     reportUnmatchedIgnoredErrors: false
-    #tips:
-    #    treatPhpDocTypesAsCertain: false
