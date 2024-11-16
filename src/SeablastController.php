@@ -52,8 +52,10 @@ class SeablastController
             // Controller can be fired up multiple times in PHPUnit, but this part may run only once
             $this->applyConfigurationBeforeSession();
         } else {
+            $serverPhpSelf = $_SERVER['PHP_SELF'];
+            Assert::string($serverPhpSelf);
             Debugger::log(
-                'Session already started: not invoking applyConfigurationBeforeSession by ' . $_SERVER['PHP_SELF'],
+                'Session already started: not invoking applyConfigurationBeforeSession by ' . $serverPhpSelf,
                 ILogger::INFO
             );
         }
@@ -171,6 +173,7 @@ class SeablastController
      */
     private function applyConfigurationWithSession(): void
     {
+        Assert::string($this->superglobals->server['HTTP_HOST']);
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
         $this->scriptName = $scriptName;
@@ -178,7 +181,7 @@ class SeablastController
         $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
             && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
             (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
-            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
+            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');    
         $this->configuration->setString(
             // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,

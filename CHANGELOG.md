@@ -15,11 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- SeablastConfiguration::exists simplified
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
 - PHPUnit generates some weird errors with PHP/8.0. So the PHP/8.0 support removed.
+- some Assertions removed as not needed for PHPStan/2
 
 ### `Fixed` for any bugfixes
 
