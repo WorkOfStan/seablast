@@ -58,7 +58,7 @@ class SeablastModelTest extends TestCase
         $params = $model->getParameters();
         // TODO change to PHP version test instead of ignoring function.alreadyNarrowedType
         /** @phpstan-ignore function.alreadyNarrowedType */
-        if (method_exists($this, 'assertObjectHasProperty')) {            
+        if (method_exists($this, 'assertObjectHasProperty')) {
             $this->assertObjectHasProperty('data', $params);
             /** @phpstan-ignore function.alreadyNarrowedType */
         } elseif (method_exists($this, 'assertObjectHasAttribute')) {
