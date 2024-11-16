@@ -69,10 +69,7 @@ class SeablastMysqliTest extends TestCase
             // that's how it should be
         } catch (\Exception $e) {
             // Handle any other exceptions (fallback)
-            $this->assertTrue(
-                false,
-                'Failure was caught but as a generic exception, not DbmsException: ' . $e->getMessage()
-            );
+            $this->fail('Failure was caught but as a generic exception, not DbmsException: ' . $e->getMessage());
         }
         // Check if the query was logged with the error
     }

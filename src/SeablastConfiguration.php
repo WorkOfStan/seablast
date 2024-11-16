@@ -75,8 +75,12 @@ class SeablastConfiguration
             "Phinx environment `{$environment}` isn't defined - check SB_PHINX_ENVIRONMENT or default_environment"
         );
         Assert::isArray($phinx['environments'][$environment]);
-        $port = isset($phinx['environments'][$environment]['port'])
-            ? (int) $phinx['environments'][$environment]['port'] : null;
+        if (isset($phinx['environments'][$environment]['port'])) {
+            Assert::scalar($phinx['environments'][$environment]['port']);
+            $port = (int) $phinx['environments'][$environment]['port'];
+        } else {
+            $port = null;
+        }
         $this->connection = new SeablastMysqli(
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
@@ -244,6 +248,7 @@ class SeablastConfiguration
         //Assert::string($property);
         //Assert::string($key);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
         }
         $this->optionsArrayArrayString[$property][$key] = $value;
@@ -259,6 +264,7 @@ class SeablastConfiguration
     {
         //Assert::string($property);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::integer($row);
         }
         $this->optionsArrayInt[$property] = $value;
@@ -274,6 +280,7 @@ class SeablastConfiguration
     {
         //Assert::string($property);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
         }
         $this->optionsArrayString[$property] = $value;

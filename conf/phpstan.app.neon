@@ -9,3 +9,5 @@ parameters:
       - ../defineAppDir.php
     scanDirectories:
       - ../src
+    #tips:
+    #    treatPhpDocTypesAsCertain: false

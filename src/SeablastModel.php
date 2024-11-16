@@ -34,6 +34,7 @@ class SeablastModel
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($className);
             Assert::true(class_exists($className), "Class {$className} does not exist.");
             $model = new $className($this->controller->getConfiguration(), $superglobals);
