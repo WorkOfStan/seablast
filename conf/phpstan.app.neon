@@ -9,5 +9,7 @@ parameters:
       - ../defineAppDir.php
     scanDirectories:
       - ../src
+    # as PHPStan 2.0 reports other things than 1.x
+    reportUnmatchedIgnoredErrors: false
     #tips:
     #    treatPhpDocTypesAsCertain: false
