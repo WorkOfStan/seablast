@@ -31,8 +31,8 @@ class SeablastMysqli extends mysqli
      * @param string $username
      * @param string $password
      * @param string $dbname
-     * @param int|null $port
-     * @param string|null $socket
+     * @param ?int $port
+     * @param ?string $socket
      * @throws DbmsException
      */
     public function __construct(
@@ -77,7 +77,7 @@ class SeablastMysqli extends mysqli
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->logQuery($trimmedQuery);
         }
-        try {    
+        try {
             $result = parent::query($trimmedQuery, $resultmode);
             $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
             if ($result === false) {

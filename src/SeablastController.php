@@ -181,7 +181,7 @@ class SeablastController
         $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
             && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
             (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
-            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');    
+            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
