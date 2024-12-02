@@ -55,7 +55,7 @@ class BarPanelTemplate implements IBarPanel
         $cntTable = '';
 
         foreach ($this->panelDetails as $id => $detail) {
-            $cntTable .= '<tr><td>' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '</td><td>';
+            $cntTable .= '<tr><td>' . htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8') . '</td><td>';
 
             if (is_array($detail)) {
                 $cntTable .= '<table>';
