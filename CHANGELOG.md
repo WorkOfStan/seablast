@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed` for changes in existing functionality
 
 - SeablastConfiguration::exists simplified
+- updated dependencies not to refer below PHP/7.2
 
 ### `Deprecated` for soon-to-be removed features
 

@@ -43,7 +43,7 @@ class SeablastController
      */
     public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
-        // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
+        // Wrapped _GET, _POST, _SERVER and _SESSION for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
