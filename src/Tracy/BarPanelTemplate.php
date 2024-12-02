@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast\Tracy;
 
 use Tracy\IBarPanel;

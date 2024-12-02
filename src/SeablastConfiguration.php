@@ -146,7 +146,6 @@ class SeablastConfiguration
      */
     public function exists(string $property): bool
     {
-        //Assert::string($property);
         $methods = [
             'getArrayArrayString',
             'getArrayInt',
@@ -174,7 +173,6 @@ class SeablastConfiguration
      */
     public function getArrayArrayString(string $property): array
     {
-        //Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayArrayString)) {
             throw new SeablastConfigurationException('No array of string array for the property ' . $property);
         }
@@ -188,7 +186,6 @@ class SeablastConfiguration
      */
     public function getArrayInt(string $property): array
     {
-        //Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayInt)) {
             throw new SeablastConfigurationException('No array int for the property ' . $property);
         }
@@ -202,7 +199,6 @@ class SeablastConfiguration
      */
     public function getArrayString(string $property): array
     {
-        //Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayString)) {
             throw new SeablastConfigurationException('No array string for the property ' . $property);
         }
@@ -216,7 +212,6 @@ class SeablastConfiguration
      */
     public function getInt(string $property): int
     {
-        //Assert::string($property);
         if (!array_key_exists($property, $this->optionsInt)) {
             throw new SeablastConfigurationException('No int value for the property ' . $property);
         }
@@ -230,7 +225,6 @@ class SeablastConfiguration
      */
     public function getString(string $property): string
     {
-        //Assert::string($property);
         if (!array_key_exists($property, $this->optionsString)) {
             throw new SeablastConfigurationException('No string value for the property ' . $property);
         }
@@ -245,8 +239,6 @@ class SeablastConfiguration
      */
     public function setArrayArrayString(string $property, string $key, array $value): self
     {
-        //Assert::string($property);
-        //Assert::string($key);
         foreach ($value as $row) {
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
@@ -262,7 +254,6 @@ class SeablastConfiguration
      */
     public function setArrayInt(string $property, array $value): self
     {
-        //Assert::string($property);
         foreach ($value as $row) {
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::integer($row);
@@ -278,7 +269,6 @@ class SeablastConfiguration
      */
     public function setArrayString(string $property, array $value): self
     {
-        //Assert::string($property);
         foreach ($value as $row) {
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
@@ -294,8 +284,6 @@ class SeablastConfiguration
      */
     public function setInt(string $property, int $value): self
     {
-        //Assert::string($property);
-        //Assert::integer($value);
         $this->optionsInt[$property] = $value;
         return $this;
     }
@@ -307,8 +295,6 @@ class SeablastConfiguration
      */
     public function setString(string $property, string $value): self
     {
-        //Assert::string($property);
-        //Assert::string($value);
         $this->optionsString[$property] = $value;
         return $this;
     }

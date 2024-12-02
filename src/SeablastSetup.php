@@ -16,9 +16,10 @@ class SeablastSetup
         // Create configuration of the app by applying configuration files in order from generic to specific
         $this->configuration = new SeablastConfiguration();
         $fileConfigurationPriority = [
-            __DIR__ . '/../conf/default.conf.php',
-            APP_DIR . '/conf/app.conf.php',
-            APP_DIR . '/conf/app.conf.local.php',
+            __DIR__ . '/../conf/default.conf.php', // default Seablast configuration
+            APP_DIR . '/vendor/seablast/auth/conf/app.conf.php', // Seablast/Auth extension configuration
+            APP_DIR . '/conf/app.conf.php', // default application configuration
+            APP_DIR . '/conf/app.conf.local.php', // configuration specific for the environment
         ];
         foreach ($fileConfigurationPriority as $confFilename) {
             $this->updateConfiguration($confFilename);
