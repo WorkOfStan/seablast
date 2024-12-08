@@ -9,6 +9,7 @@ use mysqli_result;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
+use Tracy\Dumper;
 use Tracy\ILogger;
 
 /**
@@ -83,7 +84,7 @@ class SeablastMysqli extends mysqli
             if ($result === false) {
                 $this->databaseError = true;
                 $dbError = ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error];
-                Debugger::barDump($dbError, 'Database error');
+                Debugger::barDump($dbError, 'Database error', [Dumper::TRUNCATE => 1500]); // longer than 150 chars
                 Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
                 $this->statementList[] = "{$this->errno}: {$this->error}";
                 $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");

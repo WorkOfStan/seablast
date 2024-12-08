@@ -14,11 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
 - [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
 - if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
+- `{block script}{/block}` to BlueprintWeb.latte
 
 ### `Changed` for changes in existing functionality
 
 - SeablastConfiguration::exists simplified
 - updated dependencies not to refer below PHP/7.2
+- SeablastMysqli::query error shows up to 1500 characters of a query that ended up with a database error (instead of truncating to the default 150 characters)
 
 ### `Deprecated` for soon-to-be removed features
 
