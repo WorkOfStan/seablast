@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
 - if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
 - `{block script}{/block}` to BlueprintWeb.latte
+- change of the log location enabled
 
 ### `Changed` for changes in existing functionality
 
