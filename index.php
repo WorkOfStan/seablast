@@ -25,7 +25,7 @@ Debugger::enable(
         in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
         in_array($_SERVER['REMOTE_ADDR'], $setup->getConfiguration()->getArrayString(SeablastConstant::DEBUG_IP_LIST))
     ) ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
-    APP_DIR . '/log'
+    $setup->getConfiguration()->getString(SeablastConstant::SB_LOG_DIRECTORY)
 );
 
 // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
