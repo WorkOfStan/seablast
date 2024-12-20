@@ -43,7 +43,7 @@ class SeablastController
      */
     public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
     {
-        // Wrapped _GET, _POST, _SESSION and _SERVER for sanitizing and testing
+        // Wrapped _GET, _POST, _SERVER and _SESSION for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
@@ -52,8 +52,10 @@ class SeablastController
             // Controller can be fired up multiple times in PHPUnit, but this part may run only once
             $this->applyConfigurationBeforeSession();
         } else {
+            $serverPhpSelf = $_SERVER['PHP_SELF'];
+            Assert::string($serverPhpSelf);
             Debugger::log(
-                'Session already started: not invoking applyConfigurationBeforeSession by ' . $_SERVER['PHP_SELF'],
+                'Session already started: not invoking applyConfigurationBeforeSession by ' . $serverPhpSelf,
                 ILogger::INFO
             );
         }
@@ -140,7 +142,8 @@ class SeablastController
                         $this->logger = new Logger([
                                 'logging_level' => $this->configuration->getInt($property),
                                 'error_log_message_type' => 3,
-                                'logging_file' => APP_DIR . '/log/seablast',
+                                'logging_file' => $this->configuration->getString(SeablastConstant::SB_LOG_DIRECTORY)
+                                    . '/seablast',
                                 'mail_for_admin_enabled' => ((
                                     $this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)
                                     && $this->configuration->exists(SeablastConstant::ADMIN_MAIL_ADDRESS)
@@ -171,6 +174,7 @@ class SeablastController
      */
     private function applyConfigurationWithSession(): void
     {
+        Assert::string($this->superglobals->server['HTTP_HOST']);
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
         $this->scriptName = $scriptName;

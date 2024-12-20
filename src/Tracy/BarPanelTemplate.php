@@ -1,26 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Seablast\Tracy;
 
 use Tracy\IBarPanel;
 
 /**
  * Tracy panel showing info about Template
- *
  */
 class BarPanelTemplate implements IBarPanel
 {
     use \Nette\SmartObject;
 
-    /** @var string */
-    protected $tabTitle;
-    /** @var array<mixed> */
-    protected $panelDetails;
     /** @var bool false = info, true = error */
     protected $errorPanel = false;
+    /** @var array<mixed> */
+    protected $panelDetails;
+    /** @var string */
+    protected $tabTitle;
 
     /**
-     *
      * @param string $tabTitle
      * @param array<mixed> $panelDetails
      */
@@ -52,30 +52,32 @@ class BarPanelTemplate implements IBarPanel
      */
     public function getPanel(): string
     {
-        $title = '<h1>' . htmlspecialchars($this->tabTitle) . '</h1>';
         $cntTable = '';
 
         foreach ($this->panelDetails as $id => $detail) {
-            $cntTable .= '<tr><td>' . htmlspecialchars($id) . '</td><td>';
+            $cntTable .= '<tr><td>' . htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8') . '</td><td>';
+
             if (is_array($detail)) {
                 $cntTable .= '<table>';
                 foreach ($detail as $k => $v) {
-                    $cntTable .= "<tr><td>" . htmlspecialchars($k) . "</td><td title='"
-                        . htmlspecialchars(print_r($v, true))
-                        . "'>" . htmlspecialchars(substr(print_r($v, true), 0, 240)) . "</td></tr>";
+                    $valueStr = htmlspecialchars(print_r($v, true), ENT_QUOTES, 'UTF-8');
+                    $cntTable .= '<tr><td>' . htmlspecialchars($k, ENT_QUOTES, 'UTF-8') . '</td><td title="'
+                        . $valueStr . '">' . mb_substr($valueStr, 0, 240, 'UTF-8') . '</td></tr>';
                 }
                 $cntTable .= '</table>';
             } else {
-                $cntTable .= htmlspecialchars(print_r($detail, true));
+                $cntTable .= htmlspecialchars(print_r($detail, true), ENT_QUOTES, 'UTF-8');
             }
+
             $cntTable .= '</td></tr>';
         }
-
-        $content = '<div class=\"tracy-inner tracy-InfoPanel\"><table><tbody>' .
-            $cntTable .
-            '</tbody></table>* Hover over field to see its full content.</div>';
-
-        return $title . $content;
+        return
+            // title
+            '<h1>' . htmlspecialchars($this->tabTitle, ENT_QUOTES, 'UTF-8') . '</h1>'
+            // content
+            . '<div class="tracy-inner tracy-InfoPanel"><table><tbody>'
+            . $cntTable
+            . '</tbody></table>* Hover over field to see its full content.</div>';
     }
 
     /**

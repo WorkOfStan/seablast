@@ -16,6 +16,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 ## Configuration
 
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
+- if Seablast/Auth extension is present, use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']`
 

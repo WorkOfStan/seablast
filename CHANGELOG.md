@@ -10,8 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
-- SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
 
 ### `Changed` for changes in existing functionality
 
@@ -19,11 +17,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Removed` for now removed features
 
-- PHPUnit generates some weird errors with PHP/8.0. So the PHP/8.0 support removed.
-
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.5] - 2024-12-20
+
+### Added
+
+- PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
+- SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
+- [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
+- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
+- `{block script}{/block}` to BlueprintWeb.latte
+- change of the log location enabled (single settings for Seablast\Logger, Tracy\Debugger and SeablastMysqli)
+
+### Changed
+
+- SeablastConfiguration::exists simplified
+- updated dependencies not to refer below PHP/7.2
+- SeablastMysqli::query error shows up to 1500 characters of a query that ended up with a database error (instead of truncating to the default 150 characters)
+
+### Removed
+
+- PHPUnit generates some weird errors with PHP/8.0. So the PHP/8.0 support removed.
+- some Assertions removed as not needed for PHPStan/2
 
 ## [0.2.4] - 2024-08-04
 
@@ -138,7 +156,7 @@ PHPUnit tests ready
 ### Added
 
 - show HTTP code error Tracy BarPanel
-- /api/error for is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
+- /api/error is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
 
 ### Changed **BREAKING**
 
@@ -196,16 +214,17 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD
-[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4
-[0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5
-[0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4
-[0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3
-[0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2
-[0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1
-[0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1
-[0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2
-[0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...HEAD?w=1
+[0.2.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...v0.2.5?w=1
+[0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4?w=1
+[0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5?w=1
+[0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4?w=1
+[0.2.3.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.2...v0.2.3.3?w=1
+[0.2.3.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.1...v0.2.3.2?w=1
+[0.2.3.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.3...v0.2.3.1?w=1
+[0.2.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.2...v0.2.3?w=1
+[0.2.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.1...v0.2.2?w=1
+[0.2.1]: https://github.com/WorkOfStan/seablast/compare/v0.2...v0.2.1?w=1
+[0.2]: https://github.com/WorkOfStan/seablast/compare/v0.1.1...v0.2?w=1
+[0.1.1]: https://github.com/WorkOfStan/seablast/compare/v0.1...v0.1.1?w=1
 [0.1]: https://github.com/WorkOfStan/seablast/releases/tag/v0.1

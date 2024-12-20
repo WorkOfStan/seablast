@@ -9,6 +9,8 @@ use mysqli_result;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
+use Tracy\Dumper;
+use Tracy\ILogger;
 
 /**
  * mysqli wrapper with logging
@@ -30,9 +32,9 @@ class SeablastMysqli extends mysqli
      * @param string $username
      * @param string $password
      * @param string $dbname
-     * @param int|null $port
-     * @param string|null $socket
-     * @throws \Exception
+     * @param ?int $port
+     * @param ?string $socket
+     * @throws DbmsException
      */
     public function __construct(
         string $host,
@@ -52,11 +54,12 @@ class SeablastMysqli extends mysqli
             parent::__construct($host, $username, $password, $dbname, $port, $socket);
         }
         if ($this->connect_error) {
-            throw new \Exception(
+            throw new DbmsException(
                 'Connection to database failed with error #' . $this->connect_errno . ' ' . $this->connect_error
             );
         }
-        $this->logPath = APP_DIR . '/log/query_' . date('Y-m') . '.log';
+        // Use Debugger::$logDirectory instead of APP_DIR . '/log'
+        $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
     }
 
     /**
@@ -70,22 +73,20 @@ class SeablastMysqli extends mysqli
     #[\ReturnTypeWillChange]
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
+        $trimmedQuery = trim($query);
+        if (!$this->isReadDataTypeQuery($trimmedQuery)) {
+            // Log queries that may change data
+            // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
+            $this->logQuery($trimmedQuery);
+        }
         try {
-            $trimmedQuery = trim($query);
-            if (!$this->isReadDataTypeQuery($trimmedQuery)) {
-                // Log queries that may change data
-                // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
-                $this->logQuery($query);
-            }
-            $result = parent::query($query, $resultmode);
+            $result = parent::query($trimmedQuery, $resultmode);
             $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
             if ($result === false) {
                 $this->databaseError = true;
-                // TODO optimize error logging
-                Debugger::barDump(
-                    ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error],
-                    'Database error'
-                );
+                $dbError = ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error];
+                Debugger::barDump($dbError, 'Database error', [Dumper::TRUNCATE => 1500]); // longer than 150 chars
+                Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
                 $this->statementList[] = "{$this->errno}: {$this->error}";
                 $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
             }

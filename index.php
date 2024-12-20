@@ -19,11 +19,14 @@ require_once APP_DIR . '/vendor/autoload.php';
 Debugger::setSessionStorage(new Tracy\NativeSession());
 $setup = new SeablastSetup(); // combine configuration files into a valid configuration
 // $setup contains the info for Debugger setup
-$developmentEnvironment = (
-    in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
-    in_array($_SERVER['REMOTE_ADDR'], $setup->getConfiguration()->getArrayString(SeablastConstant::DEBUG_IP_LIST))
+Debugger::enable(
+    (
+        // development environment
+        in_array($_SERVER['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
+        in_array($_SERVER['REMOTE_ADDR'], $setup->getConfiguration()->getArrayString(SeablastConstant::DEBUG_IP_LIST))
+    ) ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
+    $setup->getConfiguration()->getString(SeablastConstant::SB_LOG_DIRECTORY)
 );
-Debugger::enable($developmentEnvironment ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, APP_DIR . '/log');
 
 // Wrap _GET, _POST, _SESSION and _SERVER for sanitizing and testing
 $superglobals = new Superglobals($_GET, $_POST, $_SERVER); // $_SESSION hasn't started, yet

@@ -72,6 +72,10 @@ class SeablastConstant
      */
     public const SB_LOGGING_LEVEL = 'SB:SB_LOGGING_LEVEL';
     /**
+     * @var string log location
+     */
+    public const SB_LOG_DIRECTORY = 'SB_LOG_DIRECTORY';
+    /**
      * @var string flag whether to send emails to admin
      */
     public const ADMIN_MAIL_ENABLED = 'SB:ADMIN_MAIL:ENABLED';

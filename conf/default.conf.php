@@ -31,6 +31,7 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setString(SeablastConstant::SB_INI_SET_DISPLAY_ERRORS, '0') // errors only in the log; override locally
         ->setArrayString(SeablastConstant::DEBUG_IP_LIST, []) // default list with IPs to show Tracy
         ->setInt(SeablastConstant::SB_LOGGING_LEVEL, 3) // log warnings and more severe events
+        ->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log') // change of the log location is possible
         // Database
         // Does not have to be 'testing' expected by the automatic GitHub tests as environment is set in the unit tests
         // like this: `$setup->getConfiguration()->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');`

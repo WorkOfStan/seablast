@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Models;
 
 use Seablast\Seablast\SeablastConfiguration;
-use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;

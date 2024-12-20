@@ -36,11 +36,11 @@ class SeablastConfiguration
 
     public function __construct()
     {
-        $this->flag = new SeablastFlag(); // todo je flag zde k něčemu?
+        $this->flag = new SeablastFlag(); // initialization instead of `private $optionsX = [];` above
     }
 
     /**
-     * Access to database with lazy initialisation.
+     * Access to database with lazy initialization.
      *
      * @return SeablastMysqli
      */
@@ -68,13 +68,19 @@ class SeablastConfiguration
         $environment = $this->exists(SeablastConstant::SB_PHINX_ENVIRONMENT)
             ? $this->getString(SeablastConstant::SB_PHINX_ENVIRONMENT)
             : ($phinx['environments']['default_environment'] ?? 'undefined');
+        Assert::string($environment);
         Assert::keyExists(
             $phinx['environments'],
             $environment,
             "Phinx environment `{$environment}` isn't defined - check SB_PHINX_ENVIRONMENT or default_environment"
         );
-        $port = isset($phinx['environments'][$environment]['port'])
-            ? (int) $phinx['environments'][$environment]['port'] : null;
+        Assert::isArray($phinx['environments'][$environment]);
+        if (isset($phinx['environments'][$environment]['port'])) {
+            Assert::scalar($phinx['environments'][$environment]['port']);
+            $port = (int) $phinx['environments'][$environment]['port'];
+        } else {
+            $port = null;
+        }
         $this->connection = new SeablastMysqli(
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
@@ -110,7 +116,7 @@ class SeablastConfiguration
      * Read the database connection parameters from an external phinx configuration.
      *
      * @return array<mixed>
-     * @throws \Exception
+     * @throws DbmsException
      */
     private static function dbmsReadPhinx(): array
     {
@@ -121,14 +127,15 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true on connected, false on not connected:
+     * Returns true if connected, false otherwise.
+     *
      * So that the SQL Bar Panel is not requested in vain.
      *
      * @return bool
      */
     public function dbmsStatus(): bool
     {
-        return is_object($this->connection) && is_a($this->connection, '\mysqli');
+        return $this->connection instanceof \mysqli;
     }
 
     /**
@@ -139,7 +146,6 @@ class SeablastConfiguration
      */
     public function exists(string $property): bool
     {
-        Assert::string($property);
         $methods = [
             'getArrayArrayString',
             'getArrayInt',
@@ -148,26 +154,25 @@ class SeablastConfiguration
             'getString'
         ];
 
-        $exceptionCount = 0;
-
         foreach ($methods as $method) {
             try {
-                $result = $this->$method($property);
+                $this->$method($property);
+                return true;
             } catch (SeablastConfigurationException $ex) {
-                $exceptionCount++;
+                // Ignore and continue
             }
         }
 
-        return $exceptionCount < count($methods);
+        return false;
     }
 
     /**
      * @param string $property
      * @return array<array<string>>
+     * @throws SeablastConfigurationException
      */
     public function getArrayArrayString(string $property): array
     {
-        Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayArrayString)) {
             throw new SeablastConfigurationException('No array of string array for the property ' . $property);
         }
@@ -177,10 +182,10 @@ class SeablastConfiguration
     /**
      * @param string $property
      * @return array<int>
+     * @throws SeablastConfigurationException
      */
     public function getArrayInt(string $property): array
     {
-        Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayInt)) {
             throw new SeablastConfigurationException('No array int for the property ' . $property);
         }
@@ -190,10 +195,10 @@ class SeablastConfiguration
     /**
      * @param string $property
      * @return array<string>
+     * @throws SeablastConfigurationException
      */
     public function getArrayString(string $property): array
     {
-        Assert::string($property);
         if (!array_key_exists($property, $this->optionsArrayString)) {
             throw new SeablastConfigurationException('No array string for the property ' . $property);
         }
@@ -203,10 +208,10 @@ class SeablastConfiguration
     /**
      * @param string $property
      * @return int
+     * @throws SeablastConfigurationException
      */
     public function getInt(string $property): int
     {
-        Assert::string($property);
         if (!array_key_exists($property, $this->optionsInt)) {
             throw new SeablastConfigurationException('No int value for the property ' . $property);
         }
@@ -216,10 +221,10 @@ class SeablastConfiguration
     /**
      * @param string $property
      * @return string
+     * @throws SeablastConfigurationException
      */
     public function getString(string $property): string
     {
-        Assert::string($property);
         if (!array_key_exists($property, $this->optionsString)) {
             throw new SeablastConfigurationException('No string value for the property ' . $property);
         }
@@ -234,9 +239,8 @@ class SeablastConfiguration
      */
     public function setArrayArrayString(string $property, string $key, array $value): self
     {
-        Assert::string($property);
-        Assert::string($key);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
         }
         $this->optionsArrayArrayString[$property][$key] = $value;
@@ -250,8 +254,8 @@ class SeablastConfiguration
      */
     public function setArrayInt(string $property, array $value): self
     {
-        Assert::string($property);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::integer($row);
         }
         $this->optionsArrayInt[$property] = $value;
@@ -265,8 +269,8 @@ class SeablastConfiguration
      */
     public function setArrayString(string $property, array $value): self
     {
-        Assert::string($property);
         foreach ($value as $row) {
+            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($row);
         }
         $this->optionsArrayString[$property] = $value;
@@ -280,8 +284,6 @@ class SeablastConfiguration
      */
     public function setInt(string $property, int $value): self
     {
-        Assert::string($property);
-        Assert::integer($value);
         $this->optionsInt[$property] = $value;
         return $this;
     }
@@ -293,8 +295,6 @@ class SeablastConfiguration
      */
     public function setString(string $property, string $value): self
     {
-        Assert::string($property);
-        Assert::string($value);
         $this->optionsString[$property] = $value;
         return $this;
     }

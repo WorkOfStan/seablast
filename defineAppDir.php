@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Keep this in a separate file in order to avoid declaring new symbols in index.php
 define(
     'APP_DIR',
