@@ -58,7 +58,8 @@ class SeablastMysqli extends mysqli
                 'Connection to database failed with error #' . $this->connect_errno . ' ' . $this->connect_error
             );
         }
-        $this->logPath = APP_DIR . '/log/query_' . date('Y-m') . '.log';
+        // Use Debugger::$logDirectory instead of APP_DIR . '/log'
+        $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
     }
 
     /**

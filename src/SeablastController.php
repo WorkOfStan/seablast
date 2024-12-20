@@ -142,7 +142,8 @@ class SeablastController
                         $this->logger = new Logger([
                                 'logging_level' => $this->configuration->getInt($property),
                                 'error_log_message_type' => 3,
-                                'logging_file' => APP_DIR . '/log/seablast',
+                                'logging_file' => $this->configuration->getString(SeablastConstant::SB_LOG_DIRECTORY)
+                                    . '/seablast',
                                 'mail_for_admin_enabled' => ((
                                     $this->configuration->flag->status(SeablastConstant::ADMIN_MAIL_ENABLED)
                                     && $this->configuration->exists(SeablastConstant::ADMIN_MAIL_ADDRESS)

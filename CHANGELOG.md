@@ -10,29 +10,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
-- SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
-- [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
-- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
-- `{block script}{/block}` to BlueprintWeb.latte
-- change of the log location enabled
 
 ### `Changed` for changes in existing functionality
-
-- SeablastConfiguration::exists simplified
-- updated dependencies not to refer below PHP/7.2
-- SeablastMysqli::query error shows up to 1500 characters of a query that ended up with a database error (instead of truncating to the default 150 characters)
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
-- PHPUnit generates some weird errors with PHP/8.0. So the PHP/8.0 support removed.
-- some Assertions removed as not needed for PHPStan/2
-
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.5] - 2024-12-20
+
+### Added
+
+- PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
+- SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
+- [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
+- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
+- `{block script}{/block}` to BlueprintWeb.latte
+- change of the log location enabled (single settings for Seablast\Logger, Tracy\Debugger and SeablastMysqli)
+
+### Changed
+
+- SeablastConfiguration::exists simplified
+- updated dependencies not to refer below PHP/7.2
+- SeablastMysqli::query error shows up to 1500 characters of a query that ended up with a database error (instead of truncating to the default 150 characters)
+
+### Removed
+
+- PHPUnit generates some weird errors with PHP/8.0. So the PHP/8.0 support removed.
+- some Assertions removed as not needed for PHPStan/2
 
 ## [0.2.4] - 2024-08-04
 
@@ -205,7 +214,8 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...HEAD?w=1
+[0.2.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...v0.2.5?w=1
 [0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4?w=1
 [0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5?w=1
 [0.2.3.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.3...v0.2.3.4?w=1
