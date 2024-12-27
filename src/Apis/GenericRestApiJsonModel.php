@@ -76,12 +76,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
          *
          */
         // if ($this->status < 400) {$this->executeBusinessLogic();} // TODO move to SBdist
-        return (object) [
-                'httpCode' => $this->httpCode,
-                'rest' => (object) [
-                    'message' => $this->message,
-                ]
-        ];
+        return self::response($this->httpCode, $this->message);
     }
 
     /**
@@ -137,6 +132,24 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             return;
         }
     }
+
+    /**
+     * Simple API response.
+     *
+     * @param int $httpCode
+     * @param string $message
+     * @return object
+     */
+    protected static function response(int $httpCode, string $message): object
+    {
+        return (object) [
+                'httpCode' => $httpCode,
+                'rest' => (object) [
+                    'message' => $message,
+                ]
+        ];
+    }
+
     // todo example to be used in SBdist
     /* private function executeBusinessLogic()
       {
