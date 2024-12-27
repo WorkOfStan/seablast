@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- HTML output also returns HTTP codes other than 200
+
 ### `Security` in case of vulnerabilities
 
 ## [0.2.5] - 2024-12-20
