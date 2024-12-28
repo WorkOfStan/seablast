@@ -397,6 +397,7 @@ class SeablastController
                 if (!is_null($this->logger)) {
                     $this->logger->setUser($this->identity->getUserId());
                 }
+                $this->configuration->dbms()->setUser($this->identity->getUserId());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
