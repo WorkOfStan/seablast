@@ -13,7 +13,9 @@ use Tracy\Dumper;
 use Tracy\ILogger;
 
 /**
- * mysqli wrapper with logging
+ * MySQLi wrapper with logging.
+ *
+ * setUser() injects user ID to be logged with queries
  * TODO: explore logging of prepared statements
  */
 class SeablastMysqli extends mysqli
@@ -26,6 +28,8 @@ class SeablastMysqli extends mysqli
     private $logPath;
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
+    /** @var string */
+    private $user = 'unidentified';
 
     /**
      * @param string $host
@@ -137,10 +141,22 @@ class SeablastMysqli extends mysqli
     {
         //mb_ereg_replace does not destroy multi-byte characters such as character Č
         error_log(
-            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . ']' . PHP_EOL,
+            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']' . PHP_EOL,
             3,
             $this->logPath
         );
+    }
+
+    /**
+     * DI setter.
+     *
+     * @param int|string $user
+     *
+     * @return void
+     */
+    public function setUser($user): void
+    {
+        $this->user = (string) $user;
     }
 
     /**
