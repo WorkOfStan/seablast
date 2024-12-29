@@ -20,9 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+### `Security` in case of vulnerabilities
+
+## [0.2.6] - 2024-12-29
+
+### Fixed
+
 - HTML output also returns HTTP codes other than 200
 
-### `Security` in case of vulnerabilities
+### Security
+
+- SeablastMysqli::setUser() injects user ID to be logged with queries
 
 ## [0.2.5] - 2024-12-20
 
@@ -217,7 +225,8 @@ PHPUnit tests ready
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...HEAD?w=1
+[0.2.6]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...v0.2.6?w=1
 [0.2.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...v0.2.5?w=1
 [0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4?w=1
 [0.2.3.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.4...v0.2.3.5?w=1
