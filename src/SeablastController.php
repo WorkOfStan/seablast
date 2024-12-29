@@ -397,6 +397,7 @@ class SeablastController
                 if (!is_null($this->logger)) {
                     $this->logger->setUser($this->identity->getUserId());
                 }
+                $this->configuration->dbms()->setUser($this->identity->getUserId());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)
@@ -422,6 +423,7 @@ class SeablastController
             Debugger::barDump('User is authenticated');
             // Specific role expected, if not authorized => 403
             $roleIds = explode(',', $this->mapping['roleIds']);
+            // TODO in_array comparison is loose, so even 2 equals " 2", but explode to integers would be safer
             Debugger::barDump($roleIds, 'RoleIds allowed');
             // Read the current user's role from the configuration object
             if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {

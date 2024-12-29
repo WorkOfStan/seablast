@@ -118,6 +118,17 @@ class SeablastView
             . $templatePath . ' nor in library'); // TODO improve the error message
     }
 
+    private function httpResponseCode(): void
+    {
+        if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
+            // accepts HTTP codes 100-599 even though some of them might not be defined
+            if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
+                throw new UnknownHttpCodeException('Unknown HTTP code: ' . (int) $this->params->httpCode);
+            }
+            http_response_code((int) $this->params->httpCode); // Send the status code
+        }
+    }
+
     /**
      * Outputs the given data as JSON.
      *
@@ -133,13 +144,7 @@ class SeablastView
         if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
             header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
         }
-        if (isset($this->params->httpCode) && is_scalar($this->params->httpCode)) {
-            // accepts HTTP codes 100-599 even though some of them might not be defined
-            if ((int) $this->params->httpCode < 100 || (int) $this->params->httpCode > 599) {
-                throw new UnknownHttpCodeException('Unknown HTTP code: ' . (int) $this->params->httpCode);
-            }
-            http_response_code((int) $this->params->httpCode); // Send the status code
-        }
+        $this->httpResponseCode();
         $result = json_encode($data2json);
         Assert::string($result);
         echo($result);
@@ -152,6 +157,7 @@ class SeablastView
      */
     private function renderLatte(): void
     {
+        $this->httpResponseCode();
         $latte = new \Latte\Engine();
 
         // Maybe only for PHP8+
