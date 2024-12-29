@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- GenericRestApiJsonModel::response(int $httpCode, string $message): object as a simple API response
 
 ### `Changed` for changes in existing functionality
 
@@ -24,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.6] - 2024-12-29
 
+Correct HTTP code returned for error page. SeablastMysqli logs the user.
+
+### Added
+
+- GenericRestApiJsonModel::response(int $httpCode, string $message): object as a simple API response
+
 ### Fixed
 
 - HTML output also returns HTTP codes other than 200
@@ -33,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SeablastMysqli::setUser() injects user ID to be logged with queries
 
 ## [0.2.5] - 2024-12-20
+
+If Seablast/Auth extension is present, use its configuration. Log location change enabled.
 
 ### Added
 
@@ -55,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - some Assertions removed as not needed for PHPStan/2
 
 ## [0.2.4] - 2024-08-04
+
+Tracy logs through Seablast/logger, which provides verbosity control.
 
 ### Added
 
@@ -84,6 +93,8 @@ PHPUnit tests ready
 - SeablastController::applyConfiguration divided to part called only once before session starts, and part that can be called repeatedly (e.g. for PHPUnit)
 
 ## [0.2.3.4] - 2024-05-30
+
+SeablastConstant::SB_PHINX_ENVIRONMENT to override `$phinx['environments']['default_environment']`
 
 ### Added
 
@@ -119,6 +130,8 @@ PHPUnit tests ready
 
 ## [0.2.3] - 2024-03-03
 
+SeablastConstant::USER_ID and SeablastConstant::USER_GROUPS in SeablastConfiguration
+
 ### Added
 
 - table prefix (phinx) available through SB:phinx:table_prefix OR dbmsTablePrefix()
@@ -142,6 +155,8 @@ PHPUnit tests ready
 
 ## [0.2.1] - 2024-02-03
 
+Role-Based Access Control
+
 ### Added
 
 - `SeablastConstant::SB_SMTP_` default parameters
@@ -164,6 +179,8 @@ PHPUnit tests ready
 
 ## [0.2] - 2024-01-27
 
+CSRF, model returns object (not array anymore), directories are in plural
+
 ### Added
 
 - show HTTP code error Tracy BarPanel
@@ -181,6 +198,8 @@ PHPUnit tests ready
 - symfony/security-csrf component generates CSRF tokens (always checked if GenericRestApiJsonModel is extended)
 
 ## [0.1.1] - 2024-01-12
+
+SeablastMysqli error logging improved, HTTPS identified
 
 ### Added
 
