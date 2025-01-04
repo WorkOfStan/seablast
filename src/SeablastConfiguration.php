@@ -56,12 +56,8 @@ class SeablastConfiguration
         return $this->connection;
     }
 
-    /**
-     * Creates a database connection and sets up charset.
-     *
-     * @return void
-     */
-    private function dbmsCreate(): void
+    // todo alphabet order of methods
+    private function dbmsExtractProperties(): DatabaseProperties
     {
         $phinx = self::dbmsReadPhinx();
         Assert::isArray($phinx['environments']);
@@ -81,12 +77,30 @@ class SeablastConfiguration
         } else {
             $port = null;
         }
-        $this->connection = new SeablastMysqli(
+        return new DatabaseProperties(
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
             $phinx['environments'][$environment]['pass'],
             $phinx['environments'][$environment]['name'],
-            $port
+            $port,
+            $phinx['environments'][$environment]['table_prefix'] ?? ''
+        );
+    }
+
+    /**
+     * Creates a database connection and sets up charset.
+     *
+     * @return void
+     */
+    private function dbmsCreate(): void
+    {
+        $phinx = dbmsExtractProperties();
+        $this->connection = new SeablastMysqli(
+            $phinx->host, // todo fix localhost
+            $phinx->user,
+            $phinx->pass,
+            $phinx->name,
+            $phinx->port
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
@@ -94,13 +108,11 @@ class SeablastConfiguration
             $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
             'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
         );
-        $this->connectionTablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
+        $this->connectionTablePrefix = $phinx->tablePrefix;
     }
 
     /**
      * Return the table prefix from phinx config.
-     *
-     * TODO experimental - keep only if working well
      *
      * @return string
      */
