@@ -67,6 +67,24 @@ class SeablastMysqli extends mysqli
     }
 
     /**
+     * Override the prepare method to return LoggedMysqliStmt.
+     *
+     * @param string $query
+     * @return SeablastMysqliStmt|false
+     */
+    public function prepare(string $query)
+    {
+        // Call parent method to prepare the statement
+        $stmt = parent::prepare($query);
+        if ($stmt === false) {
+            return false;
+        }
+
+        // Wrap the existing mysqli_stmt with LoggedMysqliStmt
+        return new SeablastMysqliStmt($this, $stmt, $query);
+    }
+
+    /**
      * Logging wrapper over performing a query on the database.
      *
      * @param string $query
@@ -122,10 +140,12 @@ class SeablastMysqli extends mysqli
     /**
      * Identify query that doesn't change data.
      *
+     * public, so that SeablastMysqliStmt may use it - TODO DRY query logging
+     *
      * @param string $query
      * @return bool
      */
-    private function isReadDataTypeQuery(string $query): bool
+    public function isReadDataTypeQuery(string $query): bool
     {
         return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0
             || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'DO ') === 0 || stripos($query, 'EXPLAIN ') === 0;
@@ -134,10 +154,12 @@ class SeablastMysqli extends mysqli
     /**
      * Log this query.
      *
+     * public so that SeablastMysqliStmt may use it.
+     *
      * @param string $query
      * @return void
      */
-    private function logQuery(string $query): void
+    public function logQuery(string $query): void
     {
         //mb_ereg_replace does not destroy multi-byte characters such as character Č
         error_log(
