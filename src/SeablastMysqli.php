@@ -66,6 +66,25 @@ class SeablastMysqli extends mysqli
         $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
     }
 
+    /* public for SeablastMysqliStmt */
+    public function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
+    {
+        if ($result !== false) {
+            $this->statementList[] = //($result === false ? 'failure => ' : '') .
+                $trimmedQuery;
+            return;
+        }
+      //  $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
+       //     if ($result === false) {
+                $this->databaseError = true;
+                $dbError = ['query' => $trimmedQuery, 'Err#' => $dbCall->errno, 'Error:' => $dbCall->error];
+                Debugger::barDump($dbError, 'Database error', [Dumper::TRUNCATE => 1500]); // longer than 150 chars
+                Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
+                $this->statementList[] = "failure {$dbCall->errno}: {$dbCall->error} => " .$trimmedQuery;
+                $this->logQuery("{$trimmedQuery} -- {$dbCall->errno}: {$dbCall->error}");
+        //    }
+    }
+    
     /**
      * Override the prepare method to return LoggedMysqliStmt.
      *
@@ -103,6 +122,7 @@ class SeablastMysqli extends mysqli
         }
         try {
             $result = parent::query($trimmedQuery, $resultmode);
+            /*
             $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
             if ($result === false) {
                 $this->databaseError = true;
@@ -111,7 +131,8 @@ class SeablastMysqli extends mysqli
                 Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
                 $this->statementList[] = "{$this->errno}: {$this->error}";
                 $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
-            }
+            } */
+            $this->addStatement ((bool) $result, $trimmedQuery, $this);
             return $result;
         } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
