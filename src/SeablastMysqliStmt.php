@@ -82,6 +82,8 @@ $this->mysqli->logQuery($compiledQuery); // Logs and returns the full query with
                 try {
                     // Execute the statement
         $result = parent::execute();
+                    $this->mysqli->addStatement((bool) $result, $compiledQuery, $this);
+                    /*
 // todo dry logging instead of
                     Debugger::log($compiledQuery, 'compiled query');
 if ($result === false) {
@@ -92,6 +94,7 @@ if ($result === false) {
                 Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
                 // todo end the rest of SeablastMysqli::query logging
 }
+                    */
         return $result;
                     } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
