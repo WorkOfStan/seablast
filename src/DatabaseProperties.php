@@ -9,12 +9,20 @@ namespace Seablast\Seablast;
  */
 class DatabaseProperties
 {
-    public string $host;
-    public string $user;
-    public string $pass;
-    public string $name;
-    public ?int $port;
-    public string $tablePrefix;
+    use \Nette\SmartObject;
+
+    /** @var string */
+    public $host;
+    /** @var string */
+    public $user;
+    /** @var string */
+    public $pass;
+    /** @var string */
+    public $name;
+    /** @var int|null */
+    public $port;
+    /** @var string */
+    public $tablePrefix;
 
     /**
      * Constructor to initialize the database properties.
