@@ -56,7 +56,33 @@ class SeablastConfiguration
         return $this->connection;
     }
 
-    // todo alphabet order of methods
+    /**
+     * Creates a database connection and sets up charset.
+     *
+     * @return void
+     */
+    private function dbmsCreate(): void
+    {
+        $phinx = $this->dbmsExtractProperties();
+        $this->connection = new SeablastMysqli(
+            $phinx->host, // todo fix localhost
+            $phinx->user,
+            $phinx->pass,
+            $phinx->name,
+            $phinx->port
+        );
+        // todo does this really differentiate between successful connection, failed connection and no connection?
+        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
+        Assert::true(
+            $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
+            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
+        );
+        $this->connectionTablePrefix = $phinx->tablePrefix;
+    }
+
+    /**
+     * Read phinx configuration and provide pertinent parameters in a type strict manner
+     */
     private function dbmsExtractProperties(): DatabaseProperties
     {
         $phinx = self::dbmsReadPhinx();
@@ -85,30 +111,6 @@ class SeablastConfiguration
             $port,
             $phinx['environments'][$environment]['table_prefix'] ?? ''
         );
-    }
-
-    /**
-     * Creates a database connection and sets up charset.
-     *
-     * @return void
-     */
-    private function dbmsCreate(): void
-    {
-        $phinx = dbmsExtractProperties();
-        $this->connection = new SeablastMysqli(
-            $phinx->host, // todo fix localhost
-            $phinx->user,
-            $phinx->pass,
-            $phinx->name,
-            $phinx->port
-        );
-        // todo does this really differentiate between successful connection, failed connection and no connection?
-        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        Assert::true(
-            $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
-            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
-        );
-        $this->connectionTablePrefix = $phinx->tablePrefix;
     }
 
     /**
