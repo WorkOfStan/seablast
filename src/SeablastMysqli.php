@@ -67,6 +67,7 @@ class SeablastMysqli extends mysqli
     }
 
     /* public for SeablastMysqliStmt */
+    // param \mysqli|\mysqli_stmt $dbCall
     public function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
     {
         if ($result !== false) {
