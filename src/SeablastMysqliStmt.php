@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
-use mysqli;
 use mysqli_stmt;
 use Seablast\Seablast\Exceptions\DbmsException;
-use Tracy\Debugger;
-use Tracy\Dumper;
-use Tracy\ILogger;
 use Webmozart\Assert\Assert;
 
 class SeablastMysqliStmt extends mysqli_stmt
@@ -124,11 +120,9 @@ class SeablastMysqliStmt extends mysqli_stmt
     private function compileQuery(): string
     {
         $loggedQuery = $this->query;
-        //Assert::isIterable($this->boundParams);
         foreach ($this->boundParams as $param) {
             Assert::string($param);
             $value = is_numeric($param) ? $param : "'" . self::escapeParam($param) . "'";
-            //Assert::string($value);
             Assert::string($loggedQuery);
             $loggedQuery = preg_replace('/\?/', $value, $loggedQuery, 1);
         }

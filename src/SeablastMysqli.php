@@ -77,8 +77,7 @@ class SeablastMysqli extends mysqli
     public function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
     {
         if ($result !== false) {
-            $this->statementList[] = //($result === false ? 'failure => ' : '') .
-                $trimmedQuery;
+            $this->statementList[] = $trimmedQuery;
             return;
         }
         $this->databaseError = true;
