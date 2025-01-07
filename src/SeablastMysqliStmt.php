@@ -77,15 +77,9 @@ class SeablastMysqliStmt extends mysqli_stmt
 
         // Capture all bound parameters, excluding $types
         $this->boundParams = array_slice($args, 1);
-        $this->boundParams = $this->boundParams ?? [];
 
         // Call the parent method directly
-//        if (empty($this->boundParams)) {
-//            return (bool) parent::bind_param($types);
-//        } else {
         return (bool) parent::bind_param($types, ...$this->boundParams);
-//        }
-        //return (bool) parent::bind_param(...$args);
     }
 
     /**
