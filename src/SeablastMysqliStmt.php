@@ -70,17 +70,26 @@ class SeablastMysqliStmt extends mysqli_stmt
      * @param mixed ...$vars
      * @return bool
      */
-    public function bind_param($types, $varA, ...$vars): bool
+    public function bind_param($types, $varA = null, ...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
     {
         // Use reflection to capture all arguments
         $args = func_get_args();
         $this->boundParams = array_slice($args, 1); // Capture all bound parameters, excluding $types
         // Call parent::bind_param with the same arguments
-        return (bool) call_user_func_array([parent::class, 'bind_param'], $args);
+        $callable = [parent::class, 'bind_param'];
+        //Assert::isCallable($callable);
+        return (bool) call_user_func_array($callable, $args);
     }
 
-    public function execute(): bool
+    /**
+     * @param array<string>|null $params PHP/8.1.0 The optional params parameter has been added.
+     * //TODO make sure it's array<string>
+     * @return bool
+     * @throws DbmsException
+     */
+    public function execute(?array $params = null): bool
     {
+        // TODO shouldn't $param be also logged?
         $compiledQuery = $this->compileQuery();
         // Log the SQL query
         if (!$this->mysqli->isReadDataTypeQuery($compiledQuery)) {
@@ -90,7 +99,11 @@ class SeablastMysqliStmt extends mysqli_stmt
         }
         try {
             // Execute the statement
+            //if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+            //    $result = parent::execute($params);
+            //} else {
             $result = parent::execute();
+            //}
             $this->mysqli->addStatement((bool) $result, $compiledQuery, $this);
             return $result;
         } catch (\mysqli_sql_exception $e) {
@@ -123,7 +136,6 @@ class SeablastMysqliStmt extends mysqli_stmt
     }
 
     /**
-     * 
      * @param string $param
      * @return string
      */

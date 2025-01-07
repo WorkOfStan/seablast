@@ -41,8 +41,7 @@ class DatabaseProperties
         string $name,
         ?int $port = null,
         string $tablePrefix = ''
-    )
-    {
+    ) {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;

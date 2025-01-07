@@ -93,8 +93,9 @@ class SeablastMysqli extends mysqli
      * Override the prepare method to return LoggedMysqliStmt.
      *
      * @param string $query
-     * @return SeablastMysqliStmt|false
+     * @return SeablastMysqliStmt|false #[\ReturnTypeWillChange] because original @return \mysqli_stmt|false
      */
+    #[\ReturnTypeWillChange]
     public function prepare($query)
     {
         // Call parent method to prepare the statement
@@ -126,7 +127,7 @@ class SeablastMysqli extends mysqli
         }
         try {
             $result = parent::query($trimmedQuery, $resultmode);
-            $this->addStatement ((bool) $result, $trimmedQuery, $this);
+            $this->addStatement((bool) $result, $trimmedQuery, $this);
             return $result;
         } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
