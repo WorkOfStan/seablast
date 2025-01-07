@@ -14,15 +14,15 @@ class DatabaseProperties
     /** @var string */
     public $host;
     /** @var string */
-    public $user;
+    public $name;
     /** @var string */
     public $pass;
-    /** @var string */
-    public $name;
     /** @var int|null */
     public $port;
     /** @var string */
     public $tablePrefix;
+    /** @var string */
+    public $user;
 
     /**
      * Constructor to initialize the database properties.
@@ -41,7 +41,8 @@ class DatabaseProperties
         string $name,
         ?int $port = null,
         string $tablePrefix = ''
-    ) {
+    )
+    {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;

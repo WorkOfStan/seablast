@@ -10,12 +10,13 @@ use Seablast\Seablast\Exceptions\DbmsException;
 use Tracy\Debugger;
 use Tracy\Dumper;
 use Tracy\ILogger;
+use Webmozart\Assert\Assert;
 
 class SeablastMysqliStmt extends mysqli_stmt
 {
     use \Nette\SmartObject;
-  
-    /** @var array<scalar> */
+
+    /** @var array<mixed> */
     private $boundParams = [];
     /** @var SeablastMysqli */
     private $mysqli;
@@ -57,17 +58,32 @@ class SeablastMysqliStmt extends mysqli_stmt
         $this->errno = $stmt->errno;
     }
 
-    public function bind_param(string $types, &...$params): bool
+    /**
+     * Override the bind_param method.
+     *
+     * Note:  the mysqli_stmt::bind_param() method's arguments are implicitly passed by reference, but its signature
+     *   does not explicitly declare & for the parameters.PHPStan enforces strict compliance with the parent class
+     *   signature, and adding explicit & or using variadic arguments is treated as a mismatch.
+     *
+     * @param string $types
+     * @param mixed $varA
+     * @param mixed ...$vars
+     * @return bool
+     */
+    public function bind_param($types, $varA, ...$vars): bool
     {
-        $this->boundParams = $params;
-        return parent::bind_param($types, ...$params);
+        // Use reflection to capture all arguments
+        $args = func_get_args();
+        $this->boundParams = array_slice($args, 1); // Capture all bound parameters, excluding $types
+        // Call parent::bind_param with the same arguments
+        return (bool) call_user_func_array([parent::class, 'bind_param'], $args);
     }
 
     public function execute(): bool
     {
         $compiledQuery = $this->compileQuery();
         // Log the SQL query
-        if (!$this->isReadDataTypeQuery($compiledQuery)) {
+        if (!$this->mysqli->isReadDataTypeQuery($compiledQuery)) {
             // Log queries that may change data
             // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
             $this->mysqli->logQuery($compiledQuery); // Logs and returns the full query with bound values
@@ -82,21 +98,36 @@ class SeablastMysqliStmt extends mysqli_stmt
             throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
         }
     }
-    
+
     /**
-     * The mysqli_stmt class does not directly provide a method to return the final compiled SQL statement with bound parameters substituted. This is because parameter substitution happens at the database engine level for performance and security reasons. However, we can achieve this functionality by manually substituting parameters in the query string ourselves.
+     * The mysqli_stmt class does not directly provide a method to return the final compiled SQL statement with bound
+     * parameters substituted. This is because parameter substitution happens at the database engine level for
+     * performance and security reasons. However, we can achieve this functionality by manually substituting parameters
+     * in the query string ourselves.
+     *
+     * @return string
      */
     private function compileQuery(): string
     {
         $loggedQuery = $this->query;
+        //Assert::isIterable($this->boundParams);
         foreach ($this->boundParams as $param) {
+            Assert::string($param);
             $value = is_numeric($param) ? $param : "'" . self::escapeParam($param) . "'";
+            //Assert::string($value);
+            Assert::string($loggedQuery);
             $loggedQuery = preg_replace('/\?/', $value, $loggedQuery, 1);
         }
+        Assert::string($loggedQuery);
         return trim($loggedQuery);
     }
 
-    private static function escapeParam($param): string
+    /**
+     * 
+     * @param string $param
+     * @return string
+     */
+    private static function escapeParam(string $param): string
     {
         return str_replace("'", "\\'", $param);
     }
