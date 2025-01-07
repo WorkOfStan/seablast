@@ -70,7 +70,7 @@ class SeablastMysqliStmt extends mysqli_stmt
      * @param mixed ...$vars
      * @return bool
      */
-    public function bind_param($types, $varA = null, ...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
+    public function bind_param(string $types, $varA = null, ...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
     {
         // Use reflection to capture all arguments
         $args = func_get_args();
