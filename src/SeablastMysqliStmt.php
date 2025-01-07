@@ -61,9 +61,9 @@ class SeablastMysqliStmt extends mysqli_stmt
     /**
      * Override the bind_param method.
      *
-     * Note:  the mysqli_stmt::bind_param() method's arguments are implicitly passed by reference, but its signature
-     *   does not explicitly declare & for the parameters.PHPStan enforces strict compliance with the parent class
-     *   signature, and adding explicit & or using variadic arguments is treated as a mismatch.
+     * Note:  The mysqli_stmt::bind_param() method's arguments are implicitly passed by reference, but its signature
+     * does not explicitly declare & for the parameters. PHPStan enforces strict compliance with the parent class
+     * signature, and adding explicit & or using variadic arguments is treated as a mismatch.
      *
      * @param string $types
      * @param mixed $varA
@@ -74,11 +74,12 @@ class SeablastMysqliStmt extends mysqli_stmt
     {
         // Use reflection to capture all arguments
         $args = func_get_args();
-        $this->boundParams = array_slice($args, 1); // Capture all bound parameters, excluding $types
-        // Call parent::bind_param with the same arguments
-        $callable = [parent::class, 'bind_param'];
-        //Assert::isCallable($callable);
-        return (bool) call_user_func_array($callable, $args);
+
+        // Capture all bound parameters, excluding $types
+        $this->boundParams = array_slice($args, 1);
+
+        // Call the parent method directly
+        return (bool) parent::bind_param(...$args);
     }
 
     /**
