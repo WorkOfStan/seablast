@@ -176,4 +176,8 @@ class SeablastConstant
      * @var string string JSON handed over directly (for PHPUnit tests) instead of php://input
      */
     public const JSON_INPUT = 'SB:JSON_INPUT';
+    /**
+     * @var string string[] supported languages
+     */
+    public const LANGUAGE_LIST= 'SB:LANGUAGE_LIST';
 }
