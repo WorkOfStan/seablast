@@ -160,20 +160,23 @@ class SeablastView
         $this->httpResponseCode();
         $latte = new \Latte\Engine();
 
-        if ($this->configuration->exists('SB:I18N:TranslateClass') && (class_exists($this->configuration->getString('SB:I18N:TranslateClass')))) {
-            $translatorClass = $this->configuration->getString('SB:I18N:TranslateClass');
-            $translator = new $translatorClass($this->configuration);
+        if (
+			$this->model->getConfiguration()->exists(SeablastConstant::TRANSLATE_CLASS)
+			&& (class_exists($this->model->getConfiguration()->getString(SeablastConstant::TRANSLATE_CLASS)))
+		) {
+            $translatorClass = $this->model->getConfiguration()->getString(SeablastConstant::TRANSLATE_CLASS);
+            $translator = new $translatorClass($this->model->getConfiguration());
 
             if (!method_exists($latte, 'addExtension')) {
                 // for Latte 2 and 3
                 $latte->addFunction('translate', function ($text) use ($translator) {
-	                return $translator->translate($text);
+	            return $translator->translate($text);
                 });
             } else {
                 // for Latte 3, i.e. PHP/8.0-8.4
                 //$translator = new MyTranslator($lang);
                 $extension = new Latte\Essential\TranslatorExtension(
-	                //$translator->translate(...),
+	            //$translator->translate(...),
                     [$translator, 'translate'] // v PHP 8.0
                 );
                 $latte->addExtension($extension);
