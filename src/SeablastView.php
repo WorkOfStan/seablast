@@ -169,9 +169,11 @@ class SeablastView
 
             //if (!method_exists($latte, 'addExtension')) {
             // for Latte 2 and 3
-            $latte->addFunction('translate', function ($text) use ($translator) {
-	        return $translator->translate($text);
-            });
+            if (method_exists($translator, 'translate')) {
+                $latte->addFunction('translate', function ($text) use ($translator) {
+	                return $translator->translate($text);
+                });
+            }
             /*} else {
                 // for Latte 3, i.e. PHP/8.0-8.4
                 //$translator = new MyTranslator($lang);
