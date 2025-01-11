@@ -179,5 +179,5 @@ class SeablastConstant
     /**
      * @var string class taking care of translations
      */
-    public const TRANSLATE_CLASS= 'SB:I18N:TranslateClass';
+    public const TRANSLATE_CLASS = 'SB:I18N:TranslateClass';
 }
