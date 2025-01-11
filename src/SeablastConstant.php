@@ -177,7 +177,7 @@ class SeablastConstant
      */
     public const JSON_INPUT = 'SB:JSON_INPUT';
     /**
-     * @var string string[] supported languages
+     * @var string class taking care of translations
      */
-    public const LANGUAGE_LIST= 'SB:LANGUAGE_LIST';
+    public const TRANSLATE_CLASS= 'SB:I18N:TranslateClass';
 }
