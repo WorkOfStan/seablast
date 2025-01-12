@@ -173,7 +173,9 @@ class SeablastView
                 //$latte->addFunction('translate', function ($text) use ($translator) {
                 //    return $translator->translate($text);
                 //});
-                $latte->addFilter('translate', fn($s) => $translator->translate($s));
+                $latte->addFilter('translate', function (string $s) use ($translator) {
+                    return $translator->translate($s);
+                });
             }
             /*} else {
                 // for Latte 3, i.e. PHP/8.0-8.4
