@@ -165,7 +165,7 @@ class SeablastView
             && (class_exists($this->model->getConfiguration()->getString(SeablastConstant::TRANSLATE_CLASS)))
         ) {
             $translatorClass = $this->model->getConfiguration()->getString(SeablastConstant::TRANSLATE_CLASS);
-            Debugger::barDump($translatorClass,'Translate class');
+            Debugger::barDump($translatorClass, 'Translate class');
             $translator = new $translatorClass($this->model->getConfiguration());
 
             //if (!method_exists($latte, 'addExtension')) {
