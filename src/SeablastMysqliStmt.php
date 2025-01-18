@@ -7,6 +7,7 @@ namespace Seablast\Seablast;
 use mysqli_stmt;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Webmozart\Assert\Assert;
+use Tracy\Debugger;
 
 class SeablastMysqliStmt extends mysqli_stmt
 {
@@ -44,6 +45,7 @@ class SeablastMysqliStmt extends mysqli_stmt
      */
     private function initFrom(mysqli_stmt $stmt): void
     {
+        // cannot be done like this for readonly properties
         $this->affected_rows = $stmt->affected_rows;
         $this->insert_id = $stmt->insert_id;
         $this->num_rows = $stmt->num_rows;
@@ -62,11 +64,10 @@ class SeablastMysqliStmt extends mysqli_stmt
      * signature, and adding explicit & or using variadic arguments is treated as a mismatch.
      *
      * @param string $types
-     * @param mixed $varA
      * @param mixed ...$vars
      * @return bool
      */
-    public function bind_param($types, $varA = null, ...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
+    public function bind_param($types, &...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
     {
         // Use reflection to capture all arguments
         $args = func_get_args();

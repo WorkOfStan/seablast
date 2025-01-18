@@ -99,12 +99,15 @@ class SeablastMysqli extends mysqli
     {
         // Call parent method to prepare the statement
         $stmt = parent::prepare($query);
-        if ($stmt === false) {
-            return false;
-        }
+//        if ($stmt === false) {
+//            $this->addStatement(false, $query, $this);
+//            //return false;
+//        }
+        $this->addStatement((bool) $stmt, $query, $this);
 
         // Wrap the existing mysqli_stmt with LoggedMysqliStmt
-        return new SeablastMysqliStmt($this, $stmt, $query);
+        //return new SeablastMysqliStmt($this, $stmt, $query); // cannot be done like this for readonly properties
+        return $stmt;
     }
 
     /**

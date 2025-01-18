@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- SeablastMysqli->prepare()->execute() is logged the same way as SeablastMysqli->query()
+- SeablastMysqli->prepare() is logged the same way as SeablastMysqli->query()
+- TODO figure out - SeablastMysqli->prepare()->execute()
 - Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
 
 ### `Changed` for changes in existing functionality
+
+- polish-the-code.yml instead of linter, php-composer-dependencies, phpcbf and prettier-fix yamls
 
 ### `Deprecated` for soon-to-be removed features
 
