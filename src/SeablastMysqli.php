@@ -94,8 +94,9 @@ class SeablastMysqli extends mysqli
      *
      * @param string $query
      * xx @ return SeablastMysqliStmt|false #[\ReturnTypeWillChange] because original
-     * @return mysqli_stmt|false
+     * @return \mysqli_stmt|false
      */
+    #[\ReturnTypeWillChange]
     public function prepare($query)
     {
         // Call parent method to prepare the statement
