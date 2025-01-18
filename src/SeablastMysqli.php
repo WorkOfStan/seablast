@@ -92,9 +92,9 @@ class SeablastMysqli extends mysqli
      * Override the prepare method to return LoggedMysqliStmt.
      *
      * @param string $query
-     * @return SeablastMysqliStmt|false #[\ReturnTypeWillChange] because original @return \mysqli_stmt|false
+     * xx @ return SeablastMysqliStmt|false #[\ReturnTypeWillChange] because original
+     * @return \mysqli_stmt|false
      */
-    #[\ReturnTypeWillChange]
     public function prepare($query)
     {
         // Call parent method to prepare the statement

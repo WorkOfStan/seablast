@@ -9,6 +9,9 @@ use Seablast\Seablast\Exceptions\DbmsException;
 use Webmozart\Assert\Assert;
 use Tracy\Debugger;
 
+/**
+ * TODO DELETE THIS CLASS AS UNUSED AND UNDOABLE
+ */
 class SeablastMysqliStmt extends mysqli_stmt
 {
     use \Nette\SmartObject;
@@ -67,17 +70,17 @@ class SeablastMysqliStmt extends mysqli_stmt
      * @param mixed ...$vars
      * @return bool
      */
-    public function bind_param($types, &...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
-    {
-        // Use reflection to capture all arguments
-        $args = func_get_args();
-
-        // Capture all bound parameters, excluding $types
-        $this->boundParams = array_slice($args, 1);
-
-        // Call the parent method directly
-        return (bool) parent::bind_param($types, ...$this->boundParams);
-    }
+//    public function bind_param($types, &...$vars): bool // phpcs:ignore PSR1.Methods.CamelCapsMethodName
+//    {
+//        // Use reflection to capture all arguments
+//        $args = func_get_args();
+//
+//        // Capture all bound parameters, excluding $types
+//        $this->boundParams = array_slice($args, 1);
+//
+//        // Call the parent method directly
+//        return (bool) parent::bind_param($types, ...$this->boundParams);
+//    }
 
     /**
      * @param array<string>|null $params PHP/8.1.0 The optional params parameter has been added.
