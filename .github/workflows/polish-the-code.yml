@@ -61,7 +61,7 @@ jobs:
         uses: WorkOfStan/phpcs-fix@feature/stop-on-manual-fix
         with:
           commit-changes: true
-          php-version: "7.4"
+          php-version: "8.2"
           stop-on-manual-fix: true
 
   super-linter:
