@@ -6,6 +6,7 @@ namespace Seablast\Seablast;
 
 use mysqli;
 use mysqli_result;
+use mysqli_stmt;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
@@ -93,16 +94,16 @@ class SeablastMysqli extends mysqli
      *
      * @param string $query
      * xx @ return SeablastMysqliStmt|false #[\ReturnTypeWillChange] because original
-     * @return \mysqli_stmt|false
+     * @return mysqli_stmt|false
      */
     public function prepare($query)
     {
         // Call parent method to prepare the statement
         $stmt = parent::prepare($query);
-//        if ($stmt === false) {
-//            $this->addStatement(false, $query, $this);
-//            //return false;
-//        }
+        //        if ($stmt === false) {
+        //            $this->addStatement(false, $query, $this);
+        //            //return false;
+        //        }
         $this->addStatement((bool) $stmt, $query, $this);
 
         // Wrap the existing mysqli_stmt with LoggedMysqliStmt
