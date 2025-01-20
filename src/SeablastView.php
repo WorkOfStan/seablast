@@ -206,8 +206,14 @@ class SeablastView
         //
         // render to output
         Debugger::barDump($this->getTemplatePath(), 'renderLatte: selected template');
-        $latte->render($this->getTemplatePath(), $this->params);
-        // or render to variable
-        //$output = $latte->renderToString('template.latte', $params);
+        try {
+            $latte->render($this->getTemplatePath(), $this->params);
+            // or render to variable
+            //$output = $latte->renderToString('template.latte', $params);
+        } catch (Exceptions\DbmsException $e) {
+            // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
+            $this->model->getConfiguration()->dbms()->showSqlBarPanel();
+            throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
