@@ -91,7 +91,7 @@ class SeablastMysqli extends mysqli
 
     /**
      * Prepare wrapper that logs $query.
-     * 
+     *
      * Note: Other class cannot be used to override mysqli_stmt because mysqli_stmt has readonly properties and
      * that prevent new child class to set the values according to an already initiated instance
      *
