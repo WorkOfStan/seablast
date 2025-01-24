@@ -6,10 +6,10 @@ namespace Seablast\Seablast\Test;
 
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\Exceptions\DbmsException;
+use Seablast\Seablast\Exceptions\SeablastConfigurationException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastMysqli;
-use Seablast\Seablast\SeablastConfigurationException;
 use Tracy\Debugger;
 
 class SeablastConfigurationTest extends TestCase

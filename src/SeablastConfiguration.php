@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast;
 
 use Seablast\Seablast\Exceptions\DbmsException;
-use Seablast\Seablast\SeablastConfigurationException;
+use Seablast\Seablast\Exceptions\SeablastConfigurationException;
 use Seablast\Seablast\SeablastMysqli;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;

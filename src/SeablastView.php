@@ -168,18 +168,14 @@ class SeablastView
             Debugger::barDump($translatorClass, 'Translate class');
             $translator = new $translatorClass($this->model->getConfiguration());
 
-            //if (!method_exists($latte, 'addExtension')) {
             // for Latte 2 and 3
             if (method_exists($translator, 'translate')) {
-                Debugger::barDump('Translator exists');
-                //$latte->addFunction('translate', function ($text) use ($translator) {
-                //    return $translator->translate($text);
-                //});
+                //Debugger::barDump('Translator exists');
                 Debugger::barDump($latte, 'before filter');
                 $latte->addFilter('translate', function (string $s) use ($translator) {
                     return $translator->translate($s);
                 });
-                Debugger::barDump($latte, 'after filter');
+                //Debugger::barDump($latte, 'after filter');
             }
             /*} else {
                 // for Latte 3, i.e. PHP/8.0-8.4

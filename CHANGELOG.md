@@ -10,13 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- SeablastMysqli->prepare() is logged the same way as SeablastMysqli->query() not SeablastMysqli->prepare()->execute() however
-- Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
-- Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 
 ### `Changed` for changes in existing functionality
-
-- polish-the-code.yml instead of linter, php-composer-dependencies, phpcbf and prettier-fix yamls
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -25,6 +20,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.7] - 2025-01-25
+
+SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed when DbmsException is thrown.
+
+### Added
+
+- SeablastMysqli->prepare() is logged the same way as SeablastMysqli->query() (not SeablastMysqli->prepare()->execute() however)
+- Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
+- Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
+
+### Changed
+
+- GitHub Action polish-the-code.yml replaced linter, php-composer-dependencies, phpcbf and prettier-fix yamls
+- SeablastConfigurationException moved to Exceptions\SeablastConfigurationException
 
 ## [0.2.6] - 2024-12-29
 
@@ -249,7 +259,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...HEAD?w=1
+[0.2.7]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...v0.2.7?w=1
 [0.2.6]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...v0.2.6?w=1
 [0.2.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...v0.2.5?w=1
 [0.2.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.3.5...v0.2.4?w=1
