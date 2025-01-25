@@ -71,13 +71,15 @@ class SeablastPdo extends PDO
     /**
      * Prepares a statement and logs the query.
      *
-     * @param string $query
-     * @param array<scalar> $options
+     * Note: when PHP/7 support removed, remove phpstan-ignore-line below
+     *
+     * @param string $query but mixed in PHP/7
+     * @param array<scalar> $options but mixed in PHP/7
      * @return PDOStatement|false
      * @throws DbmsException
      */
     #[\ReturnTypeWillChange]
-    public function prepare(string $query, array $options = [])
+    public function prepare(string $query, array $options = []) // @phpstan-ignore-line
     {
         try {
             $stmt = parent::prepare($query, $options);
