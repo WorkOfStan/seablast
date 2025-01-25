@@ -17,7 +17,6 @@ use Tracy\ILogger;
  * MySQLi wrapper with logging.
  *
  * setUser() injects user ID to be logged with queries
- * TODO: explore logging of prepared statements
  */
 class SeablastMysqli extends mysqli
 {
@@ -160,8 +159,8 @@ class SeablastMysqli extends mysqli
      */
     private function isReadDataTypeQuery(string $query): bool
     {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0
-            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'DO ') === 0 || stripos($query, 'EXPLAIN ') === 0;
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
+            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
     }
 
     /**
@@ -203,7 +202,7 @@ class SeablastMysqli extends mysqli
         if (empty($this->statementList)) {
             return;
         }
-        $sqlBarPanel = new BarPanelTemplate('SQL: ' . count($this->statementList), $this->statementList);
+        $sqlBarPanel = new BarPanelTemplate('MySQLi: ' . count($this->statementList), $this->statementList);
         if ($this->databaseError) {
             $sqlBarPanel->setError();
         }
