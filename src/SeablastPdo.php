@@ -31,7 +31,7 @@ class SeablastPdo extends PDO
      * @param string $dsn
      * @param string $username
      * @param string $password
-     * @param array $options
+     * @param array<scalar> $options
      * @throws DbmsException
      */
     public function __construct(string $dsn, string $username, string $password, array $options = [])
@@ -72,10 +72,11 @@ class SeablastPdo extends PDO
      * Prepares a statement and logs the query.
      *
      * @param string $query
-     * @param array $options
+     * @param array<scalar> $options
      * @return PDOStatement|false
      * @throws DbmsException
      */
+    #[\ReturnTypeWillChange]
     public function prepare(string $query, array $options = [])
     {
         try {
