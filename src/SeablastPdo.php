@@ -79,7 +79,7 @@ class SeablastPdo extends PDO
      * @throws DbmsException
      */
     #[\ReturnTypeWillChange]
-    public function prepare(string $query, array $options = []) // @phpstan-ignore-line
+    public function prepare($query, $options = []) // @phpstan-ignore-line
     {
         try {
             $stmt = parent::prepare($query, $options);
