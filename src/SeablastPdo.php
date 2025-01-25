@@ -76,7 +76,7 @@ class SeablastPdo extends PDO
      * @return PDOStatement|false
      * @throws DbmsException
      */
-    public function prepare(string $query, array $options = []): PDOStatement|false
+    public function prepare(string $query, array $options = [])
     {
         try {
             $stmt = parent::prepare($query, $options);
@@ -84,7 +84,7 @@ class SeablastPdo extends PDO
             return $stmt;
         } catch (PDOException $e) {
             $this->addStatement(false, $query);
-            throw new DbmsException("Preparation failed: " . $e->getMessage(), (int)$e->getCode(), $e);
+            throw new DbmsException("Preparation failed 🤔: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
