@@ -6,7 +6,6 @@ namespace Seablast\Seablast;
 
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Exceptions\SeablastConfigurationException;
-use Seablast\Seablast\SeablastMysqli;
 use Tracy\Debugger;
 use Webmozart\Assert\Assert;
 
@@ -33,6 +32,8 @@ class SeablastConfiguration
     private $optionsInt = [];
     /** @var string[] */
     private $optionsString = [];
+    /** @var ?SeablastPdo */
+    private $pdo = null;
 
     public function __construct()
     {
@@ -48,7 +49,7 @@ class SeablastConfiguration
     {
         //Lazy initialisation
         if (!$this->dbmsStatus()) {
-            Debugger::barDump('Creating database connection');
+            Debugger::barDump('Creating MySQLi database connection');
             $this->dbmsCreate();
         }
         Assert::object($this->connection);
@@ -80,6 +81,49 @@ class SeablastConfiguration
         $this->connectionTablePrefix = $phinx->tablePrefix;
     }
 
+
+    /**
+     * Access to database with lazy initialization.
+     *
+     * @return SeablastPdo
+     */
+    public function pdo(): SeablastPdo
+    {
+        //Lazy initialisation
+        if (!$this->pdoStatus()) {
+            Debugger::barDump('Creating PDO database connection');
+            $this->pdoCreate();
+        }
+        Assert::object($this->pdo);
+        Assert::isAOf($this->pdo , '\Seablast\Seablast\SeablastPdo');
+        return $this->pdo;
+    }
+
+    /**
+     * Creates a database connection and sets up charset.
+     *
+     * @return void
+     */
+    private function pdoCreate(): void
+    {
+        $phinx = $this->dbmsExtractProperties();
+        //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
+        $this->pdo = new SeablastPdo(
+         //   $phinx->host, // todo fix localhost
+            "mysql:host={$phinx->host}"
+            . (is_null($phinx->port)?'':";port={$phinx->port}")
+            .";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
+            $phinx->user,
+            $phinx->pass//,
+        //    $phinx->name,
+        //    $phinx->port
+        );
+        // todo does this really differentiate between successful connection, failed connection and no connection?
+        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
+        $this->connectionTablePrefix = $phinx->tablePrefix;
+    }
+
+    
     /**
      * Read phinx configuration and provide pertinent parameters in a type strict manner
      */
@@ -152,6 +196,18 @@ class SeablastConfiguration
         return $this->connection instanceof \mysqli;
     }
 
+    /**
+     * Returns true if connected, false otherwise.
+     *
+     * So that the SQL Bar Panel is not requested in vain.
+     *
+     * @return bool
+     */
+    public function pdoStatus(): bool
+    {
+     return $this->pdo instanceof \PDO;
+    }
+    
     /**
      * Check existence of a property within configuration.
      *
