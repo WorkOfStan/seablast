@@ -129,7 +129,7 @@ class SeablastConfiguration
         //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
         $this->pdo = new SeablastPdo(
          //   $phinx->host, // todo fix localhost
-            "mysql:host={$phinx->host}"
+            "{$phinx->adapter}:host={$phinx->host}"
             . (is_null($phinx->port) ? '' : ";port={$phinx->port}")
             . ";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
             $phinx->user,
@@ -168,6 +168,7 @@ class SeablastConfiguration
             $port = null;
         }
         return new DatabaseProperties(
+            $phinx['environments'][$environment]['adapter'],
             $phinx['environments'][$environment]['host'], // todo fix localhost
             $phinx['environments'][$environment]['user'],
             $phinx['environments'][$environment]['pass'],
