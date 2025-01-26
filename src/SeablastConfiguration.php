@@ -95,7 +95,7 @@ class SeablastConfiguration
             $this->pdoCreate();
         }
         Assert::object($this->pdo);
-        Assert::isAOf($this->pdo , '\Seablast\Seablast\SeablastPdo');
+        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
         return $this->pdo;
     }
 
@@ -111,19 +111,19 @@ class SeablastConfiguration
         $this->pdo = new SeablastPdo(
          //   $phinx->host, // todo fix localhost
             "mysql:host={$phinx->host}"
-            . (is_null($phinx->port)?'':";port={$phinx->port}")
-            .";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
+            . (is_null($phinx->port) ? '' : ";port={$phinx->port}")
+            . ";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
             $phinx->user,
             $phinx->pass//,
-        //    $phinx->name,
-        //    $phinx->port
+            //    $phinx->name,
+            //    $phinx->port
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
         $this->connectionTablePrefix = $phinx->tablePrefix;
     }
 
-    
+
     /**
      * Read phinx configuration and provide pertinent parameters in a type strict manner
      */
@@ -205,9 +205,9 @@ class SeablastConfiguration
      */
     public function pdoStatus(): bool
     {
-     return $this->pdo instanceof \PDO;
+        return $this->pdo instanceof \PDO;
     }
-    
+
     /**
      * Check existence of a property within configuration.
      *
