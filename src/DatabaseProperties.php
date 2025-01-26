@@ -10,7 +10,7 @@ namespace Seablast\Seablast;
 class DatabaseProperties
 {
     use \Nette\SmartObject;
-    
+
     /** @var string */
     public $adapter;
     /** @var string */

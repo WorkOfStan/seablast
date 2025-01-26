@@ -76,12 +76,12 @@ class SeablastConfiguration
             $this->pdo()->showSqlBarPanel();
         }
     }
-    
+
     /**
      * Access to database with lazy initialization.
      *
      todo alias for mysqli and this deprecated
-     
+
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
@@ -119,7 +119,7 @@ class SeablastConfiguration
         );
         $this->connectionTablePrefix = $phinx->tablePrefix;
         // if user already set then setUser
-        if(!is_null($this->user)){
+        if (!is_null($this->user)) {
             $this->mysqli->setUser($this->user);
         }
     }
@@ -164,7 +164,7 @@ class SeablastConfiguration
         Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
         $this->connectionTablePrefix = $phinx->tablePrefix;
         // if user already set then setUser
-        if(!is_null($this->user)){
+        if (!is_null($this->user)) {
             $this->pdo->setUser($this->user);
         }
     }
@@ -237,7 +237,7 @@ class SeablastConfiguration
      * So that the SQL Bar Panel is not requested in vain.
      *
      todo alias for mysqliStatus and deprecated
-     
+
      * @return bool
      */
     public function dbmsStatus(): bool
