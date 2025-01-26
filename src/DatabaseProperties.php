@@ -10,7 +10,9 @@ namespace Seablast\Seablast;
 class DatabaseProperties
 {
     use \Nette\SmartObject;
-
+    
+    /** @var string */
+    public $adapter;
     /** @var string */
     public $host;
     /** @var string */
@@ -27,6 +29,7 @@ class DatabaseProperties
     /**
      * Constructor to initialize the database properties.
      *
+     * @param string $adapter same as DSN prefix
      * @param string $host
      * @param string $user
      * @param string $pass
@@ -35,6 +38,7 @@ class DatabaseProperties
      * @param string $tablePrefix
      */
     public function __construct(
+        string $adapter,
         string $host,
         string $user,
         string $pass,
@@ -42,6 +46,7 @@ class DatabaseProperties
         ?int $port = null,
         string $tablePrefix = ''
     ) {
+        $this->adapter = $adapter;
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;
