@@ -49,17 +49,30 @@ class SeablastPdo extends PDO
      * Executes a query and logs it.
      *
      * @param string $query
+     * @param int|null $fetchMode
+     * @param mixed ...$fetchModeArgs
      * @return PDOStatement|false
      * @throws DbmsException
      */
-    public function query(string $query)
+    public function query(string $query, ?int $fetchMode = null, ...$fetchModeArgs)
     {
         $trimmedQuery = trim($query);
         if (!$this->isReadDataTypeQuery($trimmedQuery)) {
             $this->logQuery($trimmedQuery);
         }
         try {
-            $stmt = parent::query($trimmedQuery);
+            // Execute the query based on the presence of fetchMode and fetchModeArgs
+            if (!empty($fetchModeArgs) && !is_null($fetchMode)) {
+                // Spread the fetchModeArgs to pass them as individual arguments
+                $stmt = parent::query($trimmedQuery, $fetchMode, ...$fetchModeArgs);
+            } elseif (!is_null($fetchMode)) {
+                // Only fetchMode is provided
+                $stmt = parent::query($trimmedQuery, $fetchMode);
+            } else {
+                // Neither fetchMode nor fetchModeArgs are provided
+                $stmt = parent::query($trimmedQuery);
+            }
+
             $this->addStatement(true, $trimmedQuery);
             return $stmt;
         } catch (PDOException $e) {
