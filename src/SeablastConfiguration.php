@@ -17,7 +17,7 @@ class SeablastConfiguration
     use \Nette\SmartObject;
 
     /** @var ?SeablastMysqli */
-    private $connection = null;
+    private $connection = null; //todo rename to mysqli
     /** @var ?string */
     private $connectionTablePrefix = null;
     /** @var SeablastFlag */
@@ -34,6 +34,8 @@ class SeablastConfiguration
     private $optionsString = [];
     /** @var ?SeablastPdo */
     private $pdo = null;
+    /** @var string|null for db logging */
+    private $user = null;
 
     public function __construct()
     {
@@ -41,8 +43,24 @@ class SeablastConfiguration
     }
 
     /**
+     * DI setter.
+     *
+     * @param int|string $user
+     *
+     * @return void
+     */
+    public function setUser($user): void
+    {
+        // Todo use this method in SbController::route()
+        $this->user = (string) $user;
+        // if mysqli or pdo then setUser
+    }
+    
+    /**
      * Access to database with lazy initialization.
      *
+     todo alias for mysqli and this deprecated
+     
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
@@ -50,7 +68,7 @@ class SeablastConfiguration
         //Lazy initialisation
         if (!$this->dbmsStatus()) {
             Debugger::barDump('Creating MySQLi database connection');
-            $this->dbmsCreate();
+            $this->mysqliCreate();
         }
         Assert::object($this->connection);
         Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
@@ -62,7 +80,7 @@ class SeablastConfiguration
      *
      * @return void
      */
-    private function dbmsCreate(): void
+    private function mysqliCreate(): void
     {
         $phinx = $this->dbmsExtractProperties();
         $this->connection = new SeablastMysqli(
@@ -79,6 +97,7 @@ class SeablastConfiguration
             'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
         );
         $this->connectionTablePrefix = $phinx->tablePrefix;
+        // todo if user not null then setUser
     }
 
 
@@ -121,6 +140,7 @@ class SeablastConfiguration
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
         $this->connectionTablePrefix = $phinx->tablePrefix;
+        // todo if user not null then setUser
     }
 
 
@@ -189,6 +209,8 @@ class SeablastConfiguration
      *
      * So that the SQL Bar Panel is not requested in vain.
      *
+     todo alias for mysqliStatus and deprecated
+     
      * @return bool
      */
     public function dbmsStatus(): bool
