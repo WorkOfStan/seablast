@@ -17,7 +17,7 @@ class SeablastConfiguration
     use \Nette\SmartObject;
 
     /** @var ?SeablastMysqli */
-    private $connection = null; //todo rename to mysqli
+    private $mysqli = null;
     /** @var ?string */
     private $connectionTablePrefix = null;
     /** @var SeablastFlag */
@@ -51,9 +51,30 @@ class SeablastConfiguration
      */
     public function setUser($user): void
     {
-        // Todo use this method in SbController::route()
         $this->user = (string) $user;
         // if mysqli or pdo then setUser
+        if ($this->dbmsStatus()) {
+            $this->dbms()->setUser($this->user);
+        }
+        if ($this->pdoStatus()) {
+            $this->pdo()->setUser($this->user);
+        }
+    }
+
+    /**
+     * Show Tracy BarPanel with SQL statements.
+     *
+     * @return void
+     */
+    public function showSqlBarPanel(): void
+    {
+        // if mysqli or pdo then showSqlBarPanel
+        if ($this->dbmsStatus()) {
+            $this->dbms()->showSqlBarPanel();
+        }
+        if ($this->pdoStatus()) {
+            $this->pdo()->showSqlBarPanel();
+        }
     }
     
     /**
@@ -70,9 +91,9 @@ class SeablastConfiguration
             Debugger::barDump('Creating MySQLi database connection');
             $this->mysqliCreate();
         }
-        Assert::object($this->connection);
-        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
-        return $this->connection;
+        Assert::object($this->mysqli);
+        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
+        return $this->mysqli;
     }
 
     /**
@@ -83,7 +104,7 @@ class SeablastConfiguration
     private function mysqliCreate(): void
     {
         $phinx = $this->dbmsExtractProperties();
-        $this->connection = new SeablastMysqli(
+        $this->mysqli = new SeablastMysqli(
             $phinx->host, // todo fix localhost
             $phinx->user,
             $phinx->pass,
@@ -91,15 +112,17 @@ class SeablastConfiguration
             $phinx->port
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
-        Assert::isAOf($this->connection, '\Seablast\Seablast\SeablastMysqli');
+        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
         Assert::true(
-            $this->connection->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
+            $this->mysqli->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
             'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
         );
         $this->connectionTablePrefix = $phinx->tablePrefix;
-        // todo if user not null then setUser
+        // if user already set then setUser
+        if(!is_null($this->user)){
+            $this->mysqli->setUser($this->user);
+        }
     }
-
 
     /**
      * Access to database with lazy initialization.
@@ -140,7 +163,10 @@ class SeablastConfiguration
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
         $this->connectionTablePrefix = $phinx->tablePrefix;
-        // todo if user not null then setUser
+        // if user already set then setUser
+        if(!is_null($this->user)){
+            $this->pdo->setUser($this->user);
+        }
     }
 
 
@@ -216,7 +242,7 @@ class SeablastConfiguration
      */
     public function dbmsStatus(): bool
     {
-        return $this->connection instanceof \mysqli;
+        return $this->mysqli instanceof \mysqli;
     }
 
     /**

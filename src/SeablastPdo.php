@@ -138,14 +138,15 @@ class SeablastPdo extends PDO
     }
 
     /**
-     * Sets the user for logging purposes.
+     * DI setter.
      *
-     * @param string $user
+     * @param int|string $user
+     *
      * @return void
      */
-    public function setUser(string $user): void
+    public function setUser($user): void
     {
-        $this->user = $user;
+        $this->user = (string) $user;
     }
 
     /**

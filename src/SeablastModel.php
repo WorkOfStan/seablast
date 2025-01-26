@@ -43,7 +43,7 @@ class SeablastModel
                 $this->viewParameters = $model->knowledge();
             } catch (Exceptions\DbmsException $e) {
                 // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
-                $this->controller->getConfiguration()->dbms()->showSqlBarPanel();
+                $this->controller->getConfiguration()->showSqlBarPanel();
                 throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
             }
             Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);

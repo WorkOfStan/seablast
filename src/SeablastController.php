@@ -398,9 +398,8 @@ class SeablastController
                 if (!is_null($this->logger)) {
                     $this->logger->setUser($this->identity->getUserId());
                 }
-                $this->configuration->dbms()->setUser($this->identity->getUserId());
-                // todo is there a way not to start a PDO connection before an actual query? (using yield?)
-                $this->configuration->pdo()->setUser($this->identity->getUserId());
+                // The mysqli/PDO connection starts only with an actual query with this user
+                $this->configuration->setUser($this->identity->getUserId());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)

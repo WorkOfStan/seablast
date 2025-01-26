@@ -36,6 +36,8 @@ SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed wh
 
 - GitHub Action polish-the-code.yml replaced linter, php-composer-dependencies, phpcbf and prettier-fix yamls
 - SeablastConfigurationException moved to Exceptions\SeablastConfigurationException
+- configuration->setUser for mysqli and PDO is lazy
+- configuration->showSqlBarPanel triggers both mysqli and PDO
 
 ## [0.2.6] - 2024-12-29
 
