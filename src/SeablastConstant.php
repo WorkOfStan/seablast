@@ -161,6 +161,18 @@ class SeablastConstant
      */
     public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
     /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_ADMIN = 'SB:USER_ROLE_ADMIN';
+       /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_EDITOR = 'SB:USER_ROLE_EDITOR';
+        /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_USER = 'SB:USER_ROLE_USER';
+/**
      * @var string int[] groupId
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
