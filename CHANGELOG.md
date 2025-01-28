@@ -32,6 +32,7 @@ SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed wh
 - Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 - SeablastPdo added to be logged the same way as SeablastMysqli->prepare()
 - constants for user roles admin=1, editor=2 and user=3
+- title variable to layout latte
 
 ### Changed
 
