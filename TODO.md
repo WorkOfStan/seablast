@@ -5,7 +5,7 @@ All planned changes to this project are documented in this file.
 ## Features
 
 - 240111, Messages from server and Ajax to user friendly closable banners; how to localize these messages - by some l10n?
-- 240119, APP_MAPPING restrictToGroups 1-admin, 2-editor(contentAdmin), 3-user, other can be added in the app (use constants instead of magic numbers)
+- 240119, APP_MAPPING restrictToGroups (actually roles) 1-admin, 2-editor(contentAdmin), 3-user, other can be added in the app (use constants instead of magic numbers)
 
 ## UX
 
