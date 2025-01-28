@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.2.7] - 2025-01-26
+## [0.2.7] - 2025-02-01
 
 SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed when DbmsException is thrown.
 
@@ -31,6 +31,7 @@ SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed wh
 - Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
 - Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 - SeablastPdo added to be logged the same way as SeablastMysqli->prepare()
+- constants for user roles admin=1, editor=2 and user=3
 
 ### Changed
 

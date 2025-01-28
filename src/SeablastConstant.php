@@ -161,6 +161,19 @@ class SeablastConstant
      */
     public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
     /**
+     * @var int roleId
+     * Todo consider assignment through configuration
+     */
+    public const USER_ROLE_ADMIN = 1;
+       /**
+     * @var int roleId
+     */
+    public const USER_ROLE_EDITOR = 2;
+        /**
+     * @var int roleId
+     */
+    public const USER_ROLE_USER = 3;
+/**
      * @var string int[] groupId
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
