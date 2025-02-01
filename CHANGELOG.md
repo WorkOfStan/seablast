@@ -10,10 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+- SeablastMysqli::prepareStrict throws DbmsException in case of failure
+- SeablastPdo::prepareStrict throws DbmsException in case of failure
 
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
+
+- SeablastConfiguration::dbms() - use SeablastConfiguration::mysqli() instead.
 
 ### `Removed` for now removed features
 

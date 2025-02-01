@@ -118,6 +118,24 @@ class SeablastPdo extends PDO
     }
 
     /**
+     * Prepares a statement and logs the query. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query but mixed in PHP/7
+     * @param array<scalar> $options but mixed in PHP/7
+     * @return PDOStatement
+     * @throws DbmsException
+     */
+    public function prepareStrict($query, $options = [])
+    {
+        $stmt = $this->prepare($query, $options);
+        if ($stmt === false) {
+            // Database Tracy BarPanel is displayed in try-catch in SeablastView
+            throw new DbmsException('PDO prepare statement failed');
+        }
+        return $stmt;
+    }
+
+    /**
      * Executes a query and logs it.
      *
      * @param string $query

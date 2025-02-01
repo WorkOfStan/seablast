@@ -43,22 +43,16 @@ class SeablastConfiguration
     }
 
     /**
-     * Access to database with lazy initialization.
+     * Access to database using MySQLi adapter with lazy initialization.
      *
-     * todo alias for mysqli and this deprecated
-     *
+     * @deprecated 0.2.8 Use {@see mysqli()} instead.
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
     {
-        //Lazy initialisation
-        if (!$this->dbmsStatus()) {
-            Debugger::barDump('Creating MySQLi database connection');
-            $this->mysqliCreate();
-        }
-        Assert::object($this->mysqli);
-        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
-        return $this->mysqli;
+        Debugger::barDump('Deprecated dbms(). Use mysqli() instead.');
+        Debugger::log('Deprecated dbms(). Use mysqli() instead.', \Tracy\ILogger::INFO);
+        return $this->mysqli();
     }
 
     /**
@@ -229,6 +223,23 @@ class SeablastConfiguration
         return $this->optionsString[$property];
     }
 
+    /**
+     * Access to database using MySQLi adapter with lazy initialization.
+     *
+     * @return SeablastMysqli
+     */
+    public function mysqli(): SeablastMysqli
+    {
+        //Lazy initialisation
+        if (!$this->dbmsStatus()) {
+            Debugger::barDump('Creating MySQLi database connection');
+            $this->mysqliCreate();
+        }
+        Assert::object($this->mysqli);
+        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
+        return $this->mysqli;
+    }
+    
     /**
      * Creates a database connection and sets up charset.
      *
