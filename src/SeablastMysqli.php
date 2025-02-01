@@ -89,6 +89,35 @@ class SeablastMysqli extends mysqli
     }
 
     /**
+     * Identify query that doesn't change data.
+     *
+     * @param string $query
+     * @return bool
+     */
+    private function isReadDataTypeQuery(string $query): bool
+    {
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
+            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
+    }
+
+    /**
+     * Log this query.
+     *
+     * @param string $query
+     * @return void
+     */
+    private function logQuery(string $query): void
+    {
+        //mb_ereg_replace does not destroy multi-byte characters such as character Č
+        error_log(
+            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']'
+            . PHP_EOL,
+            3,
+            $this->logPath
+        );
+    }
+
+    /**
      * Prepare wrapper that logs $query.
      *
      * Note: Other class cannot be used to override mysqli_stmt because mysqli_stmt has readonly properties and
@@ -149,35 +178,6 @@ class SeablastMysqli extends mysqli
             throw new DbmsException("{$this->errno}: {$this->error}");
         }
         return $result;
-    }
-
-    /**
-     * Identify query that doesn't change data.
-     *
-     * @param string $query
-     * @return bool
-     */
-    private function isReadDataTypeQuery(string $query): bool
-    {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
-            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
-    }
-
-    /**
-     * Log this query.
-     *
-     * @param string $query
-     * @return void
-     */
-    private function logQuery(string $query): void
-    {
-        //mb_ereg_replace does not destroy multi-byte characters such as character Č
-        error_log(
-            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']'
-            . PHP_EOL,
-            3,
-            $this->logPath
-        );
     }
 
     /**

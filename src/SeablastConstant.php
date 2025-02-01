@@ -161,22 +161,30 @@ class SeablastConstant
      */
     public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
     /**
-     * @var int roleId
+     * @var int roleId according to Seablast/Auth
      * Todo consider assignment through configuration
      */
     public const USER_ROLE_ADMIN = 1;
-       /**
-     * @var int roleId
+    /**
+     * @var int roleId according to Seablast/Auth
      */
     public const USER_ROLE_EDITOR = 2;
-        /**
-     * @var int roleId
+    /**
+     * @var int roleId according to Seablast/Auth
      */
     public const USER_ROLE_USER = 3;
-/**
+    /**
      * @var string int[] groupId
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
+    /**
+     * @var string string prefix for tables with fields available for edit for roleId
+     */
+    public const ADMIN_TABLE_EDIT = 'SB:ADMIN_TABLE_EDIT';
+    /**
+     * @var string string prefix for tables with fields available for view for roleId
+     */
+    public const ADMIN_TABLE_VIEW = 'SB:ADMIN_TABLE_VIEW';
     /**
      * @var string int error HTTP code
      */

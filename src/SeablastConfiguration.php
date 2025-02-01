@@ -43,41 +43,6 @@ class SeablastConfiguration
     }
 
     /**
-     * DI setter.
-     *
-     * @param int|string $user
-     *
-     * @return void
-     */
-    public function setUser($user): void
-    {
-        $this->user = (string) $user;
-        // if mysqli or pdo then setUser
-        if ($this->dbmsStatus()) {
-            $this->dbms()->setUser($this->user);
-        }
-        if ($this->pdoStatus()) {
-            $this->pdo()->setUser($this->user);
-        }
-    }
-
-    /**
-     * Show Tracy BarPanel with SQL statements.
-     *
-     * @return void
-     */
-    public function showSqlBarPanel(): void
-    {
-        // if mysqli or pdo then showSqlBarPanel
-        if ($this->dbmsStatus()) {
-            $this->dbms()->showSqlBarPanel();
-        }
-        if ($this->pdoStatus()) {
-            $this->pdo()->showSqlBarPanel();
-        }
-    }
-
-    /**
      * Access to database with lazy initialization.
      *
      todo alias for mysqli and this deprecated
@@ -95,80 +60,6 @@ class SeablastConfiguration
         Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
         return $this->mysqli;
     }
-
-    /**
-     * Creates a database connection and sets up charset.
-     *
-     * @return void
-     */
-    private function mysqliCreate(): void
-    {
-        $phinx = $this->dbmsExtractProperties();
-        $this->mysqli = new SeablastMysqli(
-            $phinx->host, // todo fix localhost
-            $phinx->user,
-            $phinx->pass,
-            $phinx->name,
-            $phinx->port
-        );
-        // todo does this really differentiate between successful connection, failed connection and no connection?
-        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
-        Assert::true(
-            $this->mysqli->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
-            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
-        );
-        $this->connectionTablePrefix = $phinx->tablePrefix;
-        // if user already set then setUser
-        if (!is_null($this->user)) {
-            $this->mysqli->setUser($this->user);
-        }
-    }
-
-    /**
-     * Access to database with lazy initialization.
-     *
-     * @return SeablastPdo
-     */
-    public function pdo(): SeablastPdo
-    {
-        //Lazy initialisation
-        if (!$this->pdoStatus()) {
-            Debugger::barDump('Creating PDO database connection');
-            $this->pdoCreate();
-        }
-        Assert::object($this->pdo);
-        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
-        return $this->pdo;
-    }
-
-    /**
-     * Creates a database connection and sets up charset.
-     *
-     * @return void
-     */
-    private function pdoCreate(): void
-    {
-        $phinx = $this->dbmsExtractProperties();
-        //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
-        $this->pdo = new SeablastPdo(
-         //   $phinx->host, // todo fix localhost
-            "{$phinx->adapter}:host={$phinx->host}"
-            . (is_null($phinx->port) ? '' : ";port={$phinx->port}")
-            . ";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
-            $phinx->user,
-            $phinx->pass//,
-            //    $phinx->name,
-            //    $phinx->port
-        );
-        // todo does this really differentiate between successful connection, failed connection and no connection?
-        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
-        $this->connectionTablePrefix = $phinx->tablePrefix;
-        // if user already set then setUser
-        if (!is_null($this->user)) {
-            $this->pdo->setUser($this->user);
-        }
-    }
-
 
     /**
      * Read phinx configuration and provide pertinent parameters in a type strict manner
@@ -243,18 +134,6 @@ class SeablastConfiguration
     public function dbmsStatus(): bool
     {
         return $this->mysqli instanceof \mysqli;
-    }
-
-    /**
-     * Returns true if connected, false otherwise.
-     *
-     * So that the SQL Bar Panel is not requested in vain.
-     *
-     * @return bool
-     */
-    public function pdoStatus(): bool
-    {
-        return $this->pdo instanceof \PDO;
     }
 
     /**
@@ -351,6 +230,91 @@ class SeablastConfiguration
     }
 
     /**
+     * Creates a database connection and sets up charset.
+     *
+     * @return void
+     */
+    private function mysqliCreate(): void
+    {
+        $phinx = $this->dbmsExtractProperties();
+        $this->mysqli = new SeablastMysqli(
+            $phinx->host, // todo fix localhost
+            $phinx->user,
+            $phinx->pass,
+            $phinx->name,
+            $phinx->port
+        );
+        // todo does this really differentiate between successful connection, failed connection and no connection?
+        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
+        Assert::true(
+            $this->mysqli->set_charset($this->getString(SeablastConstant::SB_CHARSET_DATABASE)),
+            'Unexpected character set: ' . $this->getString(SeablastConstant::SB_CHARSET_DATABASE)
+        );
+        $this->connectionTablePrefix = $phinx->tablePrefix;
+        // if user already set then setUser
+        if (!is_null($this->user)) {
+            $this->mysqli->setUser($this->user);
+        }
+    }
+
+    /**
+     * Access to database with lazy initialization.
+     *
+     * @return SeablastPdo
+     */
+    public function pdo(): SeablastPdo
+    {
+        //Lazy initialisation
+        if (!$this->pdoStatus()) {
+            Debugger::barDump('Creating PDO database connection');
+            $this->pdoCreate();
+        }
+        Assert::object($this->pdo);
+        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
+        return $this->pdo;
+    }
+
+    /**
+     * Creates a database connection and sets up charset.
+     *
+     * @return void
+     */
+    private function pdoCreate(): void
+    {
+        $phinx = $this->dbmsExtractProperties();
+        //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
+        $this->pdo = new SeablastPdo(
+         //   $phinx->host, // todo fix localhost
+            "{$phinx->adapter}:host={$phinx->host}"
+            . (is_null($phinx->port) ? '' : ";port={$phinx->port}")
+            . ";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
+            $phinx->user,
+            $phinx->pass//,
+            //    $phinx->name,
+            //    $phinx->port
+        );
+        // todo does this really differentiate between successful connection, failed connection and no connection?
+        Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
+        $this->connectionTablePrefix = $phinx->tablePrefix;
+        // if user already set then setUser
+        if (!is_null($this->user)) {
+            $this->pdo->setUser($this->user);
+        }
+    }
+
+    /**
+     * Returns true if connected, false otherwise.
+     *
+     * So that the SQL Bar Panel is not requested in vain.
+     *
+     * @return bool
+     */
+    public function pdoStatus(): bool
+    {
+        return $this->pdo instanceof \PDO;
+    }
+
+    /**
      * @param string $property
      * @param string $key
      * @param string[] $value
@@ -416,5 +380,40 @@ class SeablastConfiguration
     {
         $this->optionsString[$property] = $value;
         return $this;
+    }
+    
+    /**
+     * DI setter for databases.
+     *
+     * @param int|string $user
+     *
+     * @return void
+     */
+    public function setUser($user): void
+    {
+        $this->user = (string) $user;
+        // if mysqli or pdo then setUser
+        if ($this->dbmsStatus()) {
+            $this->dbms()->setUser($this->user);
+        }
+        if ($this->pdoStatus()) {
+            $this->pdo()->setUser($this->user);
+        }
+    }
+
+    /**
+     * Show Tracy BarPanel with SQL statements.
+     *
+     * @return void
+     */
+    public function showSqlBarPanel(): void
+    {
+        // if mysqli or pdo then showSqlBarPanel
+        if ($this->dbmsStatus()) {
+            $this->dbms()->showSqlBarPanel();
+        }
+        if ($this->pdoStatus()) {
+            $this->pdo()->showSqlBarPanel();
+        }
     }
 }

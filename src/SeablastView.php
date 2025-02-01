@@ -70,28 +70,6 @@ class SeablastView
     }
 
     /**
-     * If HTTP error code, show Tracy BarPanel.
-     *
-     * @return void
-     */
-    private function showHttpErrorPanel(): void
-    {
-        if (!isset($this->params->httpCode) || ($this->params->httpCode < 400)) {
-            return;
-        }
-        //$httpBarPanelInfo = []; // 'Params' => $this->params
-        //if (isset($this->params->rest->message)) {
-        //    $httpBarPanelInfo['message'] = $this->params->rest->message;
-        //}
-        $httpBarPanel = new BarPanelTemplate(
-            'HTTP: ' . (int) $this->params->httpCode,
-            isset($this->params->rest->message) ? ['message' => $this->params->rest->message] : []
-        );
-        $httpBarPanel->setError();
-        Debugger::getBar()->addPanel($httpBarPanel);
-    }
-
-    /**
      * Use app version of template, if unavailable use Seablast default version of template,
      * If unavailable throw an Exception.
      *
@@ -209,5 +187,27 @@ class SeablastView
             $this->model->getConfiguration()->showSqlBarPanel();
             throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * If HTTP error code, show Tracy BarPanel.
+     *
+     * @return void
+     */
+    private function showHttpErrorPanel(): void
+    {
+        if (!isset($this->params->httpCode) || ($this->params->httpCode < 400)) {
+            return;
+        }
+        //$httpBarPanelInfo = []; // 'Params' => $this->params
+        //if (isset($this->params->rest->message)) {
+        //    $httpBarPanelInfo['message'] = $this->params->rest->message;
+        //}
+        $httpBarPanel = new BarPanelTemplate(
+            'HTTP: ' . (int) $this->params->httpCode,
+            isset($this->params->rest->message) ? ['message' => $this->params->rest->message] : []
+        );
+        $httpBarPanel->setError();
+        Debugger::getBar()->addPanel($httpBarPanel);
     }
 }

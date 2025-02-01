@@ -31,15 +31,15 @@ SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed wh
 - Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
 - Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 - SeablastPdo added to be logged the same way as SeablastMysqli->prepare()
-- constants for user roles admin=1, editor=2 and user=3
+- constants for user roles admin=1, editor=2 and user=3 (same as used in Seablast/Auth)
 - title variable to layout latte
 
 ### Changed
 
 - GitHub Action polish-the-code.yml replaced linter, php-composer-dependencies, phpcbf and prettier-fix yamls
 - SeablastConfigurationException moved to Exceptions\SeablastConfigurationException
-- configuration->setUser for mysqli and PDO is lazy
-- configuration->showSqlBarPanel triggers both mysqli and PDO
+- configuration->setUser for MySQLi and PDO is lazy
+- configuration->showSqlBarPanel triggers both MySQLi and PDO
 
 ## [0.2.6] - 2024-12-29
 

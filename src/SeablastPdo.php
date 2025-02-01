@@ -46,6 +46,77 @@ class SeablastPdo extends PDO
     }
 
     /**
+     * Adds a query to the statement list for logging purposes.
+     * 
+     * TODO: compare w SeablastMysqli::addStatement
+     *
+     * @param bool $success
+     * @param string $query
+     * @param string|null $errorMessage
+     * @return void
+     */
+    private function addStatement(bool $success, string $query, ?string $errorMessage = null): void
+    {
+        if ($success) {
+            $this->statementList[] = $query;
+        } else {
+            $this->databaseError = true;
+            $this->statementList[] = "Failure: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}");
+            Debugger::log(
+                "Database error: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}"), ILogger::ERROR
+            );
+        }
+    }
+
+    /**
+     * Determines if the query is read-only.
+     *
+     * @param string $query
+     * @return bool
+     */
+    private function isReadDataTypeQuery(string $query): bool
+    {
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
+            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
+    }
+
+    /**
+     * Logs the SQL query.
+     *
+     * @param string $query
+     * @return void
+     */
+    private function logQuery(string $query): void
+    {
+        error_log(
+            $query . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']' . PHP_EOL,
+            3,
+            $this->logPath
+        );
+    }
+
+    /**
+     * Prepares a statement and logs the query.
+     *
+     * @param string $query but mixed in PHP/7
+     * @param array<scalar> $options but mixed in PHP/7
+     * @return PDOStatement|false
+     * @throws DbmsException
+     */
+    #[\ReturnTypeWillChange]
+    public function prepare($query, $options = [])
+    {
+        try {
+            $stmt = parent::prepare($query, $options);
+            $this->addStatement((bool)$stmt, $query);
+            return $stmt;
+        } catch (PDOException $e) {
+            $this->addStatement(false, $query, $e->getMessage());
+            throw new DbmsException("Preparation failed 🤔: " . $e->getMessage(), (int)$e->getCode(), $e);
+        }
+    }
+
+    /**
      * Executes a query and logs it.
      *
      * @param string $query
@@ -76,78 +147,9 @@ class SeablastPdo extends PDO
             $this->addStatement(true, $trimmedQuery);
             return $stmt;
         } catch (PDOException $e) {
-            $this->addStatement(false, $trimmedQuery);
+            $this->addStatement(false, $trimmedQuery, $e->getMessage());
             throw new DbmsException("Query failed: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
-    }
-
-    /**
-     * Prepares a statement and logs the query.
-     *
-     * Note: when PHP/7 support removed, remove phpstan-ignore-line below
-     * (removed)
-     *
-     * @param string $query but mixed in PHP/7
-     * @param array<scalar> $options but mixed in PHP/7
-     * @return PDOStatement|false
-     * @throws DbmsException
-     */
-    #[\ReturnTypeWillChange]
-    public function prepare($query, $options = [])
-    {
-        try {
-            $stmt = parent::prepare($query, $options);
-            $this->addStatement((bool)$stmt, $query);
-            return $stmt;
-        } catch (PDOException $e) {
-            $this->addStatement(false, $query);
-            throw new DbmsException("Preparation failed 🤔: " . $e->getMessage(), (int)$e->getCode(), $e);
-        }
-    }
-
-    /**
-     * Logs the SQL query.
-     *
-     * @param string $query
-     * @return void
-     */
-    private function logQuery(string $query): void
-    {
-        error_log(
-            $query . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']' . PHP_EOL,
-            3,
-            $this->logPath
-        );
-    }
-
-    /**
-     * Adds a query to the statement list for logging purposes.
-     *
-     * @param bool $success
-     * @param string $query
-     * @return void
-     */
-    private function addStatement(bool $success, string $query): void
-    {
-        if ($success) {
-            $this->statementList[] = $query;
-        } else {
-            $this->databaseError = true;
-            $this->statementList[] = "Failure: $query";
-            Debugger::log("Database error: $query", ILogger::ERROR);
-        }
-    }
-
-    /**
-     * Determines if the query is read-only.
-     *
-     * @param string $query
-     * @return bool
-     */
-    private function isReadDataTypeQuery(string $query): bool
-    {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
-            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
     }
 
     /**
