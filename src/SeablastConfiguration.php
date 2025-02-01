@@ -16,12 +16,12 @@ class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
-    /** @var ?SeablastMysqli */
-    private $mysqli = null;
     /** @var ?string */
     private $connectionTablePrefix = null;
     /** @var SeablastFlag */
     public $flag;
+    /** @var ?SeablastMysqli */
+    private $mysqli = null;
     /** @var array<array<string[]>> */
     private $optionsArrayArrayString = [];
     /** @var array<int[]> */
@@ -45,8 +45,8 @@ class SeablastConfiguration
     /**
      * Access to database with lazy initialization.
      *
-     todo alias for mysqli and this deprecated
-
+     * todo alias for mysqli and this deprecated
+     *
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
@@ -258,7 +258,7 @@ class SeablastConfiguration
     }
 
     /**
-     * Access to database with lazy initialization.
+     * Access to database using PDO adapter with lazy initialization.
      *
      * @return SeablastPdo
      */
@@ -284,14 +284,12 @@ class SeablastConfiguration
         $phinx = $this->dbmsExtractProperties();
         //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
         $this->pdo = new SeablastPdo(
-         //   $phinx->host, // todo fix localhost
+            //   $phinx->host, // todo fix localhost
             "{$phinx->adapter}:host={$phinx->host}"
             . (is_null($phinx->port) ? '' : ";port={$phinx->port}")
             . ";dbname={$phinx->name};charset={$this->getString(SeablastConstant::SB_CHARSET_DATABASE)}",
             $phinx->user,
-            $phinx->pass//,
-            //    $phinx->name,
-            //    $phinx->port
+            $phinx->pass
         );
         // todo does this really differentiate between successful connection, failed connection and no connection?
         Assert::isAOf($this->pdo, '\Seablast\Seablast\SeablastPdo');
