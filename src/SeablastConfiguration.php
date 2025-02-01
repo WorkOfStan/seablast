@@ -381,7 +381,7 @@ class SeablastConfiguration
         $this->optionsString[$property] = $value;
         return $this;
     }
-    
+
     /**
      * DI setter for databases.
      *

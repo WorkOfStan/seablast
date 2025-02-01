@@ -47,7 +47,7 @@ class SeablastPdo extends PDO
 
     /**
      * Adds a query to the statement list for logging purposes.
-     * 
+     *
      * TODO: compare w SeablastMysqli::addStatement
      *
      * @param bool $success
@@ -63,7 +63,8 @@ class SeablastPdo extends PDO
             $this->databaseError = true;
             $this->statementList[] = "Failure: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}");
             Debugger::log(
-                "Database error: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}"), ILogger::ERROR
+                "Database error: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}"),
+                ILogger::ERROR
             );
         }
     }
