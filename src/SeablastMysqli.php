@@ -67,14 +67,14 @@ class SeablastMysqli extends mysqli
     }
 
     /**
-     * This method is public, so that SeablastMysqliStmt may use it.
+     * Populate database TracyBar.
      *
      * @param bool $result
      * @param string $trimmedQuery
      * @param \mysqli|\mysqli_stmt $dbCall
      * @return void
      */
-    public function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
+    private function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
     {
         if ($result !== false) {
             $this->statementList[] = $trimmedQuery;

@@ -59,14 +59,14 @@ class SeablastPdo extends PDO
     {
         if ($success) {
             $this->statementList[] = $query;
-        } else {
+            return;
+        }
             $this->databaseError = true;
             $this->statementList[] = "Failure: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}");
             Debugger::log(
                 "Database error: $query" . (empty($errorMessage) ? '' : " - {$errorMessage}"),
                 ILogger::ERROR
             );
-        }
     }
 
     /**
