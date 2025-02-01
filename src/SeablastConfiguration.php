@@ -239,7 +239,7 @@ class SeablastConfiguration
         Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
         return $this->mysqli;
     }
-    
+
     /**
      * Creates a database connection and sets up charset.
      *
