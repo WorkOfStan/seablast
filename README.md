@@ -19,6 +19,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 - if Seablast/Auth extension is present, use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']`
+- the default `log` directory (both for SeablastMysqli query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`
 
 ## Model
 
@@ -31,6 +32,7 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 
 - If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `httpCode` property is used as the response HTTP code.
 - If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302 or 303 by the `httpCode` property.
+- If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
 
 ```php
 SeablastConstant::APP_MAPPING = route => [
@@ -64,15 +66,12 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 - the constant `APP_DIR` = the directory of the current application (or the library, if deployed directly)
 - don't start the value of a constant for a configuration field in the app.conf.php with SB to prevent value collision
 
-## App expectation
-
-- SeablastMysqli expects `log` directory to store query.log there
-
 ## Framework directory description
 
 | Directory | Description                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------- |
 | .github/  | Automations                                                                                                          |
+| Test/     | PHPUnit tests                                                                                                        |
 | cache/    | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/     | Default configuration for a Seablast app and for PHPStan                                                             |
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |

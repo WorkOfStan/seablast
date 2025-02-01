@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Apis;
 
 use Seablast\Seablast\Apis\GenericRestApiJsonModel;
-use Seablast\Seablast\SeablastConfiguration;
-use Seablast\Seablast\Superglobals;
 use stdClass;
 
 /**
@@ -58,18 +56,8 @@ class ApiErrorModel extends GenericRestApiJsonModel
     use \Nette\SmartObject;
 
     /**
-     *
-     * @param SeablastConfiguration $configuration
-     * @param Superglobals $superglobals
-     * @throws \Exception
-     */
-    public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
-    {
-        parent::__construct($configuration, $superglobals);
-    }
-
-    /**
      * Return the knowledge calculated in this model.
+     *
      * @return stdClass
      */
     public function knowledge(): stdClass
@@ -85,7 +73,8 @@ class ApiErrorModel extends GenericRestApiJsonModel
     }
 
     /**
-     * Log the input
+     * Log the input.
+     *
      * @return void
      * @throws \Exception
      */

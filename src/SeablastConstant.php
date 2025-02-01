@@ -161,9 +161,29 @@ class SeablastConstant
      */
     public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
     /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_ADMIN = 'SB:USER_ROLE_ADMIN';
+    /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_EDITOR = 'SB:USER_ROLE_EDITOR';
+    /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_USER = 'SB:USER_ROLE_USER';
+    /**
      * @var string int[] groupId
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
+    /**
+     * @var string string prefix for tables with fields available for edit for roleId
+     */
+    public const ADMIN_TABLE_EDIT = 'SB:ADMIN_TABLE_EDIT';
+    /**
+     * @var string string prefix for tables with fields available for view for roleId
+     */
+    public const ADMIN_TABLE_VIEW = 'SB:ADMIN_TABLE_VIEW';
     /**
      * @var string int error HTTP code
      */
@@ -176,4 +196,8 @@ class SeablastConstant
      * @var string string JSON handed over directly (for PHPUnit tests) instead of php://input
      */
     public const JSON_INPUT = 'SB:JSON_INPUT';
+    /**
+     * @var string class taking care of translations
+     */
+    public const TRANSLATE_CLASS = 'SB:I18N:TranslateClass';
 }

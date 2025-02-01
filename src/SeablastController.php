@@ -7,6 +7,7 @@ namespace Seablast\Seablast;
 use Seablast\Interfaces\IdentityManagerInterface;
 use Seablast\Logger\Logger;
 use Seablast\Seablast\Exceptions\ClientErrorException;
+use Seablast\Seablast\Exceptions\SeablastConfigurationException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
@@ -397,7 +398,8 @@ class SeablastController
                 if (!is_null($this->logger)) {
                     $this->logger->setUser($this->identity->getUserId());
                 }
-                $this->configuration->dbms()->setUser($this->identity->getUserId());
+                // The mysqli/PDO connection starts only with an actual query with this user
+                $this->configuration->setUser($this->identity->getUserId());
             }
         }
         // Authenticate: RBAC (Role-Based Access Control)

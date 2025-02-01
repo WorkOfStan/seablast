@@ -6,6 +6,7 @@ namespace Seablast\Seablast;
 
 use mysqli;
 use mysqli_result;
+use mysqli_stmt;
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\Tracy\BarPanelTemplate;
 use Tracy\Debugger;
@@ -16,7 +17,6 @@ use Tracy\ILogger;
  * MySQLi wrapper with logging.
  *
  * setUser() injects user ID to be logged with queries
- * TODO: explore logging of prepared statements
  */
 class SeablastMysqli extends mysqli
 {
@@ -67,6 +67,79 @@ class SeablastMysqli extends mysqli
     }
 
     /**
+     * Populate database TracyBar.
+     *
+     * @param bool $result
+     * @param string $trimmedQuery
+     * @param \mysqli|\mysqli_stmt $dbCall
+     * @return void
+     */
+    private function addStatement(bool $result, string $trimmedQuery, object $dbCall): void
+    {
+        if ($result !== false) {
+            $this->statementList[] = $trimmedQuery;
+            return;
+        }
+        $this->databaseError = true;
+        $dbError = ['query' => $trimmedQuery, 'Err#' => $dbCall->errno, 'Error:' => $dbCall->error];
+        Debugger::barDump(
+            ['error' => $dbError, 'where' => debug_backtrace()],
+            'Database error',
+            [Dumper::TRUNCATE => 1500] // longer than 150 chars
+        );
+        Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
+        $this->statementList[] = "failure {$dbCall->errno}: {$dbCall->error} => " . $trimmedQuery;
+        $this->logQuery("{$trimmedQuery} -- {$dbCall->errno}: {$dbCall->error}");
+    }
+
+    /**
+     * Identify query that doesn't change data.
+     *
+     * @param string $query
+     * @return bool
+     */
+    private function isReadDataTypeQuery(string $query): bool
+    {
+        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SHOW ') === 0
+            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'EXPLAIN ') === 0;
+    }
+
+    /**
+     * Log this query.
+     *
+     * @param string $query
+     * @return void
+     */
+    private function logQuery(string $query): void
+    {
+        //mb_ereg_replace does not destroy multi-byte characters such as character Č
+        error_log(
+            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']'
+            . PHP_EOL,
+            3,
+            $this->logPath
+        );
+    }
+
+    /**
+     * Prepare wrapper that logs $query.
+     *
+     * Note: Other class cannot be used to override mysqli_stmt because mysqli_stmt has readonly properties and
+     * that prevent new child class to set the values according to an already initiated instance
+     *
+     * @param string $query
+     * @return \mysqli_stmt|false
+     */
+    #[\ReturnTypeWillChange]
+    public function prepare($query)
+    {
+        // Call parent method to prepare the statement
+        $stmt = parent::prepare($query);
+        $this->addStatement((bool) $stmt, $query, $this);
+        return $stmt;
+    }
+
+    /**
      * Logging wrapper over performing a query on the database.
      *
      * @param string $query
@@ -85,15 +158,7 @@ class SeablastMysqli extends mysqli
         }
         try {
             $result = parent::query($trimmedQuery, $resultmode);
-            $this->statementList[] = ($result === false ? 'failure => ' : '') . $trimmedQuery;
-            if ($result === false) {
-                $this->databaseError = true;
-                $dbError = ['query' => $trimmedQuery, 'Err#' => $this->errno, 'Error:' => $this->error];
-                Debugger::barDump($dbError, 'Database error', [Dumper::TRUNCATE => 1500]); // longer than 150 chars
-                Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
-                $this->statementList[] = "{$this->errno}: {$this->error}";
-                $this->logQuery("{$trimmedQuery} -- {$this->errno}: {$this->error}");
-            }
+            $this->addStatement((bool) $result, $trimmedQuery, $this);
             return $result;
         } catch (\mysqli_sql_exception $e) {
             // Catch any mysqli_sql_exception and throw it as DbmsException
@@ -120,35 +185,6 @@ class SeablastMysqli extends mysqli
     }
 
     /**
-     * Identify query that doesn't change data.
-     *
-     * @param string $query
-     * @return bool
-     */
-    private function isReadDataTypeQuery(string $query): bool
-    {
-        return stripos($query, 'SELECT ') === 0 || stripos($query, 'SET ') === 0 || stripos($query, 'SHOW ') === 0
-            || stripos($query, 'DESCRIBE ') === 0 || stripos($query, 'DO ') === 0 || stripos($query, 'EXPLAIN ') === 0;
-    }
-
-    /**
-     * Log this query.
-     *
-     * @param string $query
-     * @return void
-     */
-    private function logQuery(string $query): void
-    {
-        //mb_ereg_replace does not destroy multi-byte characters such as character Č
-        error_log(
-            mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']'
-            . PHP_EOL,
-            3,
-            $this->logPath
-        );
-    }
-
-    /**
      * DI setter.
      *
      * @param int|string $user
@@ -170,7 +206,7 @@ class SeablastMysqli extends mysqli
         if (empty($this->statementList)) {
             return;
         }
-        $sqlBarPanel = new BarPanelTemplate('SQL: ' . count($this->statementList), $this->statementList);
+        $sqlBarPanel = new BarPanelTemplate('MySQLi: ' . count($this->statementList), $this->statementList);
         if ($this->databaseError) {
             $sqlBarPanel->setError();
         }
