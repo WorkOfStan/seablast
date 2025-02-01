@@ -82,7 +82,11 @@ class SeablastMysqli extends mysqli
         }
         $this->databaseError = true;
         $dbError = ['query' => $trimmedQuery, 'Err#' => $dbCall->errno, 'Error:' => $dbCall->error];
-        Debugger::barDump($dbError, 'Database error', [Dumper::TRUNCATE => 1500]); // longer than 150 chars
+        Debugger::barDump(
+            ['error' => $dbError, 'where' => debug_backtrace()],
+            'Database error',
+            [Dumper::TRUNCATE => 1500] // longer than 150 chars
+        );
         Debugger::log('Database error' . print_r($dbError, true), ILogger::ERROR);
         $this->statementList[] = "failure {$dbCall->errno}: {$dbCall->error} => " . $trimmedQuery;
         $this->logQuery("{$trimmedQuery} -- {$dbCall->errno}: {$dbCall->error}");
