@@ -188,28 +188,30 @@ class SeablastPdo extends PDO
      //   }
       //  try {
             // Execute the query based on the presence of fetchMode and fetchModeArgs
-            if (!empty($fetchModeArgs) && !is_null($fetchMode)) {
-                // Spread the fetchModeArgs to pass them as individual arguments
-                $stmt = $this->query($trimmedQuery, $fetchMode, ...$fetchModeArgs);
-            } elseif (!is_null($fetchMode)) {
-                // Only fetchMode is provided
-                $stmt = $this->query($trimmedQuery, $fetchMode);
-            } else {
-                // Neither fetchMode nor fetchModeArgs are provided
-                $stmt = $this->query($trimmedQuery);
-            }
+        if (!empty($fetchModeArgs) && !is_null($fetchMode)) {
+            // Spread the fetchModeArgs to pass them as individual arguments
+            $stmt = $this->query($trimmedQuery, $fetchMode, ...$fetchModeArgs);
+        } elseif (!is_null($fetchMode)) {
+            // Only fetchMode is provided
+            $stmt = $this->query($trimmedQuery, $fetchMode);
+        } else {
+            // Neither fetchMode nor fetchModeArgs are provided
+            $stmt = $this->query($trimmedQuery);
+        }
 
         //    $this->addStatement(true, $trimmedQuery);
-            
+
         if ($stmt === false) {
          ////   $this->addStatement(false, $trimmedQuery); // todo isn't it duplicit error report?
-            Debugger::barDump(['arguments'=> func_get_args(),
+            Debugger::barDump(
+                ['arguments' => func_get_args(),
                       'errorCode' =>        $this->errorCode(),
-                     'errorInfo' =>    $this->errorInfo()],     
-                              'Query failed');
+                     'errorInfo' =>    $this->errorInfo()],
+                'Query failed'
+            );
             throw new DbmsException("Query failed.", (int) $this->errorCode());
         }
-return $stmt;
+        return $stmt;
     }
 
     /**
