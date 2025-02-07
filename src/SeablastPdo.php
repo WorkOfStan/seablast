@@ -182,7 +182,7 @@ class SeablastPdo extends PDO
      */
     public function queryStrict(string $query, ?int $fetchMode = null, ...$fetchModeArgs)
     {
-      //  $trimmedQuery = trim($query);
+        $trimmedQuery = trim($query);
      //   if (!$this->isReadDataTypeQuery($trimmedQuery)) {
       //      $this->logQuery($trimmedQuery);
      //   }
