@@ -163,12 +163,53 @@ class SeablastPdo extends PDO
                 $stmt = parent::query($trimmedQuery);
             }
 
-            $this->addStatement(true, $trimmedQuery);
+            $this->addStatement((bool) $stmt, $trimmedQuery);
             return $stmt;
         } catch (PDOException $e) {
             $this->addStatement(false, $trimmedQuery, $e->getMessage());
             throw new DbmsException("Query failed: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
+    }
+
+    /**
+     * Executes a query and logs it. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query
+     * @param int|null $fetchMode
+     * @param mixed ...$fetchModeArgs
+     * @return PDOStatement
+     * @throws DbmsException
+     */
+    public function queryStrict(string $query, ?int $fetchMode = null, ...$fetchModeArgs)
+    {
+      //  $trimmedQuery = trim($query);
+     //   if (!$this->isReadDataTypeQuery($trimmedQuery)) {
+      //      $this->logQuery($trimmedQuery);
+     //   }
+      //  try {
+            // Execute the query based on the presence of fetchMode and fetchModeArgs
+            if (!empty($fetchModeArgs) && !is_null($fetchMode)) {
+                // Spread the fetchModeArgs to pass them as individual arguments
+                $stmt = $this->query($trimmedQuery, $fetchMode, ...$fetchModeArgs);
+            } elseif (!is_null($fetchMode)) {
+                // Only fetchMode is provided
+                $stmt = $this->query($trimmedQuery, $fetchMode);
+            } else {
+                // Neither fetchMode nor fetchModeArgs are provided
+                $stmt = $this->query($trimmedQuery);
+            }
+
+        //    $this->addStatement(true, $trimmedQuery);
+            
+        if ($stmt === false) {
+         ////   $this->addStatement(false, $trimmedQuery); // todo isn't it duplicit error report?
+            Debugger::barDump(['arguments'=> func_get_args(),
+                      'errorCode' =>        $this->errorCode(),
+                     'errorInfo' =>    $this->errorInfo()],     
+                              'Query failed');
+            throw new DbmsException("Query failed.", (int) $this->errorCode());
+        }
+return $stmt;
     }
 
     /**
