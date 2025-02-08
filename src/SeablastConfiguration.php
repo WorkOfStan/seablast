@@ -16,11 +16,11 @@ class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
-    /** @var ?string */
+    /** @var string|null */
     private $connectionTablePrefix = null;
     /** @var SeablastFlag */
     public $flag;
-    /** @var ?SeablastMysqli */
+    /** @var SeablastMysqli|null */
     private $mysqli = null;
     /** @var array<array<string[]>> */
     private $optionsArrayArrayString = [];
@@ -32,7 +32,7 @@ class SeablastConfiguration
     private $optionsInt = [];
     /** @var string[] */
     private $optionsString = [];
-    /** @var ?SeablastPdo */
+    /** @var SeablastPdo|null */
     private $pdo = null;
     /** @var string|null for db logging */
     private $user = null;

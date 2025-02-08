@@ -20,9 +20,9 @@ class SeablastController
 
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var ?IdentityManagerInterface */
+    /** @var IdentityManagerInterface|null */
     private $identity = null;
-    /** @var ?Logger */
+    /** @var Logger|null */
     private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
@@ -30,7 +30,7 @@ class SeablastController
     private $scriptName;
     /** @var Superglobals */
     private $superglobals;
-    /** @var ?ILogger */
+    /** @var ILogger|null */
     private $tracyLogger = null;
     /** @var string */
     private $uriPath = '';

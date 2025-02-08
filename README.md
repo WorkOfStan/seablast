@@ -43,7 +43,7 @@ SeablastConstant::APP_MAPPING = route => [
 
 ## Database adapters
 
-SeablastConfiguration gives you access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
+SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 
 ## Authentication and authorisation
 
