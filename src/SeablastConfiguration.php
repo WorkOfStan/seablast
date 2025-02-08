@@ -121,12 +121,13 @@ class SeablastConfiguration
      *
      * So that the SQL Bar Panel is not requested in vain.
      *
-     todo alias for mysqliStatus and deprecated
-
+     * @deprecated 0.2.8 Use {@see mysqliStatus()} instead.
      * @return bool
      */
     public function dbmsStatus(): bool
     {
+        Debugger::barDump('Deprecated dbmsStatus(). Use mysqliStatus() instead.');
+        Debugger::log('Deprecated dbmsStatus(). Use mysqliStatus() instead.', \Tracy\ILogger::INFO);
         return $this->mysqli instanceof \mysqli;
     }
 
@@ -229,9 +230,9 @@ class SeablastConfiguration
      * @return SeablastMysqli
      */
     public function mysqli(): SeablastMysqli
-    {
+    {    
         //Lazy initialisation
-        if (!$this->dbmsStatus()) {
+        if (!$this->mysqliStatus()) {
             Debugger::barDump('Creating MySQLi database connection');
             $this->mysqliCreate();
         }
@@ -266,6 +267,18 @@ class SeablastConfiguration
         if (!is_null($this->user)) {
             $this->mysqli->setUser($this->user);
         }
+    }
+
+    /**
+     * Returns true if connected, false otherwise.
+     *
+     * So that the SQL Bar Panel is not requested in vain.
+     *
+     * @return bool
+     */
+    public function mysqliStatus(): bool
+    {
+        return $this->mysqli instanceof \mysqli;
     }
 
     /**
@@ -402,8 +415,8 @@ class SeablastConfiguration
     {
         $this->user = (string) $user;
         // if mysqli or pdo then setUser
-        if ($this->dbmsStatus()) {
-            $this->dbms()->setUser($this->user);
+        if ($this->mysqliStatus()) {
+            $this->mysqli()->setUser($this->user);
         }
         if ($this->pdoStatus()) {
             $this->pdo()->setUser($this->user);
@@ -418,8 +431,8 @@ class SeablastConfiguration
     public function showSqlBarPanel(): void
     {
         // if mysqli or pdo then showSqlBarPanel
-        if ($this->dbmsStatus()) {
-            $this->dbms()->showSqlBarPanel();
+        if ($this->mysqliStatus()) {
+            $this->mysqli()->showSqlBarPanel();
         }
         if ($this->pdoStatus()) {
             $this->pdo()->showSqlBarPanel();

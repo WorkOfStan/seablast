@@ -39,7 +39,7 @@ class SeablastMysqliTest extends TestCase
         $configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
         $configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that the database test works
 
-        $this->mysqli = $configuration->dbms();
+        $this->mysqli = $configuration->mysqli();
     }
 
     public function testConstructorSuccess(): void

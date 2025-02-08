@@ -381,7 +381,7 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager($this->configuration->dbms());
+            $this->identity = new $identityManager($this->configuration->mysqli());
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }

@@ -19,7 +19,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 - if Seablast/Auth extension is present, use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']`
-- the default `log` directory (both for SeablastMysqli query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`
+- the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`
 
 ## Model
 
@@ -40,6 +40,10 @@ SeablastConstant::APP_MAPPING = route => [
     'roleIds' => '1,2', // comma delimited roleIds permitted to access the route,
 ]
 ```
+
+## Database adapters
+
+SeablastConfiguration gives you access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 
 ## Authentication and authorisation
 
