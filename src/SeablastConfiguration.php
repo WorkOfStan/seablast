@@ -230,7 +230,7 @@ class SeablastConfiguration
      * @return SeablastMysqli
      */
     public function mysqli(): SeablastMysqli
-    {    
+    {
         //Lazy initialisation
         if (!$this->mysqliStatus()) {
             Debugger::barDump('Creating MySQLi database connection');
