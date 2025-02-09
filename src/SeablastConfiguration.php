@@ -270,7 +270,7 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true if connected, false otherwise.
+     * Returns true if mysqli adapter connected, false otherwise.
      *
      * So that the SQL Bar Panel is not requested in vain.
      *
@@ -325,7 +325,7 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true if connected, false otherwise.
+     * Returns true if PDO adapter connected, false otherwise.
      *
      * So that the SQL Bar Panel is not requested in vain.
      *

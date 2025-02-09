@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.8] - 2025-02-09
 
+Strict versions of database adapter calls.
+
 ### Added
 
 - SeablastMysqli::prepareStrict throws DbmsException in case of failure
