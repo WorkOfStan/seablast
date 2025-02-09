@@ -133,9 +133,31 @@ class SeablastMysqli extends mysqli
     #[\ReturnTypeWillChange]
     public function prepare($query)
     {
-        // Call parent method to prepare the statement
-        $stmt = parent::prepare($query);
-        $this->addStatement((bool) $stmt, $query, $this);
+        try {
+            // Call parent method to prepare the statement
+            $stmt = parent::prepare($query);
+            $this->addStatement((bool) $stmt, $query, $this);
+            return $stmt;
+        } catch (\mysqli_sql_exception $e) {
+            // Catch any mysqli_sql_exception and throw it as DbmsException
+            throw new DbmsException("mysqli_sql_exception: " . $e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Prepare wrapper that logs $query. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query
+     * @return \mysqli_stmt
+     * @throws DbmsException in case of failure
+     */
+    public function prepareStrict($query)
+    {
+        $stmt = $this->prepare($query);
+        if ($stmt === false) {
+            // Database Tracy BarPanel is displayed in try-catch in SeablastView
+            throw new DbmsException('MySQLi prepare statement failed');
+        }
         return $stmt;
     }
 
@@ -171,10 +193,9 @@ class SeablastMysqli extends mysqli
      *
      * @param string $query
      * @param int $resultmode
-     * @return bool|mysqli_result declared as #[\ReturnTypeWillChange] because in PHP/7 variant type cannot be written
+     * @return bool|mysqli_result
      * @throws DbmsException in case of failure
      */
-    #[\ReturnTypeWillChange]
     public function queryStrict($query, $resultmode = MYSQLI_STORE_RESULT)
     {
         $result = $this->query($query, $resultmode);

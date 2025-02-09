@@ -118,6 +118,24 @@ class SeablastPdo extends PDO
     }
 
     /**
+     * Prepares a statement and logs the query. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query but mixed in PHP/7
+     * @param array<scalar> $options but mixed in PHP/7
+     * @return PDOStatement
+     * @throws DbmsException
+     */
+    public function prepareStrict($query, $options = [])
+    {
+        $stmt = $this->prepare($query, $options);
+        if ($stmt === false) {
+            // Database Tracy BarPanel is displayed in try-catch in SeablastView
+            throw new DbmsException('PDO prepare statement failed');
+        }
+        return $stmt;
+    }
+
+    /**
      * Executes a query and logs it.
      *
      * @param string $query
@@ -145,12 +163,50 @@ class SeablastPdo extends PDO
                 $stmt = parent::query($trimmedQuery);
             }
 
-            $this->addStatement(true, $trimmedQuery);
+            $this->addStatement((bool) $stmt, $trimmedQuery);
             return $stmt;
         } catch (PDOException $e) {
             $this->addStatement(false, $trimmedQuery, $e->getMessage());
             throw new DbmsException("Query failed: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
+    }
+
+    /**
+     * Executes a query and logs it. Throws an exception in case of SQL statement failure.
+     *
+     * @param string $query
+     * @param int|null $fetchMode
+     * @param mixed ...$fetchModeArgs
+     * @return PDOStatement
+     * @throws DbmsException
+     */
+    public function queryStrict(string $query, ?int $fetchMode = null, ...$fetchModeArgs)
+    {
+        $trimmedQuery = trim($query);
+        // Execute the query based on the presence of fetchMode and fetchModeArgs
+        if (!empty($fetchModeArgs) && !is_null($fetchMode)) {
+            // Spread the fetchModeArgs to pass them as individual arguments
+            $stmt = $this->query($trimmedQuery, $fetchMode, ...$fetchModeArgs);
+        } elseif (!is_null($fetchMode)) {
+            // Only fetchMode is provided
+            $stmt = $this->query($trimmedQuery, $fetchMode);
+        } else {
+            // Neither fetchMode nor fetchModeArgs are provided
+            $stmt = $this->query($trimmedQuery);
+        }
+
+        if ($stmt === false) {
+            Debugger::barDump(
+                [
+                    'arguments' => func_get_args(),
+                    'errorCode' => $this->errorCode(),
+                    'errorInfo' => $this->errorInfo()
+                ],
+                'Query failed'
+            );
+            throw new DbmsException("Query failed.", (int) $this->errorCode());
+        }
+        return $stmt;
     }
 
     /**

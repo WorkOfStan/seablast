@@ -20,9 +20,9 @@ class SeablastController
 
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var ?IdentityManagerInterface */
+    /** @var IdentityManagerInterface|null */
     private $identity = null;
-    /** @var ?Logger */
+    /** @var Logger|null */
     private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
@@ -30,7 +30,7 @@ class SeablastController
     private $scriptName;
     /** @var Superglobals */
     private $superglobals;
-    /** @var ?ILogger */
+    /** @var ILogger|null */
     private $tracyLogger = null;
     /** @var string */
     private $uriPath = '';
@@ -381,7 +381,7 @@ class SeablastController
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager($this->configuration->dbms());
+            $this->identity = new $identityManager($this->configuration->mysqli());
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }

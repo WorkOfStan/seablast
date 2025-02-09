@@ -61,9 +61,9 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setInt(SeablastConstant::SB_SMTP_PORT, 25)
         ->setString(SeablastConstant::SB_SMTP_USERNAME, '')
         ->setString(SeablastConstant::SB_SMTP_PASSWORD, '')
-        // User roles according to Seablast/Auth
-     ->setInt(SeablastConstant::USER_ROLE_ADMIN, 1)
-    ->setInt(SeablastConstant::USER_ROLE_EDITOR, 2)
-    ->setInt(SeablastConstant::USER_ROLE_USER, 3)
+        // User roles according to Seablast/Auth // TODO get rid of these?
+        ->setInt(SeablastConstant::USER_ROLE_ADMIN, 1)
+        ->setInt(SeablastConstant::USER_ROLE_EDITOR, 2)
+        ->setInt(SeablastConstant::USER_ROLE_USER, 3)
     ;
 };

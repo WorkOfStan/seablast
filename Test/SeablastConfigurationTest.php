@@ -35,7 +35,7 @@ class SeablastConfigurationTest extends TestCase
 
     public function testDbmsReturnsSeablastMysqliInstance(): void
     {
-        $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->dbms());
+        $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->mysqli());
     }
 
 //    public function testDbmsThrowsExceptionIfNoConnection(): void
@@ -50,7 +50,7 @@ class SeablastConfigurationTest extends TestCase
 ////            ->method('dbmsStatus')
 ////            ->willReturn(false);
 //
-//        $this->configuration->dbms();
+//        $this->configuration->mysqli();
 //    }
 
 //    public function testDbmsTablePrefix()

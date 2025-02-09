@@ -21,6 +21,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.8] - 2025-02-09
+
+Strict versions of database adapter calls.
+
+### Added
+
+- SeablastMysqli::prepareStrict throws DbmsException in case of failure
+- SeablastPdo::prepareStrict and SeablastPdo::queryStrict throw DbmsException in case of failure
+- SeablastConfiguration::mysqli() as replacement for a temporary alias SeablastConfiguration::dbms()
+- SeablastConfiguration::mysqliStatus() as replacement for a temporary alias SeablastConfiguration::dbmsStatus()
+
+### Deprecated
+
+- SeablastConfiguration::dbms() - use SeablastConfiguration::mysqli() instead.
+- SeablastConfiguration::dbmsStatus() - use SeablastConfiguration::mysqliStatus() instead.
+
 ## [0.2.7] - 2025-02-01
 
 SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed when DbmsException is thrown.
@@ -264,7 +280,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...HEAD?w=1
+[0.2.8]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...v0.2.8?w=1
 [0.2.7]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...v0.2.7?w=1
 [0.2.6]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...v0.2.6?w=1
 [0.2.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.4...v0.2.5?w=1

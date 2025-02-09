@@ -16,11 +16,11 @@ class SeablastConfiguration
 {
     use \Nette\SmartObject;
 
-    /** @var ?string */
+    /** @var string|null */
     private $connectionTablePrefix = null;
     /** @var SeablastFlag */
     public $flag;
-    /** @var ?SeablastMysqli */
+    /** @var SeablastMysqli|null */
     private $mysqli = null;
     /** @var array<array<string[]>> */
     private $optionsArrayArrayString = [];
@@ -32,7 +32,7 @@ class SeablastConfiguration
     private $optionsInt = [];
     /** @var string[] */
     private $optionsString = [];
-    /** @var ?SeablastPdo */
+    /** @var SeablastPdo|null */
     private $pdo = null;
     /** @var string|null for db logging */
     private $user = null;
@@ -43,22 +43,16 @@ class SeablastConfiguration
     }
 
     /**
-     * Access to database with lazy initialization.
+     * Access to database using MySQLi adapter with lazy initialization.
      *
-     * todo alias for mysqli and this deprecated
-     *
+     * @deprecated 0.2.8 Use {@see mysqli()} instead.
      * @return SeablastMysqli
      */
     public function dbms(): SeablastMysqli
     {
-        //Lazy initialisation
-        if (!$this->dbmsStatus()) {
-            Debugger::barDump('Creating MySQLi database connection');
-            $this->mysqliCreate();
-        }
-        Assert::object($this->mysqli);
-        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
-        return $this->mysqli;
+        Debugger::barDump('Deprecated dbms(). Use mysqli() instead.');
+        Debugger::log('Deprecated dbms(). Use mysqli() instead.', \Tracy\ILogger::INFO);
+        return $this->mysqli();
     }
 
     /**
@@ -127,12 +121,13 @@ class SeablastConfiguration
      *
      * So that the SQL Bar Panel is not requested in vain.
      *
-     todo alias for mysqliStatus and deprecated
-
+     * @deprecated 0.2.8 Use {@see mysqliStatus()} instead.
      * @return bool
      */
     public function dbmsStatus(): bool
     {
+        Debugger::barDump('Deprecated dbmsStatus(). Use mysqliStatus() instead.');
+        Debugger::log('Deprecated dbmsStatus(). Use mysqliStatus() instead.', \Tracy\ILogger::INFO);
         return $this->mysqli instanceof \mysqli;
     }
 
@@ -230,6 +225,23 @@ class SeablastConfiguration
     }
 
     /**
+     * Access to database using MySQLi adapter with lazy initialization.
+     *
+     * @return SeablastMysqli
+     */
+    public function mysqli(): SeablastMysqli
+    {
+        //Lazy initialisation
+        if (!$this->mysqliStatus()) {
+            Debugger::barDump('Creating MySQLi database connection');
+            $this->mysqliCreate();
+        }
+        Assert::object($this->mysqli);
+        Assert::isAOf($this->mysqli, '\Seablast\Seablast\SeablastMysqli');
+        return $this->mysqli;
+    }
+
+    /**
      * Creates a database connection and sets up charset.
      *
      * @return void
@@ -255,6 +267,18 @@ class SeablastConfiguration
         if (!is_null($this->user)) {
             $this->mysqli->setUser($this->user);
         }
+    }
+
+    /**
+     * Returns true if mysqli adapter connected, false otherwise.
+     *
+     * So that the SQL Bar Panel is not requested in vain.
+     *
+     * @return bool
+     */
+    public function mysqliStatus(): bool
+    {
+        return $this->mysqli instanceof \mysqli;
     }
 
     /**
@@ -301,7 +325,7 @@ class SeablastConfiguration
     }
 
     /**
-     * Returns true if connected, false otherwise.
+     * Returns true if PDO adapter connected, false otherwise.
      *
      * So that the SQL Bar Panel is not requested in vain.
      *
@@ -391,8 +415,8 @@ class SeablastConfiguration
     {
         $this->user = (string) $user;
         // if mysqli or pdo then setUser
-        if ($this->dbmsStatus()) {
-            $this->dbms()->setUser($this->user);
+        if ($this->mysqliStatus()) {
+            $this->mysqli()->setUser($this->user);
         }
         if ($this->pdoStatus()) {
             $this->pdo()->setUser($this->user);
@@ -407,8 +431,8 @@ class SeablastConfiguration
     public function showSqlBarPanel(): void
     {
         // if mysqli or pdo then showSqlBarPanel
-        if ($this->dbmsStatus()) {
-            $this->dbms()->showSqlBarPanel();
+        if ($this->mysqliStatus()) {
+            $this->mysqli()->showSqlBarPanel();
         }
         if ($this->pdoStatus()) {
             $this->pdo()->showSqlBarPanel();
