@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- mapping['roleIds'] exploded into array of integers is safer even thou in_array comparison is loose (so 2 equals " 2")
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
