@@ -1,6 +1,8 @@
 <?php
 
-// only for PHPUnit tests
+declare(strict_types=1);
+
+// Unlike the applications that use it, the Seablast library uses database only for PHPUnit tests.
 return
 [
     'paths' => [
