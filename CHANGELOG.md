@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+- GitHub test PHP/8.4
 
 ### `Changed` for changes in existing functionality
 
