@@ -424,8 +424,9 @@ class SeablastController
             }
             Debugger::barDump('User is authenticated');
             // Specific role expected, if not authorized => 403
-            $roleIds = explode(',', $this->mapping['roleIds']);
-            // TODO in_array comparison is loose, so even 2 equals " 2", but explode to integers would be safer
+            $roleIds = array_map('intval', explode(',', $this->mapping['roleIds']));
+            // Note: in_array comparison is loose, so 2 equals " 2", but explode to integers is safer
+            // TODO: note this to SB/dist
             Debugger::barDump($roleIds, 'RoleIds allowed');
             // Read the current user's role from the configuration object
             if (!in_array($this->configuration->getInt(SeablastConstant::USER_ROLE_ID), $roleIds)) {

@@ -18,8 +18,8 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
 - if Seablast/Auth extension is present, use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
-- set the default phinx environment in the phinx configuration: `['environments']['default_environment']`
-- the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`
+- set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
+- the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
 
 ## Model
 
@@ -41,16 +41,12 @@ SeablastConstant::APP_MAPPING = route => [
 ]
 ```
 
-## Database adapters
-
-SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
-
 ## Authentication and authorisation
 
 - Roles are for access.
 - Routes can only be allowed for roles (never denied). I.e. access to a route can be restricted to certain roles.
 - Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
-- Groups are on top of it, e.g. for promotions etc.
+- Groups are on top of it, e.g. for promotions, subscriptions etc.
 - RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
 
 ## Security
@@ -85,3 +81,8 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 ## Testing
 
 The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
+
+## Development notes
+
+`./blast.sh phpstan` runs PHPStan to test the repository.
+It can also be called ./vendor/seablast/seablast/blast.sh from a Seablast application as a management script for deployment and development.
