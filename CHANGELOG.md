@@ -23,9 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.9] - 2025-03-09
 
+chore: PHP/8.4 support added
+
 ### Added
 
 - support for PHP/8.4, including GitHub tests
+- support for PHP/8.0 added again
 - blast.sh - Management script for deployment and development of a Seablast application
 
 ### Changed

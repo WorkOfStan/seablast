@@ -30,7 +30,11 @@ check_web_inaccessibility() {
     local status_code
     status_code=$(curl -o /dev/null -s -w "%{http_code}" "$url")
 
-    [ "$status_code" -eq 404 ] && echo "✅ $url is correctly blocked ($status_code)." || display_warning "⚠️  Warning: $url is accessible with status $status_code."
+    if [ "$status_code" -eq 404 ]; then
+        echo "✅ $url is correctly blocked ($status_code)."
+    else
+        display_warning "⚠️  Warning: $url is accessible with status $status_code."
+    fi
 }
 
 # Ensures required folders exist and checks web inaccessibility
@@ -54,6 +58,16 @@ setup_environment() {
     fi
 }
 
+# Runs PHPUnit tests if configuration is available
+run_phpunit() {
+    if [[ -f "phpunit.xml" ]]; then
+        display_header "-- Running PHPUnit --"
+        vendor/bin/phpunit
+    else
+        display_warning "NO phpunit.xml CONFIGURATION"
+    fi
+}
+
 # Runs Composer update and database migrations
 assemble() {
     display_header "-- Updating Composer dependencies --"
@@ -66,7 +80,7 @@ assemble() {
     # Drop tables in the testing database if changes were made to migrations
     vendor/bin/phinx migrate -e testing --configuration ./conf/phinx.local.php
 
-    [[ -f "phpunit.xml" ]] && display_header "-- Running PHPUnit --" && vendor/bin/phpunit || display_warning "NO phpunit.xml CONFIGURATION"
+    run_phpunit
 }
 
 # Switches to the main branch
@@ -79,6 +93,8 @@ back_to_main() {
 # Runs PHPStan (with or without --pro)
 run_phpstan() {
     local pro_flag="$1"
+    # Split the string into an array on spaces
+    IFS=' ' read -r -a pro_flags <<< "$pro_flag"
 
     display_header "-- Installing Composer dependencies --"
     composer install -a --prefer-dist --no-progress
@@ -88,10 +104,11 @@ run_phpstan() {
     display_header "-- As PHPUnit>=7 is used the PHPUnit plugin is used for better compatibility ... --"
     composer require --dev phpstan/phpstan-phpunit --prefer-dist --no-progress --with-all-dependencies
 
-    [[ -f "phpunit.xml" ]] && display_header "-- Running PHPUnit --" && vendor/bin/phpunit || display_warning "NO phpunit.xml CONFIGURATION"
+    run_phpunit
 
     display_header "-- Running PHPStan Analysis --"
-    vendor/bin/phpstan.phar --configuration=conf/phpstan.webmozart-assert.neon analyse . $pro_flag
+    # $pro_flag array is expanded below
+    vendor/bin/phpstan.phar --configuration=conf/phpstan.webmozart-assert.neon analyse . "${pro_flags[@]}"
 }
 
 # Removes PHPStan package
@@ -113,7 +130,7 @@ esac
 # Default behavior when no arguments are provided
 if [ $# -eq 0 ]; then
     display_header "-- Setting up environment --"
-    setup_environment
+    setup_environment DEFAULT_PATHS
     display_header "-- Running assemble functionality --"
     assemble
     exit 0
