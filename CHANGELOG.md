@@ -10,11 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- GitHub test PHP/8.4
 
 ### `Changed` for changes in existing functionality
-
-- mapping['roleIds'] exploded into array of integers is safer even thou in_array comparison is loose (so 2 equals " 2")
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -23,6 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.9] - 2025-03-09
+
+### Added
+
+- support for PHP/8.4, including GitHub tests
+- blast.sh - Management script for deployment and development of a Seablast application
+
+### Changed
+
+- mapping['roleIds'] exploded into array of integers is safer even thou in_array comparison is loose (so 2 equals " 2")
 
 ## [0.2.8] - 2025-02-09
 
@@ -283,7 +291,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...HEAD?w=1
+[0.2.9]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...v0.2.9?w=1
 [0.2.8]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...v0.2.8?w=1
 [0.2.7]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...v0.2.7?w=1
 [0.2.6]: https://github.com/WorkOfStan/seablast/compare/v0.2.5...v0.2.6?w=1

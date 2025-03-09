@@ -81,3 +81,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 ## Testing
 
 The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
+
+## Development notes
+
+`./blast.sh phpstan` runs PHPStan to test the repo. It can also be called ./vendor/seablast/seablast/blast.sh from a Seablast application as a management script for deployment and development.
