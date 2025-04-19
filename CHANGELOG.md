@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+- nav.latte is used in the BlueprintWeb.latte and can be used in app
 
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
+
+- phpstan.sh removed as blast.sh cam be used instead
 
 ### `Fixed` for any bugfixes
 
