@@ -50,7 +50,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         Assert::keyExists(
             $this->superglobals->server,
             'REQUEST_METHOD',
-            'API call without REQUEST_METHOD will not work'
+            'API call to ' . get_called_class() . ' without REQUEST_METHOD will not work'
         );
         Debugger::barDump($this->superglobals, 'Superglobals for API'); // TODO add such barDump somewhere before this
         $this->processInput();

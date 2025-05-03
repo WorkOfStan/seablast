@@ -14,15 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- better error reporting in Apis\GenericRestApiJsonModel
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
-- phpstan.sh removed as blast.sh cam be used instead
+- phpstan.sh removed as blast.sh can be used instead
 
 ### `Fixed` for any bugfixes
 
+- change .htaccess directive for Apache 2.2 `Order Allow,Deny\nDeny from all` to Apache 2.4 `Require all denied` to return 403 (instead of 500)
+
 ### `Security` in case of vulnerabilities
+
+- blast.sh: 403 is also considered as a sufficient folder security
 
 ## [0.2.9] - 2025-03-09
 
