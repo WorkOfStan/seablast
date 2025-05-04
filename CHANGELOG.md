@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- nav.latte is used in the BlueprintWeb.latte and can be used in app
+- nav.latte is used in the BlueprintWeb.latte and can be used in app (using inherite.latte)
+- blast.sh self-update (from the Seablast library)
 
 ### `Changed` for changes in existing functionality
 
 - better error reporting in Apis\GenericRestApiJsonModel
+- blast.sh main requires confirmation
 
 ### `Deprecated` for soon-to-be removed features
 

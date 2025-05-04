@@ -4,7 +4,7 @@
 # Usage:
 #   ./blast.sh                          # Runs assemble + creates required folders + checks web inaccessibility
 #   ./blast.sh --base-url http://localhost  # Checks if defined folders are inaccessible at http://localhost
-#   ./blast.sh main                     # Switches to the main branch
+#   ./blast.sh main                     # Switches to the main branch (after confirmation)
 #   ./blast.sh phpstan-pro              # Runs PHPStan with --pro
 #   ./blast.sh phpstan                  # Runs PHPStan without --pro
 #   ./blast.sh phpstan-remove           # Removes PHPStan package
@@ -128,7 +128,7 @@ self_update() {
             cp "$update_file" "$0"
             display_header "Self-update successful: Updated to the newer version from $update_file"
         else
-            display_warning "Self-update: Update file found but it is not newer than the current version."
+            display_warning "Self-update: Update file found, but it is not newer than the current version."
         fi
     else
         display_warning "Self-update: Update file not found at $update_file"
@@ -155,16 +155,19 @@ fi
 
 # Handle command-line parameters
 case "$1" in
-    main) 
+    main)
+        printf "Switches your working tree to the specified branch: main. Git will then fetch from origin (showing you a verbose progress report), bringing in all branches and tags, deleting any remote-tracking branches that have been removed on the server, and then merge (not rebase) the corresponding remote branch into your current branch.\n"
+        read -r -n1 -p "Continue? [y/N] " reply; echo
+        [[ $reply =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
         back_to_main
         ;;
-    phpstan) 
+    phpstan)
         run_phpstan "--memory-limit 350M"
         ;;
-    phpstan-pro) 
+    phpstan-pro)
         run_phpstan "--memory-limit 350M --pro"
         ;;
-    phpstan-remove) 
+    phpstan-remove)
         phpstan_remove
         ;;
     self-update)
