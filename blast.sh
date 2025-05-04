@@ -8,7 +8,7 @@
 #   ./blast.sh phpstan-pro              # Runs PHPStan with --pro
 #   ./blast.sh phpstan                  # Runs PHPStan without --pro
 #   ./blast.sh phpstan-remove           # Removes PHPStan package
-#   ./blast.sh self-update              # Self-update: checks and overrides itself with a newer version if available
+#   ./blast.sh self-update              # Self-update the app version, i.e. checks and overrides itself with a newer version if available in the vendor directory
 
 # Color constants
 NC='\033[0m' # No Color
@@ -176,6 +176,7 @@ case "$1" in
     *)
         display_warning "❌ Unknown option: $1"
         echo "Usage: ./blast.sh [--base-url http://example.com][main|phpstan|phpstan-pro|phpstan-remove|self-update]"
+        echo "(See the beginning of the code for the explanation.)"
         exit 1
         ;;
 esac

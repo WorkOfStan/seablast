@@ -85,4 +85,4 @@ The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, 
 ## Development notes
 
 `./blast.sh phpstan` runs PHPStan to test the repository.
-It can also be called ./vendor/seablast/seablast/blast.sh from a Seablast application as a management script for deployment and development.
+It can also be called `./vendor/seablast/seablast/blast.sh` from a Seablast application as a management script for deployment and development. Run `./blast.sh -?` to see all the options.
