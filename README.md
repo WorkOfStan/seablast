@@ -16,7 +16,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 ## Configuration
 
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
-- if Seablast/Auth extension is present, use its configuration
+- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
@@ -51,11 +51,11 @@ SeablastConstant::APP_MAPPING = route => [
 
 ## Security
 
-All JSON calls and form submits MUST contain `csrfToken` handed over in the `$csrfToken` string latte variable.
+All JSON calls and form submits MUST contain `csrfToken` handed over to the view layer in the `$csrfToken` string latte variable.
 
 ## Stack
 
-- PHP ^7.2 || ^8.1
+- PHP ^7.2 || ^8.0
 - [Latte](http://latte.nette.org/): for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
 - [Tracy](https://github.com/nette/tracy): for debugging
@@ -71,11 +71,11 @@ All JSON calls and form submits MUST contain `csrfToken` handed over in the `$cs
 | Directory | Description                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------- |
 | .github/  | Automations                                                                                                          |
-| Test/     | PHPUnit tests                                                                                                        |
 | cache/    | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/     | Default configuration for a Seablast app and for PHPStan                                                             |
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
 | src/      | Seablast classes                                                                                                     |
+| tests/    | PHPUnit tests                                                                                                        |
 | views/    | Latte templates to be inherited                                                                                      |
 
 ## Testing
