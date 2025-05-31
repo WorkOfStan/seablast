@@ -45,8 +45,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Seablast\\Seablast\\Test\\": [
-        "Test/"
+      "Seablast\\Seablast\\Tests\\": [
+        "tests/"
       ]
     }
   }

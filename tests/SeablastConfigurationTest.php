@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast\Test;
+namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\Exceptions\DbmsException;

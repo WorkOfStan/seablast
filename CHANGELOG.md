@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - better error reporting in Apis\GenericRestApiJsonModel
 - blast.sh main requires confirmation
+- PHPUnit tests folder renamed according to a common convention
 
 ### `Deprecated` for soon-to-be removed features
 
