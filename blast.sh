@@ -1,12 +1,14 @@
 #!/bin/bash
 # blast.sh - Management script for deployment and development of a Seablast application
+# Seablast:v0.2.10
 # Usage:
-#   ./blast.sh                 # Runs assemble + creates required folders + checks web inaccessibility
-#   ./blast.sh --base-url http://localhost # Checks if defined folders are inaccessible at http://localhost
-#   ./blast.sh main            # Switches to the main branch
-#   ./blast.sh phpstan-pro     # Runs PHPStan with --pro
-#   ./blast.sh phpstan         # Runs PHPStan without --pro
-#   ./blast.sh phpstan-remove  # Removes PHPStan package
+#   ./blast.sh                          # Runs assemble + creates required folders + checks web inaccessibility
+#   ./blast.sh --base-url http://localhost  # Checks if defined folders are inaccessible at http://localhost
+#   ./blast.sh main                     # Switches to the main branch (after confirmation)
+#   ./blast.sh phpstan-pro              # Runs PHPStan with --pro
+#   ./blast.sh phpstan                  # Runs PHPStan without --pro
+#   ./blast.sh phpstan-remove           # Removes PHPStan package
+#   ./blast.sh self-update              # Self-update the app version, i.e. checks and overrides itself with a newer version if available in the vendor directory
 
 # Color constants
 NC='\033[0m' # No Color
@@ -21,7 +23,7 @@ display_warning() { printf "${WARNING}%s${NC}\n" "$1"; }
 BASE_URL="http://localhost"
 
 # Default paths for web inaccessibility checks
-DEFAULT_PATHS=("cache" "conf" "log" "models" "views")
+DEFAULT_PATHS=("cache" "conf" "log" "src" "views")
 
 # Function to check web inaccessibility
 check_web_inaccessibility() {
@@ -30,7 +32,7 @@ check_web_inaccessibility() {
     local status_code
     status_code=$(curl -o /dev/null -s -w "%{http_code}" "$url")
 
-    if [ "$status_code" -eq 404 ]; then
+    if [ "$status_code" -eq 404 ] || [ "$status_code" -eq 403 ]; then
         echo "✅ $url is correctly blocked ($status_code)."
     else
         display_warning "⚠️  Warning: $url is accessible with status $status_code."
@@ -48,12 +50,12 @@ setup_environment() {
     done
 
     # Create local config if not present but the dist template is available, if newly created, then stop the script so that the admin may adapt the newly created config
-    [[ ! -f "conf/app.conf.local.php" && -f "conf/app.conf.dist.php" ]] && cp -p conf/app.conf.dist.php conf/app.conf.local.php && warning "Check/modify the newly created conf/app.conf.local.php"  && exit 0
+    [[ ! -f "conf/app.conf.local.php" && -f "conf/app.conf.dist.php" ]] && cp -p conf/app.conf.dist.php conf/app.conf.local.php && display_warning "Check/modify the newly created conf/app.conf.local.php"  && exit 0
 
     # conf/phinx.local.php or at least conf/phinx.dist.php is required
     if [[ ! -f "conf/phinx.local.php" ]]; then
-        [[ ! -f "conf/phinx.dist.php" ]] && warning "phinx config is required for a Seablast app" && exit 0
-        cp -p conf/phinx.dist.php conf/phinx.local.php && warning "Check/modify the newly created conf/phinx.local.php"
+        [[ ! -f "conf/phinx.dist.php" ]] && display_warning "phinx config is required for a Seablast app" && exit 0
+        cp -p conf/phinx.dist.php conf/phinx.local.php && display_warning "Check/modify the newly created conf/phinx.local.php"
         exit 0
     fi
 }
@@ -118,7 +120,22 @@ phpstan_remove() {
     composer remove --dev phpstan/phpstan-webmozart-assert
 }
 
-# Parse arguments
+# Self-update function: checks for an updated version of this script and overrides itself if found
+self_update() {
+    local update_file="./vendor/seablast/seablast/blast.sh"
+    if [ -f "$update_file" ]; then
+        if [ "$update_file" -nt "$0" ]; then
+            cp "$update_file" "$0"
+            display_header "Self-update successful: Updated to the newer version from $update_file"
+        else
+            display_warning "Self-update: Update file found, but it is not newer than the current version."
+        fi
+    else
+        display_warning "Self-update: Update file not found at $update_file"
+    fi
+}
+
+# Parse optional base-url argument
 case "$1" in
     --base-url)
         shift
@@ -130,21 +147,36 @@ esac
 # Default behavior when no arguments are provided
 if [ $# -eq 0 ]; then
     display_header "-- Setting up environment --"
-    setup_environment DEFAULT_PATHS
+    setup_environment "${DEFAULT_PATHS[@]}"
     display_header "-- Running assemble functionality --"
     assemble
     exit 0
 fi
 
-# Handle different command-line parameters
+# Handle command-line parameters
 case "$1" in
-    main) back_to_main ;;
-    phpstan) run_phpstan "--memory-limit 350M" ;;
-    phpstan-pro) run_phpstan "--memory-limit 350M --pro" ;;
-    phpstan-remove) phpstan_remove ;;
+    main)
+        printf "Switches your working tree to the specified branch: main. Git will then fetch from origin (showing you a verbose progress report), bringing in all branches and tags, deleting any remote-tracking branches that have been removed on the server, and then merge (not rebase) the corresponding remote branch into your current branch.\n"
+        read -r -n1 -p "Continue? [y/N] " reply; echo
+        [[ $reply =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+        back_to_main
+        ;;
+    phpstan)
+        run_phpstan "--memory-limit 350M"
+        ;;
+    phpstan-pro)
+        run_phpstan "--memory-limit 350M --pro"
+        ;;
+    phpstan-remove)
+        phpstan_remove
+        ;;
+    self-update)
+        self_update
+        ;;
     *)
         display_warning "❌ Unknown option: $1"
-        echo "Usage: ./blast.sh [--base-url http://example.com][main|phpstan|phpstan-pro|phpstan-remove]"
+        echo "Usage: ./blast.sh [--base-url http://example.com][main|phpstan|phpstan-pro|phpstan-remove|self-update]"
+        echo "(See the beginning of the code for the explanation.)"
         exit 1
         ;;
 esac

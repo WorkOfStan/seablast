@@ -210,7 +210,15 @@ class SeablastController
      */
     public function getIdentity(): IdentityManagerInterface
     {
-        Assert::notNull($this->identity, 'SeablastController::getIdentity() called too soon.');
+        Assert::notNull(
+            $this->identity,
+            'SeablastController::getIdentity() called too soon. ' .
+            (
+                $this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)
+                ? "Connect " . $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER)
+                : "No SB_IDENTITY_MANAGER configured."
+            )
+        );
         return $this->identity;
     }
 
@@ -227,7 +235,7 @@ class SeablastController
             ['requestUri' => $requestUri, 'parsedUrl' => $parsedUrl],
             'makeSureUrlIsParametric'
         );
-        Assert::isArray($parsedUrl, 'MUST be an array with at least field `path`');
+        Assert::isArray($parsedUrl, 'MUST be an array with at least a `path` field');
         Assert::keyExists($parsedUrl, 'path');
         // /app/products and /app/products/ and /app/products/?id=1 are all resolved to /products
         $this->uriPath = self::removeSuffix($parsedUrl['path'], '/');
@@ -333,7 +341,7 @@ class SeablastController
     }
 
     /**
-     * Transform URI to model with parameters and RBAC.
+     * Transform URI to model with parameters and RBAC (Role-Based Access Control).
      *
      * @return void
      */
@@ -366,6 +374,7 @@ class SeablastController
         // --> model & params & view type (html, json)
         //
         // TODO fix: if deployed standalone, ends with exception `No array string for the property SB:APP_MAPPING`. OK?
+        // TODO ... there's /error and /api/error so it should not fail, anymore
         $mapping = $this->configuration->getArrayArrayString(SeablastConstant::APP_MAPPING);
         if (!isset($mapping[$this->uriPath])) {
             Debugger::barDump(
@@ -398,7 +407,7 @@ class SeablastController
                 if (!is_null($this->logger)) {
                     $this->logger->setUser($this->identity->getUserId());
                 }
-                // The mysqli/PDO connection starts only with an actual query with this user
+                // The mysqli/PDO connection lazy starts (only with an actual query) with this user
                 $this->configuration->setUser($this->identity->getUserId());
             }
         }
@@ -434,7 +443,7 @@ class SeablastController
                 return;
             }
         }
-        // If id argument is expected, it is also required
+        // If id:int argument is expected, it is also required
         if (isset($this->mapping['id'])) {
             if (!isset($this->superglobals->get[$this->mapping['id']])) {
                 Debugger::barDump(
@@ -450,7 +459,7 @@ class SeablastController
                 (int) $this->superglobals->get[$this->mapping['id']]
             );
         }
-        // If code argument is expected, it is also required
+        // If code:string argument is expected, it is also required
         if (isset($this->mapping['code'])) {
             if (!isset($this->superglobals->get[$this->mapping['code']])) {
                 Debugger::barDump(

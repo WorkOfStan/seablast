@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Seablast\Seablast\Test;
+namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Seablast\Seablast\SeablastConstant;
@@ -32,7 +32,7 @@ class SeablastViewTest extends TestCase
         }
 
         $this->configuration = new SeablastConfiguration();
-        $defaultConfig = __DIR__ . '/../conf/default.conf.php';
+        $defaultConfig = APP_DIR . '/conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));

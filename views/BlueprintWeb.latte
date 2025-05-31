@@ -61,15 +61,7 @@
     <body>
         <header>
             <nav>
-                {* TODO JavaScript to toggle menu *}
-                <!-- Hamburger menu for mobile -->
-                <div id="hamburger-menu">☰</div>
-                <ul id="menu">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
+                {include 'inherite.latte', latte => 'nav.latte'}
             </nav>
         </header>
 
