@@ -103,8 +103,33 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         Debugger::barDump($jsonDecoded, 'data json_decoded from php://input');
         // Validate JSON input
         if (json_last_error() !== JSON_ERROR_NONE) {
+            // According to https://www.php.net/json_last_error
+            switch (json_last_error()) {
+                case JSON_ERROR_CTRL_CHAR: $err = 'Unexpected control character';
+                    break;
+                case JSON_ERROR_DEPTH: $err = 'Maximum stack depth exceeded';
+                    break;
+                case JSON_ERROR_INF_OR_NAN: $err = 'One or more NAN or INF values in the value to be encoded';
+                    break;
+                case JSON_ERROR_INVALID_PROPERTY_NAME: $err = 'A property name that cannot be encoded was given';
+                    break;
+                case JSON_ERROR_RECURSION: $err = 'One or more recursive references in the value to be encoded';
+                    break;
+                case JSON_ERROR_STATE_MISMATCH:$err = 'Underflow or mismatch';
+                    break;
+                case JSON_ERROR_SYNTAX: $err = 'Syntax error';
+                    break;
+                case JSON_ERROR_UNSUPPORTED_TYPE: $err = 'A value of a type that cannot be encoded was given';
+                    break;
+                case JSON_ERROR_UTF16: $err = 'Malformed UTF-16 characters, possibly incorrectly encoded';
+                    break;
+                case JSON_ERROR_UTF8: $err = 'Malformed UTF-8';
+                    break;
+                default: $err = 'Unknown JSON error (int)' . json_last_error();
+                    break;
+            }
             $this->httpCode = 400; // Bad Request
-            $this->message = 'Invalid JSON input'; // TODO be more specific by https://www.php.net/json_last_error
+            $this->message = $err;
             return;
         } elseif (!is_object($jsonDecoded)) { // maybe this is redundant vs json_last_error above
             Debugger::barDump("Decoded JSON doesn't translate to an object", 'ERROR on input');
