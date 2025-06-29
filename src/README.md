@@ -5,7 +5,6 @@
 2. **SeablastController**: Applies the configuration and determines the appropriate mapping based on the URL and superglobals. The mapping is retrieved from `APP_MAPPING` and assigned to `string[] mapping`. If `mapping['roleIds']` is set, the IdentityManager comes into play here.
 
 3. **SeablastModel**:
-
    - Invokes the `knowledge()` method of the app model if `controller->mapping['model']` is set.
    - Passes the results through `getParameters()` to standardize output.
    - If no model is set, it returns a CSRF token via `getParameters()`.
