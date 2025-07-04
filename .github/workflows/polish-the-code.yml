@@ -46,7 +46,9 @@ jobs:
       - name: Invoke the Prettier fix
         uses: WorkOfStan/prettier-fix@v1.1.5
         with:
-          commit-changes: ${{ github.event_name != 'schedule' }}
+          # TODO fix super-linter prettier vs prettier-fix
+          # commit-changes: ${{ github.event_name != 'schedule' }}
+          commit-changes: false
 
   phpcs-phpcbf:
     needs: prettier-fix
