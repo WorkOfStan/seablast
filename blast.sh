@@ -44,9 +44,15 @@ setup_environment() {
     local paths=("$@") # Use provided paths or default ones
     [ ${#paths[@]} -eq 0 ] && paths=("${DEFAULT_PATHS[@]}") # If no paths given, use defaults
 
+    local has_curl=false
+    if command -v curl &> /dev/null; then
+      has_curl=true
+    else
+      display_warning "⚠️  Warning: curl is not installed, so security of folders cannot be tested."
+    fi
     for folder in "${paths[@]}"; do
         [ ! -d "$folder" ] && mkdir -p "$folder" && display_header "Created missing folder: $folder"
-        check_web_inaccessibility "/$folder/"
+        $has_curl && check_web_inaccessibility "/$folder/"
     done
 
     # Create local config if not present but the dist template is available, if newly created, then stop the script so that the admin may adapt the newly created config
