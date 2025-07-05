@@ -68,6 +68,6 @@ jobs:
 
   super-linter:
     needs: phpcs-phpcbf
-    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.3
+    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@feature/refspull
     with:
       runs-on: "ubuntu-latest"
