@@ -191,6 +191,9 @@ class SeablastController
             $this->superglobals->server['HTTP_HOST'] .
             $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')
         );
+        // TODO: $this->configuration->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
+        //  $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')) // just app directory
+        // but isn't it too late for this settings?
     }
 
     /**
