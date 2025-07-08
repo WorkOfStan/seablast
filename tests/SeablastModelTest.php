@@ -36,6 +36,9 @@ class SeablastModelTest extends TestCase
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
 
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
+        if ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME)) {
+            $this->configuration->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH, '/');
+        }
         $this->controller = new SeablastController(
             $this->configuration,
             new Superglobals(
