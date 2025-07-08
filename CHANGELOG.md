@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Security` in case of vulnerabilities
 
 - blast.sh: 403 is also considered as a sufficient folder security
+- cookies limited to app path
 
 ## [0.2.9] - 2025-03-09
 

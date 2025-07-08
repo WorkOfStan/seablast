@@ -105,13 +105,6 @@ class SeablastController
                                 . ' required if following is set: ' . $property);
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
-                        //ini_set('session.http_only', '1');
-//                        if (
-//                            isset($this->superglobals->server['REQUEST_SCHEME']) &&
-//                            $this->superglobals->server['REQUEST_SCHEME'] == 'https'
-//                        ) {
-//                            ini_set('session.cookie_secure', '1');
-//                        }
                         //ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
                             $this->configuration->getInt($property), // int $lifetime_or_options,
@@ -126,11 +119,12 @@ class SeablastController
                                 ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
                                 : $this->getAppPath(), // ?string $path = null,
                             $this->getAppHostWithoutPort(), // ?string $domain = null,
+                            // TODO DRY // more ways to identify HTTPS
                             isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] === 'https', // ?bool $secure = null,
                             true // ?bool $httponly = null
                         );
-                        // TODO debugging DRY
+                        // TODO session_set_cookie_params cookie debugging DRY
                         Debugger::barDump(['lifetime' => $this->configuration->getInt($property),
                             'path' =>
                             // @phpstan-ignore booleanAnd.leftAlwaysTrue
@@ -147,6 +141,7 @@ class SeablastController
                             'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] === 'https',
                             'httponly' => true,
+                            '_COOKIE' => $_COOKIE,
                             ], 'session_set_cookie_params');
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
@@ -464,11 +459,6 @@ class SeablastController
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
             $this->identity = new $identityManager($this->configuration->mysqli());
-//            if (method_exists($this->identity, 'setCookieDomainPath')) {
-//                $this->identity->setCookieDomainPath(
-//                    $this->configuration->getString(SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL)
-//                );
-//            }
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
