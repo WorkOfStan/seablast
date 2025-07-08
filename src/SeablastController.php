@@ -433,11 +433,11 @@ class SeablastController
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
             /* @phpstan-ignore-next-line Property $identity does not accept object. */
             $this->identity = new $identityManager($this->configuration->mysqli());
-            if (method_exists($this->identity, 'setCookieDomainPath')) {
-                $this->identity->setCookieDomainPath(
-                    $this->configuration->getString(SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL)
-                );
-            }
+//            if (method_exists($this->identity, 'setCookieDomainPath')) {
+//                $this->identity->setCookieDomainPath(
+//                    $this->configuration->getString(SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL)
+//                );
+//            }
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
