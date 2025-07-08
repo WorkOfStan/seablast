@@ -143,7 +143,7 @@ class SeablastController
                             ) //
                                 ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
                                 : $this->getAppPath(),
-                            'domain' => $this->getAppHostWithoutPort,
+                            'domain' => $this->getAppHostWithoutPort(),
                             'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] === 'https',
                             'httponly' => true,
