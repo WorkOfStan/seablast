@@ -101,7 +101,6 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
                         if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
-                            // TODO test this!
                             throw new SeablastConfigurationException(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
@@ -113,7 +112,7 @@ class SeablastController
 //                        ) {
 //                            ini_set('session.cookie_secure', '1');
 //                        }
-                        ini_set('session.cookie_httponly', '1');
+                        //ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
                             $this->configuration->getInt($property), // int $lifetime_or_options,
                             // @phpstan-ignore booleanAnd.leftAlwaysTrue
@@ -126,15 +125,29 @@ class SeablastController
                             ) //
                                 ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
                                 : $this->getAppPath(), // ?string $path = null,
-                            $this->getAppHost(), // ?string $domain = null,
+                            $this->getAppHostWithoutPort(), // ?string $domain = null,
                             isset($this->superglobals->server['REQUEST_SCHEME']) &&
-                            $this->superglobals->server['REQUEST_SCHEME'] == 'https', // ?bool $secure = null,
+                            $this->superglobals->server['REQUEST_SCHEME'] === 'https', // ?bool $secure = null,
                             true // ?bool $httponly = null
                         );
-//                        session_set_cookie_params(
-//
-//                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)
-//                        );
+                        // TODO debugging DRY
+                        Debugger::barDump(['lifetime' => $this->configuration->getInt($property),
+                            'path' =>
+                            // @phpstan-ignore booleanAnd.leftAlwaysTrue
+                            ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) && //
+                            !(//
+                            $this->configuration->getString(
+                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH //
+                            ) === ''//
+                            ) //
+                            ) //
+                                ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
+                                : $this->getAppPath(),
+                            'domain' => $this->getAppHostWithoutPort,
+                            'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
+                            $this->superglobals->server['REQUEST_SCHEME'] === 'https',
+                            'httponly' => true,
+                            ], 'session_set_cookie_params');
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
@@ -209,12 +222,30 @@ class SeablastController
     /**
      * Returns host name (domain) of the running app.
      *
-     * @return string
+     * @return string Hostname, possibly with port (e.g., 'example.com:8080')
      */
     private function getAppHost(): string
     {
         Assert::string($this->superglobals->server['HTTP_HOST']);
         return $this->superglobals->server['HTTP_HOST'];
+    }
+
+    /**
+     * Returns host name (domain) of the running app without port.
+     *
+     * @return string Hostname without port (e.g., 'example.com')
+     */
+    private function getAppHostWithoutPort(): string
+    {
+        $host = $this->getAppHost();
+        // If there's a colon and it's not an IPv6 address
+        if (strpos($host, ':') !== false && strpos($host, ']') === false) {
+            $parts = explode(':', $host, 2);
+            return $parts[0];
+        }
+
+        // IPv6 address or no port
+        return $host;
     }
 
     /**
