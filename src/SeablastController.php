@@ -132,7 +132,7 @@ class SeablastController
                             true // ?bool $httponly = null
                         );
 //                        session_set_cookie_params(
-//                            
+//
 //                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)
 //                        );
                         break;
@@ -228,7 +228,7 @@ class SeablastController
         Assert::string($scriptName);
         //$this->scriptName = $scriptName; // TODO get rid of $this->sN
         $appPath = self::removeSuffix($scriptName, '/vendor/seablast/seablast/index.php');
-        // the following syntax returns identical result, 
+        // the following syntax returns identical result,
         // if SCRIPT_NAME ends exactly with /vendor/seablast/seablast/index.php
         //$appPath = self::removeSuffix(
         //    (pathinfo($scriptName, PATHINFO_DIRNAME) === '/')
