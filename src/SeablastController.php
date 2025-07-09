@@ -26,8 +26,6 @@ class SeablastController
     private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
-    /** @var string */
-    private $scriptName;
     /** @var Superglobals */
     private $superglobals;
     /** @var ILogger|null */
@@ -49,6 +47,7 @@ class SeablastController
         $this->configuration = $configuration;
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
         $this->pageUnderConstruction();
+        $this->applyConfigurationRegardlessSession(); // before session, so that cookie path limited to app folder
         if (session_status() === PHP_SESSION_NONE) {
             // Controller can be fired up multiple times in PHPUnit, but this part may run only once
             $this->applyConfigurationBeforeSession();
@@ -60,7 +59,6 @@ class SeablastController
                 ILogger::INFO
             );
         }
-        $this->applyConfigurationWithSession();
         $this->route();
     }
 
@@ -101,23 +99,46 @@ class SeablastController
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
                         if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
-                            // TODO test this!
                             throw new SeablastConfigurationException(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
                                 . ' required if following is set: ' . $property);
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
-                        ini_set('session.http_only', '1');
-                        if (
-                            isset($this->superglobals->server['REQUEST_SCHEME']) &&
-                            $this->superglobals->server['REQUEST_SCHEME'] == 'https'
-                        ) {
-                            ini_set('session.cookie_secure', '1');
-                        }
-                        ini_set('session.cookie_httponly', '1');
+                        //ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
-                            $this->configuration->getInt($property),
-                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)
+                            $this->configuration->getInt($property), // int $lifetime_or_options,
+                            // @phpstan-ignore booleanAnd.leftAlwaysTrue
+                            ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) && //
+                            !(//
+                            $this->configuration->getString(
+                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH //
+                            ) === ''//
+                            ) //
+                            ) //
+                                ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
+                                : $this->getAppPath(), // ?string $path = null,
+                            $this->getAppHostWithoutPort(), // ?string $domain = null,
+                            $this->isHttps($this->superglobals->server), // ?bool $secure = null,
+                            true // ?bool $httponly = null
                         );
+                        // TODO session_set_cookie_params cookie debugging DRY
+                        Debugger::barDump(['lifetime' => $this->configuration->getInt($property),
+                            'path' =>
+                            // @phpstan-ignore booleanAnd.leftAlwaysTrue
+                            ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) && //
+                            !(//
+                            $this->configuration->getString(
+                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH //
+                            ) === ''//
+                            ) //
+                            ) //
+                                ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
+                                : $this->getAppPath(),
+                            'domain' => $this->getAppHostWithoutPort(),
+                            'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
+                            $this->superglobals->server['REQUEST_SCHEME'] === 'https',
+                            'httponly' => true,
+                            '_COOKIE' => $_COOKIE,
+                            ], 'session_set_cookie_params');
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
@@ -173,27 +194,64 @@ class SeablastController
      *
      * @return void
      */
-    private function applyConfigurationWithSession(): void
+    private function applyConfigurationRegardlessSession(): void
     {
-        Assert::string($this->superglobals->server['HTTP_HOST']);
-        $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
-        Assert::string($scriptName);
-        $this->scriptName = $scriptName;
-        // more ways to identify HTTPS
-        $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
-            && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
-            (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
-            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
-            'http' . ($isHttps ? 's' : '') . '://' .
-            $this->superglobals->server['HTTP_HOST'] .
-            $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')
+            'http' . ($this->isHttps($this->superglobals->server) ? 's' : '') . '://' .
+            $this->getAppHost() .
+            $this->getAppPath()
         );
-        // TODO: $this->configuration->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
-        //  $this->removeSuffix($this->scriptName, '/vendor/seablast/seablast/index.php')) // just app directory
-        // but isn't it too late for this settings?
+    }
+
+    /**
+     * Returns host name (domain) of the running app.
+     *
+     * @return string Hostname, possibly with port (e.g., 'example.com:8080')
+     */
+    private function getAppHost(): string
+    {
+        Assert::string($this->superglobals->server['HTTP_HOST']);
+        return $this->superglobals->server['HTTP_HOST'];
+    }
+
+    /**
+     * Returns host name (domain) of the running app without port.
+     *
+     * @return string Hostname without port (e.g., 'example.com')
+     */
+    private function getAppHostWithoutPort(): string
+    {
+        $host = $this->getAppHost();
+        // If there's a colon and it's not an IPv6 address
+        if (strpos($host, ':') !== false && strpos($host, ']') === false) {
+            $parts = explode(':', $host, 2);
+            return $parts[0];
+        }
+
+        // IPv6 address or no port
+        return $host;
+    }
+
+    /**
+     * Returns path to the running app.
+     *
+     * @return string
+     */
+    private function getAppPath(): string
+    {
+        $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
+        Assert::string($scriptName);
+        $appPath = self::removeSuffix($scriptName, '/vendor/seablast/seablast/index.php');
+        // the following syntax returns identical result,
+        // if SCRIPT_NAME ends exactly with /vendor/seablast/seablast/index.php
+        //$appPath = self::removeSuffix(
+        //    (pathinfo($scriptName, PATHINFO_DIRNAME) === '/')
+        //        ? '' : pathinfo($scriptName, PATHINFO_DIRNAME),
+        //    '/vendor/seablast/seablast'
+        //);
+        return $appPath;
     }
 
     /**
@@ -223,6 +281,43 @@ class SeablastController
             )
         );
         return $this->identity;
+    }
+
+    /**
+     * Checks whether the current request was made using HTTPS.
+     *
+     * This function supports detection of HTTPS in both Apache and Nginx environments,
+     * including setups behind reverse proxies or load balancers (e.g., Nginx, Cloudflare),
+     * by inspecting common server variables and headers.
+     *
+     * For maximum security when behind a proxy, you can pass a list of trusted proxy IPs
+     * to avoid spoofed headers like X-Forwarded-Proto.
+     *
+     * @param array<mixed> $server The $_SERVER array or a custom equivalent.
+     * @param array<string> $trustedProxies (optional) Array of trusted proxy IP addresses.
+     *                               When specified, proxy-related headers are trusted
+     *                               only if the request comes from one of these IPs.
+     *
+     * @return bool True if the request was made via HTTPS, false otherwise.
+     *
+     * @example
+     * isHttps($_SERVER); // Basic usage
+     * isHttps($_SERVER, ['192.168.1.1']); // Usage with trusted proxies
+     */
+    private function isHttps(array $server, array $trustedProxies = []): bool
+    {
+        $clientIp = $server['REMOTE_ADDR'] ?? '';
+
+        $proxyHeaders = (
+            (!empty($server['HTTP_X_FORWARDED_PROTO']) && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+            (!empty($server['HTTP_X_FORWARDED_SSL']) && strtolower($server['HTTP_X_FORWARDED_SSL']) === 'on')
+            );
+
+        return
+            (!empty($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
+            (!empty($server['REQUEST_SCHEME']) && strtolower($server['REQUEST_SCHEME']) === 'https') ||
+            (!empty($server['SERVER_PORT']) && $server['SERVER_PORT'] == '443') ||
+            ($proxyHeaders && in_array($clientIp, $trustedProxies, true));
     }
 
     /**
@@ -354,19 +449,16 @@ class SeablastController
             $this->superglobals->server['REQUEST_URI'],
             '$_SERVER[REQUEST_URI] expected a string. Got: ' . gettype($this->superglobals->server['REQUEST_URI'])
         );
-        $appPath = self::removeSuffix(
-            (pathinfo($this->scriptName, PATHINFO_DIRNAME) === '/')
-                ? '' : pathinfo($this->scriptName, PATHINFO_DIRNAME),
-            '/vendor/seablast/seablast'
-        );
         // process the URL
-        $this->makeSureUrlIsParametric(self::removePrefix($this->superglobals->server['REQUEST_URI'], $appPath));
+        $this->makeSureUrlIsParametric(
+            self::removePrefix($this->superglobals->server['REQUEST_URI'], $this->getAppPath())
+        );
         // uriPath and uriQuery are now populated
         Debugger::barDump(
             [
                 'REQUEST_URI' => $this->superglobals->server['REQUEST_URI'],
                 'APP_DIR' => APP_DIR,
-                'appPath' => $appPath, //todo compare w SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL
+                'appPath' => $this->getAppPath(),
                 'path' => $this->uriPath,
                 'query' => $this->uriQuery,
             ],

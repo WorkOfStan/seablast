@@ -10,31 +10,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+
+### `Changed` for changes in existing functionality
+
+### `Deprecated` for soon-to-be removed features
+
+### `Removed` for now removed features
+
+### `Fixed` for any bugfixes
+
+### `Security` in case of vulnerabilities
+
+## [0.2.10] - 2025-07-09
+
+fix: cookies limited to app path
+
+### Added
+
 - nav.latte is used in the BlueprintWeb.latte and can be used in app (using inherite.latte)
 - blast.sh self-update (from the Seablast library)
 - assets/scripts expected by plugins (Seablast/Auth) send-auth-token.js expecting both Environment.js and seablast.js
 
-### `Changed` for changes in existing functionality
+### Changed
 
 - better error reporting in Apis\GenericRestApiJsonModel
 - blast.sh main requires confirmation
 - PHPUnit tests folder renamed according to a common convention
 - GenericRestApiJsinModel.php is more verbose about an input JSON error
 
-### `Deprecated` for soon-to-be removed features
-
-### `Removed` for now removed features
+### Removed
 
 - phpstan.sh removed because blast.sh can be used instead
 
-### `Fixed` for any bugfixes
+### Fixed
 
 - change .htaccess directive for Apache 2.2 `Order Allow,Deny\nDeny from all` to Apache 2.4 `Require all denied` to return 403 (instead of 500)
 - blast.sh checks for curl presence before invoking it
 
-### `Security` in case of vulnerabilities
+### Security
 
 - blast.sh: 403 is also considered as a sufficient folder security
+- cookies limited to app path
 
 ## [0.2.9] - 2025-03-09
 
@@ -309,7 +325,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...HEAD?w=1
+[0.2.10]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...v0.2.10?w=1
 [0.2.9]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...v0.2.9?w=1
 [0.2.8]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...v0.2.8?w=1
 [0.2.7]: https://github.com/WorkOfStan/seablast/compare/v0.2.6...v0.2.7?w=1
