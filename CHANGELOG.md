@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.10.1] - 2025-07-09
+
+fix: automatic population of SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH by the app path
+
 ## [0.2.10] - 2025-07-09
 
 fix: cookies limited to app path
@@ -50,7 +54,7 @@ fix: cookies limited to app path
 ### Security
 
 - blast.sh: 403 is also considered as a sufficient folder security
-- cookies limited to app path
+- cookies limited to app path, so various apps in the same domain don't cross-logout
 
 ## [0.2.9] - 2025-03-09
 
@@ -325,7 +329,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...HEAD?w=1
+[0.2.10.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...v0.2.10.1?w=1
 [0.2.10]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...v0.2.10?w=1
 [0.2.9]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...v0.2.9?w=1
 [0.2.8]: https://github.com/WorkOfStan/seablast/compare/v0.2.7...v0.2.8?w=1

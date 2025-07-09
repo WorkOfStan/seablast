@@ -71,6 +71,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 | Directory | Description                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------- |
 | .github/  | Automations                                                                                                          |
+| assets/   | Web assets available for browser (such as shared scripts)                                                            |
 | cache/    | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
 | conf/     | Default configuration for a Seablast app and for PHPStan                                                             |
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
