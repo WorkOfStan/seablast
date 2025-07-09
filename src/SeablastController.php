@@ -26,8 +26,6 @@ class SeablastController
     private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
-    //** @var string */
-    //private $scriptName;
     /** @var Superglobals */
     private $superglobals;
     /** @var ILogger|null */
@@ -119,9 +117,7 @@ class SeablastController
                                 ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
                                 : $this->getAppPath(), // ?string $path = null,
                             $this->getAppHostWithoutPort(), // ?string $domain = null,
-                            // TODO DRY // more ways to identify HTTPS
-                            isset($this->superglobals->server['REQUEST_SCHEME']) &&
-                            $this->superglobals->server['REQUEST_SCHEME'] === 'https', // ?bool $secure = null,
+                            $this->isHttps($this->superglobals->server), // ?bool $secure = null,
                             true // ?bool $httponly = null
                         );
                         // TODO session_set_cookie_params cookie debugging DRY
@@ -200,15 +196,10 @@ class SeablastController
      */
     private function applyConfigurationRegardlessSession(): void
     {
-        // more ways to identify HTTPS
-        $isHttps = (!empty($this->superglobals->server['REQUEST_SCHEME'])
-            && $this->superglobals->server['REQUEST_SCHEME'] == 'https') ||
-            (!empty($this->superglobals->server['HTTPS']) && $this->superglobals->server['HTTPS'] == 'on') ||
-            (!empty($this->superglobals->server['SERVER_PORT']) && $this->superglobals->server['SERVER_PORT'] == '443');
         $this->configuration->setString(
             // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
-            'http' . ($isHttps ? 's' : '') . '://' .
+            'http' . ($this->isHttps($this->superglobals->server) ? 's' : '') . '://' .
             $this->getAppHost() .
             $this->getAppPath()
         );
@@ -252,7 +243,6 @@ class SeablastController
     {
         $scriptName = filter_var($this->superglobals->server['SCRIPT_NAME'], FILTER_SANITIZE_URL);
         Assert::string($scriptName);
-        //$this->scriptName = $scriptName; // TODO get rid of $this->sN
         $appPath = self::removeSuffix($scriptName, '/vendor/seablast/seablast/index.php');
         // the following syntax returns identical result,
         // if SCRIPT_NAME ends exactly with /vendor/seablast/seablast/index.php
@@ -291,6 +281,43 @@ class SeablastController
             )
         );
         return $this->identity;
+    }
+
+    /**
+     * Checks whether the current request was made using HTTPS.
+     *
+     * This function supports detection of HTTPS in both Apache and Nginx environments,
+     * including setups behind reverse proxies or load balancers (e.g., Nginx, Cloudflare),
+     * by inspecting common server variables and headers.
+     *
+     * For maximum security when behind a proxy, you can pass a list of trusted proxy IPs
+     * to avoid spoofed headers like X-Forwarded-Proto.
+     *
+     * @param array<mixed> $server The $_SERVER array or a custom equivalent.
+     * @param array<string> $trustedProxies (optional) Array of trusted proxy IP addresses.
+     *                               When specified, proxy-related headers are trusted
+     *                               only if the request comes from one of these IPs.
+     *
+     * @return bool True if the request was made via HTTPS, false otherwise.
+     *
+     * @example
+     * isHttps($_SERVER); // Basic usage
+     * isHttps($_SERVER, ['192.168.1.1']); // Usage with trusted proxies
+     */
+    private function isHttps(array $server, array $trustedProxies = []): bool
+    {
+        $clientIp = $server['REMOTE_ADDR'] ?? '';
+
+        $proxyHeaders = (
+            (!empty($server['HTTP_X_FORWARDED_PROTO']) && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+            (!empty($server['HTTP_X_FORWARDED_SSL']) && strtolower($server['HTTP_X_FORWARDED_SSL']) === 'on')
+            );
+
+        return
+            (!empty($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
+            (!empty($server['REQUEST_SCHEME']) && strtolower($server['REQUEST_SCHEME']) === 'https') ||
+            (!empty($server['SERVER_PORT']) && $server['SERVER_PORT'] == '443') ||
+            ($proxyHeaders && in_array($clientIp, $trustedProxies, true));
     }
 
     /**
