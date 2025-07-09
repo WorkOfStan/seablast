@@ -50,7 +50,7 @@ fix: cookies limited to app path
 ### Security
 
 - blast.sh: 403 is also considered as a sufficient folder security
-- cookies limited to app path
+- cookies limited to app path, so various apps in the same domain don't cross-logout
 
 ## [0.2.9] - 2025-03-09
 
