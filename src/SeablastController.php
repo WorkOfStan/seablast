@@ -98,24 +98,22 @@ class SeablastController
                         ini_set('session.cookie_lifetime', strval($this->configuration->getInt($property)));
                         break;
                     case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
-                        if (!$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)) {
-                            throw new SeablastConfigurationException(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH
-                                . ' required if following is set: ' . $property);
+                        if (
+                            !$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) ||
+                            ($this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) //
+                            === '')
+                        ) {
+                            $this->configuration->setString(
+                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
+                                $this->getAppPath()
+                            );
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
                         //ini_set('session.cookie_httponly', '1');
                         session_set_cookie_params(
                             $this->configuration->getInt($property), // int $lifetime_or_options,
-                            // @phpstan-ignore booleanAnd.leftAlwaysTrue
-                            ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) && //
-                            !(//
-                            $this->configuration->getString(
-                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH //
-                            ) === ''//
-                            ) //
-                            ) //
-                                ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
-                                : $this->getAppPath(), // ?string $path = null,
+                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH), //
+                            // ?string $path = null,
                             $this->getAppHostWithoutPort(), // ?string $domain = null,
                             $this->isHttps($this->superglobals->server), // ?bool $secure = null,
                             true // ?bool $httponly = null
@@ -123,16 +121,7 @@ class SeablastController
                         // TODO session_set_cookie_params cookie debugging DRY
                         Debugger::barDump(['lifetime' => $this->configuration->getInt($property),
                             'path' =>
-                            // @phpstan-ignore booleanAnd.leftAlwaysTrue
-                            ($this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) && //
-                            !(//
-                            $this->configuration->getString(
-                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH //
-                            ) === ''//
-                            ) //
-                            ) //
-                                ? $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH)//
-                                : $this->getAppPath(),
+                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH),
                             'domain' => $this->getAppHostWithoutPort(),
                             'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
                             $this->superglobals->server['REQUEST_SCHEME'] === 'https',
