@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+feat: Seablast\i18n integration
+
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+- SeablastSetup contains `APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration`
+- assets\uls to be used for language switching by Seablast\i18n
 
 ### `Changed` for changes in existing functionality
 

@@ -56,10 +56,15 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 ## Stack
 
 - PHP ^7.2 || ^8.0
-- [Latte](http://latte.nette.org/): for templating
+- [Latte](http://latte.nette.org/) ^2.11.7 || ^3: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
-- [Tracy](https://github.com/nette/tracy): for debugging
+- [Tracy](https://github.com/nette/tracy) ^2.9.8 || ^2.10.9: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
+- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls.git) **TODO version** : for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
+
+### ULS (Universal Language Selector jQuery library)
+
+- To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
 
 ## Notes
 

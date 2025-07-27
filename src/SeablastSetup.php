@@ -18,6 +18,7 @@ class SeablastSetup
         $fileConfigurationPriority = [
             __DIR__ . '/../conf/default.conf.php', // default Seablast configuration
             APP_DIR . '/vendor/seablast/auth/conf/app.conf.php', // Seablast/Auth extension configuration
+            APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration
             APP_DIR . '/conf/app.conf.php', // default application configuration
             APP_DIR . '/conf/app.conf.local.php', // configuration specific for the environment
         ];
