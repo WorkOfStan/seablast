@@ -1,4 +1,4 @@
-# ignore 3rd party libraries, so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_ES, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
+# ignore 3rd party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES
 assets/uls/src/jquery.uls.core.js
 assets/uls/src/jquery.uls.data.js
 assets/uls/src/jquery.uls.languagefilter.js
