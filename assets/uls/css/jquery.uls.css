@@ -1,27 +1,13 @@
 .uls-trigger {
-    /* background: url( ../images/language.svg ) no-repeat left center; */
     padding-left: 24px;
-    /* display: inline-flex;
-    align-items: center; */
-    /* gap: 0.3em; /* nebo margin u svg */
-    /* color: inherit; /* nebo nastavit např. color: red; */
-    /* text-decoration: none; */
 }
 
 .uls-trigger .icon {
-    vertical-align: middle; /* nebo: text-bottom, baseline, podle vzhledu */
-    /* height: 1em; /* přizpůsobí velikost textu */
-    /* width: auto; /* zachová poměr */
-    /* margin-right: 0.3em; /* mezera mezi ikonou a textem */
-    /* fill: currentColor; /* pro jistotu */
+    vertical-align: middle;
 }
 
 .uls-trigger .icon svg {
-    /* vertical-align: middle; /* nebo: text-bottom, baseline, podle vzhledu */
     height: 1em; /* přizpůsobí velikost textu */
-    /* width: auto; /* zachová poměr */
-    /* margin-right: 0.3em; /* mezera mezi ikonou a textem */
-    /* fill: currentColor; /* pro jistotu */
 }
 
 .uls-menu {

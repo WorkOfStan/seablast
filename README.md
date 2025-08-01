@@ -55,17 +55,68 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 
 ## Stack
 
-- PHP ^7.2 || ^8.0
+- PHP >=7.2 <8.5
 - [Latte](http://latte.nette.org/) ^2.11.7 || ^3: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
 - [Tracy](https://github.com/nette/tracy) ^2.9.8 || ^2.10.9: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
-- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls.git) **Todo add version** : for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
+- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
 
 ### ULS (Universal Language Selector jQuery library)
 
-- To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
 - .eslintignore and .prettierignore to ignore third-party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES and so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
+- To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
+- xx based on <https://github.com/wikimedia/jquery.uls> Revision: 882691e10ea47c0732f482071ed00646cfa9050c Date: 12.03.2025 15:53:49
+- based on <https://github.com/wikimedia/jquery.uls> Revision: 077c71408284f446b626b656ce206e6ed3af705c Date: 17.07.2025 14:25:10
+
+    - css\jquery.uls.css
+    ```css
+    .uls-trigger {
+        background: url( ../images/language.svg ) no-repeat left center;
+        padding-left: 24px;
+    }
+    ```
+
+    ... changed to ...
+
+    ```css
+    .uls-trigger {
+        /* background: url( ../images/language.svg ) no-repeat left center; */
+        padding-left: 24px;
+        /* display: inline-flex;
+        align-items: center; */
+        /* gap: 0.3em; /* nebo margin u svg */
+        /* color: inherit; /* nebo nastavit např. color: red; */
+        /* text-decoration: none; */
+    }
+
+    .uls-trigger .icon {
+        vertical-align: middle; /* nebo: text-bottom, baseline, podle vzhledu */
+        /* height: 1em; /* přizpůsobí velikost textu */
+        /* width: auto; /* zachová poměr */
+        /* margin-right: 0.3em; /* mezera mezi ikonou a textem */
+        /* fill: currentColor; /* pro jistotu */
+    }
+
+    .uls-trigger .icon svg {
+        /* vertical-align: middle; /* nebo: text-bottom, baseline, podle vzhledu */
+        height: 1em; /* přizpůsobí velikost textu */
+        /* width: auto; /* zachová poměr */
+        /* margin-right: 0.3em; /* mezera mezi ikonou a textem */
+        /* fill: currentColor; /* pro jistotu */
+    }
+    ```
+
+    - images\language.svg
+    ```svg
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    ```
+    ... changed to ...
+    ```svg
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+    ```
+
+- See <https://github.com/wikimedia/jquery.uls/compare/077c71408284f446b626b656ce206e6ed3af705c...master> to compare the changes in the latest version
 
 ## Notes
 
