@@ -71,8 +71,8 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
   - css\jquery.uls.css
     ```css
     .uls-trigger {
-        background: url( ../images/language.svg ) no-repeat left center;
-        padding-left: 24px;
+      background: url(../images/language.svg) no-repeat left center;
+      padding-left: 24px;
     }
     ```
 
@@ -80,15 +80,15 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 
     ```css
     .uls-trigger {
-        padding-left: 24px;
+      padding-left: 24px;
     }
 
     .uls-trigger .icon {
-        vertical-align: middle;
+      vertical-align: middle;
     }
 
     .uls-trigger .icon svg {
-        height: 1em; /* přizpůsobí velikost textu */
+      height: 1em; /* přizpůsobí velikost textu */
     }
     ```
 
