@@ -97,7 +97,9 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
     ```svg
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
     ```
+
     ... changed to ...
+
     ```svg
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
     ```
