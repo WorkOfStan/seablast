@@ -67,6 +67,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 - .eslintignore and .prettierignore to ignore third-party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES and so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
 - To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
 - based on <https://github.com/wikimedia/jquery.uls> Revision: 077c71408284f446b626b656ce206e6ed3af705c Date: 17.07.2025 14:25:10
+
   - css\jquery.uls.css
 
     ```css
