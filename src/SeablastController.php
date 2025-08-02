@@ -478,6 +478,9 @@ class SeablastController
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
+            if (method_exists($this->identity, 'setCookiePath')) {
+                $this->identity->setCookiePath($this->getAppPath());
+            }
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
                 $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);

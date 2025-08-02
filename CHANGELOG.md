@@ -29,6 +29,7 @@ feat: Seablast\i18n integration
 
 - SeablastSetup contains `APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration`
 - assets\uls to be used for language switching by [Seablast\I18n](https://github.com/WorkOfStan/seablast-i18n)
+- inject Cookie path `$this->identity->setCookiePath($this->getAppPath());`
 
 ### Changed
 
