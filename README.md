@@ -17,6 +17,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
 - if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use its configuration
+- if [Seablast/I18n](https://github.com/WorkOfStan/seablast-i18n) extension is present (i.e. referenced in composer.json), use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.

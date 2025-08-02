@@ -7,17 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-feat: Seablast\i18n integration
-
 ### `Added` for new features
 
 - TableViewModel for admin.latte
-- SeablastSetup contains `APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration`
-- assets\uls to be used for language switching by Seablast\i18n
 
 ### `Changed` for changes in existing functionality
-
-- package limited to the tested PHP versions, i.e. "php": ">=7.2 <8.5"
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -26,6 +20,19 @@ feat: Seablast\i18n integration
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.11] - 2025-08-03
+
+feat: Seablast\i18n integration
+
+### Added
+
+- SeablastSetup contains `APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration`
+- assets\uls to be used for language switching by [Seablast\I18n](https://github.com/WorkOfStan/seablast-i18n)
+
+### Changed
+
+- package limited to the tested PHP versions, i.e. "php": ">=7.2 <8.5"
 
 ## [0.2.10.1] - 2025-07-09
 
@@ -39,7 +46,7 @@ fix: cookies limited to app path
 
 - nav.latte is used in the BlueprintWeb.latte and can be used in app (using inherite.latte)
 - blast.sh self-update (from the Seablast library)
-- assets/scripts expected by plugins (Seablast/Auth) send-auth-token.js expecting both Environment.js and seablast.js
+- assets/scripts expected by plugins (Seablast\Auth) send-auth-token.js expecting both Environment.js and seablast.js
 
 ### Changed
 
@@ -102,7 +109,7 @@ SeablastMysqli->prepare() is logged, the database Tracy BarPanel is displayed wh
 - Run super-linter and composer-dependencies workflows at 6:30 AM UTC on the 15th of every month
 - Make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 - SeablastPdo added to be logged the same way as SeablastMysqli->prepare()
-- constants for user roles admin=1, editor=2 and user=3 (same as used in Seablast/Auth)
+- constants for user roles admin=1, editor=2 and user=3 (same as used in Seablast\Auth)
 - title variable to layout latte
 
 ### Changed
@@ -130,14 +137,14 @@ Correct HTTP code returned for error page. SeablastMysqli logs the user.
 
 ## [0.2.5] - 2024-12-20
 
-If Seablast/Auth extension is present, use its configuration. Log location change enabled.
+If Seablast\Auth extension is present, use its configuration. Log location change enabled.
 
 ### Added
 
 - PHPUnit tests. The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
 - SeablastMysqli::queryStrict now changes mysqli_sql_exception to the expected DbmsException. (Useful for PHP/8.x tests on GitHub.)
 - [prettier-fix](https://github.com/WorkOfStan/prettier-fix) included to fix all those `VALIDATE_something_PRETTIER` that are now crucial part of super-linter
-- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
+- if [Seablast\Auth](https://github.com/WorkOfStan/seablast-auth) extension is present, use its configuration
 - `{block script}{/block}` to BlueprintWeb.latte
 - change of the log location enabled (single settings for Seablast\Logger, Tracy\Debugger and SeablastMysqli)
 
@@ -154,7 +161,7 @@ If Seablast/Auth extension is present, use its configuration. Log location chang
 
 ## [0.2.4] - 2024-08-04
 
-Tracy logs through Seablast/logger, which provides verbosity control.
+Tracy logs through Seablast\logger, which provides verbosity control.
 
 ### Added
 
@@ -162,7 +169,7 @@ Tracy logs through Seablast/logger, which provides verbosity control.
 
 ### Changed
 
-- use [seablast/logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
+- use [Seablast\Logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
 - following SQL statements are not logged: DESCRIB, DO, EXPLAIN as they do not change the table data
 
 ### Fixed
@@ -335,7 +342,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...HEAD?w=1
+[0.2.11]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...v0.2.11?w=1
 [0.2.10.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...v0.2.10.1?w=1
 [0.2.10]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...v0.2.10?w=1
 [0.2.9]: https://github.com/WorkOfStan/seablast/compare/v0.2.8...v0.2.9?w=1
