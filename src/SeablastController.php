@@ -479,7 +479,10 @@ class SeablastController
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }
             if (method_exists($this->identity, 'setCookiePath')) {
+                Debugger::barDump('Cookie Path injection');
                 $this->identity->setCookiePath($this->getAppPath());
+            } else {
+                Debugger::barDump('Cookie Path NOT INJECTED, i.e. remains default');
             }
             Assert::methodExists($this->identity, 'isAuthenticated');
             if ($this->identity->isAuthenticated()) {
