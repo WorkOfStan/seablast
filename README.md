@@ -124,7 +124,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
 | src/      | Seablast classes                                                                                                     |
 | tests/    | PHPUnit tests                                                                                                        |
-| views/    | Latte templates to be inherited                                                                                      |
+| views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)    |
 
 ## Testing
 
