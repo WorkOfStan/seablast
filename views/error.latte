@@ -1,10 +1,8 @@
-<!DOCTYPE html>{* template expected by SeablastView for errors *}{* TODO: improve this template Roboto? Lato? Localised error? *}
-<html>
-    <head>
-        <title>A Seablast error page</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{* template latte where app version should be used instead of library version *}
+{layout 'BlueprintWeb.latte'}
+{block mainblock}
         <style>
-            body {
+            .message-container {
                 font-family: 'Roboto', sans-serif;
                 background-color: #f4f4f4;
                 margin: 0;
@@ -12,11 +10,11 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 100vh;
+                height: 50vh;
                 color: #333;
             }
 
-            .container {
+            .message-box {
                 text-align: center;
                 padding: 40px;
                 background: white;
@@ -24,23 +22,21 @@
                 border-radius: 10px;
             }
 
-            h1 {
+            .message-container h1 {
                 color: #007bff;
                 font-weight: 400;
             }
 
-            p {
+            .message-container p {
                 font-size: 18px;
                 font-weight: 300;
                 margin-top: 10px;
             }
         </style>
-    </head>
-    <body>
-        <div class="container">
+        <div class="message-container">
+        <div class="message-box">
             <p>Ooops, došlo k chybě...</p>
             <p n:if="$message">Popis: {$message}</p>
         </div>
-    </body>
-</html>
-
+        </div>
+{/block}

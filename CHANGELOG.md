@@ -34,6 +34,7 @@ feat: Seablast\i18n integration
 ### Changed
 
 - package limited to the tested PHP versions, i.e. "php": ">=7.2 <8.5"
+- the default error.latte uses the BlueprintWeb.latte template
 
 ## [0.2.10.1] - 2025-07-09
 
