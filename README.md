@@ -17,6 +17,7 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
 - if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use its configuration
+- if [Seablast/I18n](https://github.com/WorkOfStan/seablast-i18n) extension is present (i.e. referenced in composer.json), use its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
@@ -55,11 +56,58 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 
 ## Stack
 
-- PHP ^7.2 || ^8.0
-- [Latte](http://latte.nette.org/): for templating
+- PHP >=7.2 <8.5
+- [Latte](http://latte.nette.org/) ^2.11.7 || ^3: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
-- [Tracy](https://github.com/nette/tracy): for debugging
+- [Tracy](https://github.com/nette/tracy) ^2.9.8 || ^2.10.9: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
+- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
+
+### ULS (Universal Language Selector jQuery library)
+
+- if flag `I18nConstant::FLAG_SHOW_LANGUAGE_SELECTOR` is active (default in Seablast\I18n), then CSS and JS dependencies are already part of the template [BlueprintWeb.latte](views/BlueprintWeb.latte).
+- .eslintignore and .prettierignore to ignore third-party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES and so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
+- To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
+- based on <https://github.com/wikimedia/jquery.uls> Revision: 077c71408284f446b626b656ce206e6ed3af705c Date: 17.07.2025 14:25:10
+
+  - css\jquery.uls.css
+
+    ```css
+    .uls-trigger {
+      background: url(../images/language.svg) no-repeat left center;
+      padding-left: 24px;
+    }
+    ```
+
+    ... changed to ...
+
+    ```css
+    .uls-trigger {
+      padding-left: 24px;
+    }
+
+    .uls-trigger .icon {
+      vertical-align: middle;
+    }
+
+    .uls-trigger .icon svg {
+      height: 1em; /* přizpůsobí velikost textu */
+    }
+    ```
+
+  - images\language.svg
+
+    ```svg
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    ```
+
+    ... changed to ...
+
+    ```svg
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+    ```
+
+- See <https://github.com/wikimedia/jquery.uls/compare/077c71408284f446b626b656ce206e6ed3af705c...master> to compare the changes in the latest version
 
 ## Notes
 
@@ -77,7 +125,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 | log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
 | src/      | Seablast classes                                                                                                     |
 | tests/    | PHPUnit tests                                                                                                        |
-| views/    | Latte templates to be inherited                                                                                      |
+| views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)    |
 
 ## Testing
 

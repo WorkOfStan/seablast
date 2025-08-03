@@ -1,0 +1,11 @@
+*~
+.*.swp
+.idea
+*.kate-swp
+*.bak
+/node_modules
+/dist
+data/supplementalData.xml
+/scripts/vendor
+/vendor
+.eslintcache

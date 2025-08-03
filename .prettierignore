@@ -1,0 +1,2 @@
+# ignore third-party libraries, so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
+assets/uls/**

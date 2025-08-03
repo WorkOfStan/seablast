@@ -67,6 +67,7 @@ class SeablastConstant
      * @ var string phinxEnvironment for database connection to override $phinx['environments']['default_environment']
      */
     public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
+    // SB:LANGUAGE is reserved for Seablast\i18n
     /**
      * @var string trigger and verbosity control for seablast/logger
      */
