@@ -30,6 +30,7 @@ feat: Seablast\i18n integration
 - SeablastSetup contains `APP_DIR . '/vendor/seablast/i18n/conf/app.conf.php', // Seablast/i18n extension configuration`
 - assets\uls to be used for language switching by [Seablast\I18n](https://github.com/WorkOfStan/seablast-i18n)
 - inject Cookie path `$this->identity->setCookiePath($this->getAppPath());`
+- if flag `I18nConstant::FLAG_SHOW_LANGUAGE_SELECTOR` is active (default in Seablast\I18n), then CSS and JS dependencies are already part of the template [BlueprintWeb.latte](views/BlueprintWeb.latte).
 
 ### Changed
 
