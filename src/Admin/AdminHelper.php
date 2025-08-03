@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WorkOfStan\Protokronika\Models;
+namespace Seablast\Seablast\Admin;
 
 use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfiguration;
