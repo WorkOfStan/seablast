@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - TableViewModel for admin.latte
+- `footer.latte` populates the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}`.
 
 ### `Changed` for changes in existing functionality
 

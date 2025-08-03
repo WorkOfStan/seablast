@@ -42,6 +42,10 @@ SeablastConstant::APP_MAPPING = route => [
 ]
 ```
 
+## View
+
+- Feel free to use the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}` which can be populated by your local `nav.latte` and `footer.latte`.
+
 ## Authentication and authorisation
 
 - Roles are for access.
