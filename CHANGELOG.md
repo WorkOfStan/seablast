@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
-- backward latte compatibility `"latte/latte": ">=2.10.8 <4"`
+- backward compatibility `"latte/latte": ">=2.10.8 <4"`, `"seablast/logger": "^1.0 || ^2.0.3",`
 
 ### `Security` in case of vulnerabilities
 
