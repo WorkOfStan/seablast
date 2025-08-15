@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- backward latte compatibility `"latte/latte": ">=2.10.8 <4"`
+
 ### `Security` in case of vulnerabilities
 
 ## [0.2.11] - 2025-08-03

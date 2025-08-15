@@ -4,7 +4,7 @@
   "type": "library",
   "require": {
     "php": ">=7.2 <8.5",
-    "latte/latte": "^2.11.7 || ^3",
+    "latte/latte": ">=2.10.8 <4",
     "nette/utils": "^3.2.10 || ^4.0.5",
     "seablast/interfaces": "^0.1.1",
     "seablast/logger": "^2.0.3",

@@ -6,10 +6,9 @@
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
             {include '../../../../vendor/seablast/i18n/views/uls.css.latte'}
             <script>
-                const csrfToken = {$csrfToken};{* id:sb_json *}
                 const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
                 const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
-            </script>            
+            </script>
         {/if}
         <style>
             body {
