@@ -13,7 +13,6 @@ use Tracy\Debugger;
 /**
  * Retrieve items from database.
  *
- * (TODO Move to Seablast)
  * // GET:
  * // SELECT * ... explicitně uvést * v konfiguraci kvůli security; také vyjmenovat editable fields
  * // FROM ___ ... conf table

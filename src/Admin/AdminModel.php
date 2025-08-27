@@ -12,7 +12,6 @@ use stdClass;
 
 /**
  * Retrieve items from database
- * (TODO Move to Seablast)
  */
 class AdminModel implements SeablastModelInterface
 {

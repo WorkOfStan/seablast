@@ -1,12 +1,12 @@
 #!/bin/bash
 # blast.sh - Management script for deployment and development of a Seablast application
-# Seablast:v0.2.10
+# Seablast:v0.2.11
 # Usage:
 #   ./blast.sh                          # Runs assemble + creates required folders + checks web inaccessibility
 #   ./blast.sh --base-url http://localhost  # Checks if defined folders are inaccessible at http://localhost
 #   ./blast.sh main                     # Switches to the main branch (after confirmation)
-#   ./blast.sh phpstan-pro              # Runs PHPStan with --pro
 #   ./blast.sh phpstan                  # Runs PHPStan without --pro
+#   ./blast.sh phpstan-pro              # Runs PHPStan with --pro
 #   ./blast.sh phpstan-remove           # Removes PHPStan package
 #   ./blast.sh self-update              # Self-update the app version, i.e. checks and overrides itself with a newer version if available in the vendor directory
 

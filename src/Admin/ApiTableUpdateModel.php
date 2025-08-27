@@ -13,7 +13,6 @@ use Tracy\Debugger;
 /**
  * Update editable fields in database
  *
- * (TODO Move to Seablast)
  * // todo DELETE via this API
  * todo use route: /api/table
  */

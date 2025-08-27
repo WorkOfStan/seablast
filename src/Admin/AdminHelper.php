@@ -12,8 +12,6 @@ use Tracy\Debugger;
 
 /**
  * Helper methods for AdminModel, TableViewModel and ApiTableUpdateModel
- *
- * (TODO Move to Seablast)
  */
 class AdminHelper
 {
