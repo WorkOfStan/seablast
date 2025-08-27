@@ -69,5 +69,7 @@ jobs:
     needs: phpcs-phpcbf
     uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@feature/super-linter-version-parametric
     with:
-      filter-regex-exclude: "^(/github/workspace/)?assets/uls/.*" # exclude 3rd party code
+      # is enough: '.*\/vendor\/.*'
+      #filter-regex-exclude: "^(/github/workspace/)?assets/uls/.*" # exclude 3rd party code
+      filter-regex-exclude: ".*\/assets\/uls\/.*" # exclude 3rd party code
       runs-on: "ubuntu-latest"
