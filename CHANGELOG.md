@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Removed` for now removed features
 
+- no need for .eslintignore or .stylelintignore when 3rd party code is excluded by filter-regex-exclude parameter of super-linter
+
 ### `Fixed` for any bugfixes
 
 - backward compatibility `"latte/latte": ">=2.10.8 <4"`, `"seablast/logger": "^1.0 || ^2.0.3",`
