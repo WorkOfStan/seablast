@@ -71,5 +71,6 @@ jobs:
     with:
       # is enough: '.*\/vendor\/.*'
       #filter-regex-exclude: "^(/github/workspace/)?assets/uls/.*" # exclude 3rd party code
-      filter-regex-exclude: ".*\/assets\/uls\/.*" # exclude 3rd party code
+      #filter-regex-exclude: ".*\/assets\/uls\/.*" # exclude 3rd party code
+      filter-regex-exclude: ".*/assets/uls/.*" # exclude 3rd party code
       runs-on: "ubuntu-latest"
