@@ -72,7 +72,7 @@ fix: cookies limited to app path
 ### Fixed
 
 - change .htaccess directive for Apache 2.2 `Order Allow,Deny\nDeny from all` to Apache 2.4 `Require all denied` to return 403 (instead of 500)
-- blast.sh checks for cURL presence before invoking it
+- blast.sh checks for curl presence before invoking it
 
 ### Security
 
