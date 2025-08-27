@@ -1,3 +1,0 @@
-# ignore third-party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES
-assets/uls/src/jquery.uls.*.js
-assets/uls/i18n/*.json
