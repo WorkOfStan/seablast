@@ -72,7 +72,7 @@ fix: cookies limited to app path
 ### Fixed
 
 - change .htaccess directive for Apache 2.2 `Order Allow,Deny\nDeny from all` to Apache 2.4 `Require all denied` to return 403 (instead of 500)
-- blast.sh checks for curl presence before invoking it
+- blast.sh checks for cURL presence before invoking it
 
 ### Security
 
@@ -341,7 +341,7 @@ SeablastMysqli error logging improved, HTTPS identified
 - GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
 - SeablastModelInterface.php to define minimal requirements for a model used by SeablastModel
 - SeablastModel uses permanent argument Superglobals $superglobals (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available)
-- FLAG_DEBUG_JSON: Output JSON as HTML instead of application/json so that Tracy is displayed
+- FLAG_DEBUG_JSON: Output JSON as HTML instead of `application/json` so that Tracy is displayed
 - `declare(strict_types=1);` everywhere
 - SB_WEB_FORCE_ASSET_VERSION Int to forced update of external CSS and JavaScript files
 - SB_APP_ROOT_ABSOLUTE_URL The absolute URL of the root of the application
