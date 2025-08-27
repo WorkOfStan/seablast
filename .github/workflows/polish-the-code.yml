@@ -67,6 +67,6 @@ jobs:
 
   super-linter:
     needs: phpcs-phpcbf
-    uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@feature/super-linter-version-parametric
+    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@feature/super-linter-version-parametric
     with:
       runs-on: "ubuntu-latest"
