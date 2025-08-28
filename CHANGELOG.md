@@ -9,26 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
-- TableViewModel for admin.latte
-- `footer.latte` populates the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}`.
-- `namespace Seablast\Seablast\Admin;`
-- [zizmor.yaml](.github/linters/zizmor.yaml): disable unpinned-uses check - Allows referring to an action by version tag instead of exact hash, so that Dependabot can monitor and update versions automatically.
-
 ### `Changed` for changes in existing functionality
-
-- chore: super-linter bump to v8.1.0
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
-- no need for .eslintignore or .stylelintignore when 3rd party code is excluded by filter-regex-exclude parameter of super-linter
-
 ### `Fixed` for any bugfixes
 
-- backward compatibility `"latte/latte": ">=2.10.8 <4"`, `"seablast/logger": "^1.0 || ^2.0.3",`
-
 ### `Security` in case of vulnerabilities
+
+## [0.2.11.1] - 2025-08-28
+
+chore: backward compatibility latte/latte and seablast/logger
+
+### Added
+
+- TableViewModel for admin.latte (still under development)
+- `footer.latte` populates the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}`.
+- `namespace Seablast\Seablast\Admin;`
+- [zizmor.yaml](.github/linters/zizmor.yaml): disable unpinned-uses check - Allows referring to an action by version tag instead of exact hash, so that Dependabot can monitor and update versions automatically.
+
+### Changed
+
+- chore: super-linter bump to v8.1.0 (seablast/actions::v0.2.5)
+
+### Removed
+
+- no need for .eslintignore or .stylelintignore when third-party code is excluded by filter-regex-exclude parameter of super-linter
+
+### Fixed
+
+- backward compatibility `"latte/latte": ">=2.10.8 <4"`, `"seablast/logger": "^1.0 || ^2.0.3",`
 
 ## [0.2.11] - 2025-08-03
 
@@ -74,7 +86,7 @@ fix: cookies limited to app path
 ### Fixed
 
 - change .htaccess directive for Apache 2.2 `Order Allow,Deny\nDeny from all` to Apache 2.4 `Require all denied` to return 403 (instead of 500)
-- blast.sh checks for curl presence before invoking it
+- blast.sh checks for cURL presence before invoking it
 
 ### Security
 
@@ -354,7 +366,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - model returns knowledge()
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...HEAD?w=1
+[0.2.11.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...v0.2.11.1?w=1
 [0.2.11]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...v0.2.11?w=1
 [0.2.10.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...v0.2.10.1?w=1
 [0.2.10]: https://github.com/WorkOfStan/seablast/compare/v0.2.9...v0.2.10?w=1
