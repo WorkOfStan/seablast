@@ -24,7 +24,7 @@ permissions:
 jobs:
   # Note: https://docs.github.com/en/actions/using-workflows/reusing-workflows The strategy property is not supported in any job that calls a reusable workflow.
   php-composer-unit-stan:
-    uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@v0.2.4
+    uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@v0.2.5
     with:
       # JSON
       php-version: '["7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]'
@@ -46,9 +46,7 @@ jobs:
       - name: Invoke the Prettier fix
         uses: WorkOfStan/prettier-fix@v1.1.5
         with:
-          # TODO fix super-linter prettier vs prettier-fix
-          # commit-changes: ${{ github.event_name != 'schedule' }}
-          commit-changes: false
+          commit-changes: ${{ github.event_name != 'schedule' }}
 
   phpcs-phpcbf:
     needs: prettier-fix
@@ -67,6 +65,7 @@ jobs:
 
   super-linter:
     needs: phpcs-phpcbf
-    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.4
+    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.5
     with:
+      filter-regex-exclude: ".*/assets/uls/.*" # exclude third-party code
       runs-on: "ubuntu-latest"

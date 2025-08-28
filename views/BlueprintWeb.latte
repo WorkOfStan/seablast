@@ -6,10 +6,9 @@
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
             {include '../../../../vendor/seablast/i18n/views/uls.css.latte'}
             <script>
-                const csrfToken = {$csrfToken};{* id:sb_json *}
                 const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
                 const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
-            </script>            
+            </script>
         {/if}
         <style>
             body {
@@ -63,7 +62,7 @@
             }
         </style>
         <script>
-            const csrf_token = {$csrfToken};
+            const csrf_token = {$csrfToken};{* id:sb_json *}
         </script>
     </head>
     <body>
@@ -74,15 +73,11 @@
         </header>
 
         <main>
-            Initial content
             {block mainblock}{/block}
-            <p>CSRF token: {$csrfToken}{* id:sb_json *}</p>
         </main>
 
         <footer>
-            <p>Contact us: contact@example.com</p>
-            <p>Follow us on social media</p>
-            <!-- Social media links -->
+            {include 'inherite.latte', latte => 'footer.latte'}
         </footer>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
