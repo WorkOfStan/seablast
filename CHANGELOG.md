@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.12] - 2025-09-12
+
+fix: **BREAKING-CHANGE** `id="bannerContainer"` to `id="banner-container"`
+
+### Changed
+
+- `SeablastConfiguration::setArray*()` are using `Assert::all*()` methods which are available since Webmozart/Assert::v1.10.0
+
+### Fixed
+
+- HTML: The <script> tag cannot be used in a <head> tag. (head-script-disabled)
+- **BREAKING-CHANGE** `<div id="bannerContainer"></div>` - `The id and class attribute values must be in lowercase and split by a dash. (id-class-value)`
+
 ## [0.2.11.1] - 2025-08-28
 
 chore: backward compatibility latte/latte and seablast/logger
@@ -363,10 +376,11 @@ SeablastMysqli error logging improved, HTTPS identified
 - SeablastMysqli lazy initialisation; database load checked, if fails an Exception is thrown
 - if Location redirection fails, a nice redirection HTML page ( redirection.latte ) is displayed
 - APP_MAPPING controls route to model to view, i.e. URL maps to template (404 otherwise)
-- model returns knowledge()
+- **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...HEAD?w=1
+[0.2.12]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...v0.2.12?w=1
 [0.2.11.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...v0.2.11.1?w=1
 [0.2.11]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...v0.2.11?w=1
 [0.2.10.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.10...v0.2.10.1?w=1

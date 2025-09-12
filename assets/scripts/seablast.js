@@ -2,7 +2,7 @@
 /*!
  * MIT License for seablast.js - Seablast common components
  *
- * Copyright (c) 2024 Stanislav Rejthar
+ * Copyright (c) 2024-2025 Stanislav Rejthar
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -128,8 +128,8 @@ class BannerManager {
     closeButton.onclick = () => banner.remove();
     banner.appendChild(closeButton);
 
-    const bannerContainer = document.getElementById("bannerContainer");
-    const shouldFly = this.isBottomOfElementOutsideView("bannerContainer");
+    const bannerContainer = document.getElementById("banner-container");
+    const shouldFly = this.isBottomOfElementOutsideView("banner-container");
     const targetContainer =
       shouldFly &&
       document.querySelector("main > div.container > div.k-container-square")
