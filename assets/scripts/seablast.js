@@ -128,8 +128,8 @@ class BannerManager {
     closeButton.onclick = () => banner.remove();
     banner.appendChild(closeButton);
 
-    const bannerContainer = document.getElementById("bannerContainer");
-    const shouldFly = this.isBottomOfElementOutsideView("bannerContainer");
+    const bannerContainer = document.getElementById("banner-container");
+    const shouldFly = this.isBottomOfElementOutsideView("banner-container");
     const targetContainer =
       shouldFly &&
       document.querySelector("main > div.container > div.k-container-square")

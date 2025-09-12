@@ -5,10 +5,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
             {include '../../../../vendor/seablast/i18n/views/uls.css.latte'}
-            <script>
-                const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
-                const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
-            </script>
         {/if}
         <style>
             body {
@@ -61,17 +57,23 @@
                 }
             }
         </style>
+    </head>
+    <body>
+        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
+            <script>
+                const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
+                const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
+            </script>
+        {/if}
         <script>
             const csrf_token = {$csrfToken};{* id:sb_json *}
         </script>
-    </head>
-    <body>
         <header>
             <nav>
                 {include 'inherite.latte', latte => 'nav.latte'}
             </nav>
         </header>
-
+        {*<div id="banner-container"></div>*}
         <main>
             {block mainblock}{/block}
         </main>

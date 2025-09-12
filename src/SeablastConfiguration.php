@@ -344,10 +344,8 @@ class SeablastConfiguration
      */
     public function setArrayArrayString(string $property, string $key, array $value): self
     {
-        foreach ($value as $row) {
-            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-            Assert::string($row);
-        }
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+        Assert::allString($value);
         $this->optionsArrayArrayString[$property][$key] = $value;
         return $this;
     }
@@ -359,10 +357,8 @@ class SeablastConfiguration
      */
     public function setArrayInt(string $property, array $value): self
     {
-        foreach ($value as $row) {
-            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-            Assert::integer($row);
-        }
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+        Assert::allInteger($value);
         $this->optionsArrayInt[$property] = $value;
         return $this;
     }
@@ -374,10 +370,8 @@ class SeablastConfiguration
      */
     public function setArrayString(string $property, array $value): self
     {
-        foreach ($value as $row) {
-            /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-            Assert::string($row);
-        }
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+        Assert::allString($value);
         $this->optionsArrayString[$property] = $value;
         return $this;
     }
