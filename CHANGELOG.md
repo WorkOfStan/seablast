@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 - HTML: The <script> tag cannot be used in a <head> tag. (head-script-disabled)
-- **BREAKING-CHANGE** `<div id="bannerContainer"></div>` - The id and class attribute values must be in lowercase and split by a dash. (id-class-value)
+- **BREAKING-CHANGE** `<div id="bannerContainer"></div>` - `The id and class attribute values must be in lowercase and split by a dash. (id-class-value)`
 
 ### `Security` in case of vulnerabilities
 
