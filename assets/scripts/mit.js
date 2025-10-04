@@ -24,8 +24,8 @@
  */
 /* global $, API_BASE, csrfToken, flags */
 
-import { Overlay } from "./scripts/Overlay.js";
-import { BannerManager } from "../vendor/seablast/seablast/assets/scripts/seablast.js";
+import { Overlay } from "./Overlay.js";
+import { BannerManager } from "./seablast.js";
 
 $(() => {
   /** @type import('Environment.js').Environment */
