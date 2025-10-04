@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
+- added: mit.js::initEditable();
+
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
@@ -17,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
-fix: BlueprintWeb.latte csrfToken typo (which prevents edit fields in admin view)
+- fix: BlueprintWeb.latte csrfToken typo (which prevents edit fields in admin view)
 
 ### `Security` in case of vulnerabilities
 

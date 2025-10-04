@@ -60,3 +60,6 @@
         </table>
     </main>
 {/block}
+{block script}
+<script src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/assets/scripts/mit.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* initEditable(); *}
+{/block}
