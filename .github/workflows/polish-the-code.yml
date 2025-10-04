@@ -63,7 +63,7 @@ jobs:
       runs-on: "ubuntu-latest"
 
   prettier-fix:
-    needs: php-composer-unit-stan
+    needs: [php-composer-unit-stan, commit-check]
     # Note: runs-on doesn't accept all expressions, so a string is used
     runs-on: "ubuntu-latest"
     permissions:
@@ -92,7 +92,7 @@ jobs:
           stop-on-manual-fix: true
 
   super-linter:
-    needs: [phpcs-phpcbf, commit-check]
+    needs: phpcs-phpcbf
     uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.6
     with:
       # exclude third-party code
