@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+fix: BlueprintWeb.latte csrfToken typo (which prevents edit fields in admin view)
+
 ### `Security` in case of vulnerabilities
 
 ## [0.2.12] - 2025-09-12

@@ -52,7 +52,7 @@ SeablastConstant::APP_MAPPING = route => [
 - Routes can only be allowed for roles (never denied). I.e. access to a route can be restricted to certain roles.
 - Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
 - Groups are on top of it, e.g. for promotions, subscriptions etc.
-- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID and also USER_ID.
 
 ## Security
 
