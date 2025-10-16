@@ -9,6 +9,7 @@ use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
 use Tracy\Debugger;
+use Webmozart\Assert\Assert;
 
 /**
  * Retrieve items from database.
