@@ -196,6 +196,14 @@ WHERE
         if (is_object($mysqliResult)) {
             while ($row = $mysqliResult->fetch_assoc()) {
                 Assert::scalar($row['id']);
+
+
+//use Webmozart\Assert\Assert;
+
+//$value = '123'; // nebo 123
+
+Assert::false(is_float($row['id']), 'Value must not be a float.');
+                
                 $data[$row['id']] = $row;
             }
         }
