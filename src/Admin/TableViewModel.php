@@ -194,6 +194,7 @@ WHERE
         // Fetch each row and add it to the $data array
         if (is_object($mysqliResult)) {
             while ($row = $mysqliResult->fetch_assoc()) {
+                Assert::scalar($row['id']);
                 $data[$row['id']] = $row;
             }
         }
