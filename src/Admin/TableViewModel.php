@@ -202,8 +202,8 @@ WHERE
 
 //$value = '123'; // nebo 123
 
-Assert::false(is_float($row['id']), 'Value must not be a float.');
-                
+                Assert::false(is_float($row['id']), 'Value must not be a float.');
+
                 $data[$row['id']] = $row;
             }
         }
