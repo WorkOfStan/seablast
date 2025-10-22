@@ -8,6 +8,7 @@
 2) variable $content = array of database tables to generate vertical menu;
 3) variable $table = array of 10 rows and 6 columns (id, date, language, code, text, active) to be displayed as table.
 *}
+    <link rel="stylesheet" href="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/seablast.css?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}">
     <style>
         .menu, .content-menu {
             list-style-type: none;
@@ -20,46 +21,199 @@
         .content-menu li {
             margin-bottom: 5px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 5px;
-            text-align: left;
-        }
+    .table-container {
+        overflow-x: auto; /* Allow horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+        padding-right: 10%; /* so that even with horizontal scrolling, there's a right border */
+    }
+    main {
+        max-width: 100%; /* so that the parent of .table-container is limited and so horizontal scroll bar appears */
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 5px;
+        text-align: left;
+    }
+    .fixed-column {
+        position: sticky;
+        left: 0;
+        background-color: #e9e9f9; /* Optional background for fixed column */
+        z-index: 2; /* Ensure it stays on top */
+    }
+    th.fixed-column {
+        z-index: 3; /* Higher z-index for header cells */
+    }
+    div.content {
+        display: flex;
+        flex-direction: row;
+    }
+    div.content aside {
+        flex: 1; /* Adjusts the width of the aside. Change as necessary. */
+    }
+    div.content main {
+        flex: 5; /* Adjusts the width of the main content. Change as necessary. */
+    }
     </style>
 
-    <nav>
-        <ul class="menu">
-            <li n:foreach="$menu as $menuItem, $link"><a href="{$link}">{$menuItem}</a></li>
-        </ul>
-    </nav>
-
+<nav n:if="$menu">
+    <ul class="menu">
+        {* todo fix this ,$link syntax - maybe from new Latte? *}
+        <li n:foreach="$menu as $menuItem"><a href="{$menuItem['link']}">{$menuItem['label']}</a></li>
+    </ul>
+</nav>
+<div n:if="!$content" class="content">Žádné tabulky k náhledu</div>
+<div n:if="$content" class="content">
     <aside>
         <ul class="content-menu">
-            <li n:foreach="$content as $dbTable">{$dbTable}</li>
+            <li n:foreach="$content as $dbTable"><a href="?t={$dbTable}">{$dbTable}</a></li>
         </ul>
     </aside>
-
-    <main>
-        <table>
-            <thead>
-                <tr>
-                    <th n:foreach="$table[0] as $column => $value">{$column|capitalize}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr n:foreach="$table as $row">
-                    <td n:foreach="$row as $value">{$value}</td>
-                </tr>
-            </tbody>
-        </table>
+    {var $firstRow = reset($table)} {* obsolete? or indexing it would be enough instead of $columns? *}
+    <main n:if="!$columns">
+        Vyber tabulku vlevo.
     </main>
+    <main n:if="$columns"> {* todo if it works, remove the same conditions below *}
+        <h1>Filters</h1>
+        {* no need for input hidden t and order as only condition parameter is updated by JavaScript *}
+        <div id="condition-container">
+            <!-- Conditions will be dynamically added here -->
+            <div n:foreach="$conditionDetails as $condArray" class="condition-group">
+                <select class="condition-index" name="condition-index">
+                    <option></option> {* empty *}
+                    <option n:foreach="$columns as $index => $column" value="{$index}" {if $index === (int) $condArray[0]}selected{/if}>{$column}</option>
+                </select>
+                <input class="condition-rule" name="condition-rule" type="text" value="{$condArray[1]}" placeholder="Condition"/>
+                <button type="button" class="remove-condition">Remove Condition</button>
+            </div>
+        </div>
+
+        <br/><br/>
+        <button type="button" id="add-condition">Add Condition</button>
+        <br/><br/>
+        <button type="button" id="update-conditions">Submit</button>
+
+        <h1 n:if="$columns">Content</h1>
+        <div class="table-container">
+            <table n:if="$columns"> {* show header for en empty result *}
+                <thead>
+                    <tr>
+                        {* todo show the activated asc/desc *}
+                        <th n:foreach="$columns as $index => $column" {if $column === "id"}class="fixed-column"{/if}>{$column|capitalize} &nbsp; <button data-order="d{$index}" class="table-order">&darr;</button> <button data-order="a{$index}" class="table-order">&uarr;</button>{if in_array($column, $editable)} (edit){/if}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr n:foreach="$table as $row">
+                        {* todo is row['id'] universal row identification? *}
+                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('App:selected-table')}&key={$key}&id={$row['id']}"{/if}>{$value}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 {/block}
 {block script}
-<script src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/assets/scripts/mit.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* initEditable(); *}
+<script type="module" src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/mit.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* initEditable(); *}
+<script src="https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register"></script>
+<script>
+    $(document).ready(function () {
+
+      $(".table-order").click(function () {
+        //get order + init element data-order => refresh page
+        //incl. all conditions
+        // Get the clicked element's data-pair attribute
+        let pair = $(this).data("order"); // Example: "a1", "d2", etc.
+
+        // Parse the current URL to get the query parameters
+        let url = new URL(window.location.href);
+        let params = new URLSearchParams(url.search);
+
+        // Get the existing "order" parameter, if available
+        let order = params.get("order");
+        let orderArray = order ? order.split(",") : [];
+
+        // Extract the number from the clicked pair (e.g., "1" from "a1")
+        let number = pair.slice(1);
+
+        // Remove any existing entries for this number from the order array
+        orderArray = orderArray.filter(entry => entry.slice(1) !== number);
+
+        // Add the new pair to the start of the array
+        orderArray.unshift(pair);
+
+        // Update the "order" parameter
+        params.set("order", orderArray.join(","));
+
+        // Refresh the page with the updated query parameters
+        window.location.href = url.origin + url.pathname + "?" + params.toString();
+      });
+
+
+      const conditionContainer = $("#condition-container"); // Container for conditions
+
+      // Function to add a new condition
+      function addCondition() {
+        const html = '<div class="condition-group">' +
+                '<select class="condition-index" name="condition-index">' +
+                '<option value="">-- Select Column --</option>' +
+        {foreach $columns as $index => $column}'<option value={$index}>{$column|noescape}</option>' +{/foreach}
+        '</select>' +
+                '<input class="condition-rule" name="condition-rule" type="text" placeholder="Condition"/>' +
+                '<button type="button" class="remove-condition">Remove Condition</button>' +
+                '</div>';
+        conditionContainer.append(html);
+      }
+
+      // Function to remove a condition
+      function removeCondition(event) {
+        $(event.target).closest(".condition-group").remove();
+      }
+
+      // Add a new condition when "Add Condition" is clicked
+      $("#add-condition").on("click", addCondition);
+
+      // Remove condition when "Remove" button is clicked   
+      conditionContainer.on("click", ".remove-condition", removeCondition);
+
+      // Function to collect all conditions and update the URL
+      function updateConditionsInURL() {
+        var conditions = []; // Array to hold formatted conditions
+
+        // Loop through each condition group
+        $(".condition-group").each(function () {
+          var index = $(this).find(".condition-index").val(); // Get selected index
+          var rule = $(this).find(".condition-rule").val(); // Get the rule input value
+
+          if (index && rule) {
+            conditions.push(index + "|" + rule); // Format as "condition-index|condition-rule"
+          }
+        });
+
+        // Get the current URL
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+
+        // Remove existing `condition[]` parameters
+        params.delete("condition[]");
+
+        // Add the new `condition[]` parameters
+        conditions.forEach(function (condition) {
+          params.append("condition[]", condition);
+        });
+
+        // Refresh the page with the updated query parameters
+        window.location.href = url.origin + url.pathname + "?" + params.toString();
+      }
+
+      // Example: Trigger the update when a button is clicked
+      $("#update-conditions").on("click", updateConditionsInURL);
+
+    });
+</script>
 {/block}

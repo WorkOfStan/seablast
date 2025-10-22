@@ -195,15 +195,7 @@ WHERE
         // Fetch each row and add it to the $data array
         if (is_object($mysqliResult)) {
             while ($row = $mysqliResult->fetch_assoc()) {
-                Assert::scalar($row['id']);
-
-
-//use Webmozart\Assert\Assert;
-
-//$value = '123'; // nebo 123
-
-                Assert::false(is_float($row['id']), 'Value must not be a float.');
-
+                Assert::true(is_string($row['id']) || is_int($row['id'])); 
                 $data[$row['id']] = $row;
             }
         }

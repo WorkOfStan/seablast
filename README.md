@@ -46,6 +46,11 @@ SeablastConstant::APP_MAPPING = route => [
 
 - Feel free to use the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}` which can be populated by your local `nav.latte` and `footer.latte`.
 
+### Administration
+
+- By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs same as used in Seablast\Auth) with different rights.
+- TODO: describe allocation of tables using `->setArrayString(SeablastConstant::ADMIN_TABLE_VIEW...`
+
 ## Authentication and authorisation
 
 - Roles are for access.
@@ -61,9 +66,9 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 ## Stack
 
 - PHP >=7.2 <8.5
-- [Latte](http://latte.nette.org/) ^2.11.7 || ^3: for templating
+- [Latte](http://latte.nette.org/) `>=2.10.8 <4`: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
-- [Tracy](https://github.com/nette/tracy) ^2.9.8 || ^2.10.9: for debugging
+- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
 - [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
 

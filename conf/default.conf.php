@@ -56,6 +56,25 @@ return static function (SeablastConfiguration $SBConfig): void {
                 'model' => '\Seablast\Seablast\Models\ErrorModel',
             ]
         )
+        // Administration page
+        ->setArrayArrayString(
+            SeablastConstant::APP_MAPPING,
+            '/api/poseidon', // page slug, i.e. URL representation
+            [
+                'code' => 't', // tablename GET parameter t is required
+                'model' => '\Seablast\Seablast\Admin\ApiTableUpdateModel',
+                'roleIds' => '1, 2', // only admins (not users)
+            ]
+        )
+        ->setArrayArrayString(
+            SeablastConstant::APP_MAPPING,
+            '/poseidon', // page slug, i.e. URL representation
+            [
+                'template' => 'admin', // template used by the View component  //TODO update admin.latte
+                'model' => '\Seablast\Seablast\Admin\AdminModel',
+                'roleIds' => '1, 2', // only admins (not users)
+            ]
+        )
         // Default SMTP parameters
         ->setString(SeablastConstant::SB_SMTP_HOST, 'localhost')
         ->setInt(SeablastConstant::SB_SMTP_PORT, 25)

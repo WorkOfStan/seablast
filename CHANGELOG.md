@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
-- added: mit.js::initEditable();
+- add: mit.js::initEditable();
+- add: working /poseidon and /api/poseidon routes for admin.latte using shared seablast.css
 
 ### `Changed` for changes in existing functionality
 

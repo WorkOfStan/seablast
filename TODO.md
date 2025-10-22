@@ -10,5 +10,4 @@ All planned changes to this project are documented in this file.
 ## UX
 
 - 231207, nice 404 (adapt redirection.latte to special operational pages layout)
-- 231229, UI for db administration
 - 2402010004: Mit.js mit.css with sb const update by sbView
