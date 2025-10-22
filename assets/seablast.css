@@ -14,7 +14,7 @@
   color: #ededed; /* not white, so that always visible */
   box-sizing: border-box;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
   width: 100%;
   max-width: 800px; /* Max width of the individual banners */
   position: relative; /* To position the button relative to the banner */
@@ -38,12 +38,14 @@
   font-size: 20px;
   cursor: pointer;
 }
+
 /* messages animation, then slide to its position */
 @keyframes floatBanner {
   0% {
     transform: translateY(50vh);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -62,12 +64,12 @@
 .editable textarea {
   cursor: pointer;
   margin: 10px;
-  border-radius: 10px;
   border: 10px solid skyblue;
   padding: 10px;
   resize: none; /* Prevents resizing of textarea */
   border-radius: 5px;
 }
+
 /* overlay */
 div#overlay {
   position: fixed;
@@ -75,15 +77,17 @@ div#overlay {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgb(0 0 0 / 70%);
   z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
+
   /* So that text-counter is below */
   flex-direction: column;
   gap: 5px; /* Adds space between textarea and counter */
 }
+
 div#overlay textarea#overlayTextarea {
   width: 60%;
   height: 60%;
@@ -95,6 +99,7 @@ div#overlay textarea#overlayTextarea {
   font-size: 14px;
   color: whitesmoke;
 }
+
 div.buttonPanel {
   /* how does the panel look */
   position: absolute;
@@ -109,25 +114,31 @@ div.buttonPanel {
 button.responsive {
   text-align: left;
 }
+
 button.button--toggle,
 button.responsive button.button--toggle {
   text-align: center;
 }
-@media (max-width: 980px) {
+
+@media (width <= 980px) {
   /* for Pixel7 MUST be at least 980px, less doesn't change it */
   button.responsive {
     font-size: xx-large; /* todo experiment */
   }
 }
+
 button.button--cancel {
-  background-color: #cc2222; /* some light red */
+  background-color: #c22; /* some light red */
 }
+
 button.button--delete {
   color: red;
 }
+
 button.button--edit {
   color: green;
 }
+
 button.button--save {
-  background-color: #6666ff; /* some light blue */
+  background-color: #66f; /* some light blue */
 }
