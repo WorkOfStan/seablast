@@ -195,7 +195,7 @@ WHERE
         // Fetch each row and add it to the $data array
         if (is_object($mysqliResult)) {
             while ($row = $mysqliResult->fetch_assoc()) {
-                Assert::true(is_string($row['id']) || is_int($row['id'])); 
+                Assert::true(is_string($row['id']) || is_int($row['id']));
                 $data[$row['id']] = $row;
             }
         }
