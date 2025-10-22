@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 - add: mit.js::initEditable();
-- add: working /poseidon and /api/poseidon routes for admin.latte using shared seablast.css
+- add: working `/poseidon` and `/api/poseidon` routes for [admin.latte](views/admin.latte) using shared [seablast.css](assets/seablast.css)
 
 ### `Changed` for changes in existing functionality
 
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 - fix: BlueprintWeb.latte csrfToken typo (which prevents edit fields in admin view)
+- fix: fix scheduled GitHub Actions by bumping seablast-actions to 0.2.7 to bump super-linter::v.8.2.0 to v.8.2.1
 
 ### `Security` in case of vulnerabilities
 
