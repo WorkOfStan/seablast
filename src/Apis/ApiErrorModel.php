@@ -81,34 +81,34 @@ class ApiErrorModel extends GenericRestApiJsonModel
      * @throws \Exception
      */
     private function executeBusinessLogic(): void
-{
-    if ($this->superglobals->server['REQUEST_METHOD'] !== 'POST') {
-        throw new \Exception('Unexpected HTTP method');
-    }
+    {
+        if ($this->superglobals->server['REQUEST_METHOD'] !== 'POST') {
+            throw new \Exception('Unexpected HTTP method');
+        }
 
     // Mapping of text severity -> Tracy\ILogger constant
-    $severityMap = [
+        $severityMap = [
         'DEBUG'     => ILogger::DEBUG,
         'INFO'      => ILogger::INFO,
         'WARNING'   => ILogger::WARNING,
         'ERROR'     => ILogger::ERROR,
         'EXCEPTION' => ILogger::EXCEPTION,
         'CRITICAL'  => ILogger::CRITICAL,
-    ];
+        ];
 
-    $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));
-    $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
+        $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));
+        $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
 
-    $message = sprintf(
-        '%s %s %s %s',
-        $this->data->page ?? 'unknown-page',
-        $this->data->order ?? '-',
-        $inputSeverity,
-        $this->data->message ?? '(missing message)'
-    );
+        $message = sprintf(
+            '%s %s %s %s',
+            $this->data->page ?? 'unknown-page',
+            $this->data->order ?? '-',
+            $inputSeverity,
+            $this->data->message ?? '(missing message)'
+        );
 
-    Debugger::log($message, $severity);
+        Debugger::log($message, $severity);
 
-    $this->message = 'Error logged.';
-}
+        $this->message = 'Error logged.';
+    }
 }
