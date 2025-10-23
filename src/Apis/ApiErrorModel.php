@@ -10,11 +10,11 @@ use Tracy\Debugger;
 use Tracy\ILogger;
 
 /**
- * Log errors reported by Ajax saved to the app error log
- * - message
- * - severity accepted values (case insensitive): DEBUG, INFO, WARNING, ERROR, EXCEPTION, CRITICAL (default=ERROR)
- * - order of ajax call from one script
+ * Log errors reported by Ajax saved to the app error log with these informations:
  * - page name that invoked the call
+ * - order of ajax call from one script
+ * - severity accepted values (case insensitive): DEBUG, INFO, WARNING, ERROR, EXCEPTION, CRITICAL (default=ERROR)
+ * - message
  *
  * Usage:
  * conf/app.conf.php
