@@ -6,11 +6,13 @@ namespace Seablast\Seablast\Apis;
 
 use Seablast\Seablast\Apis\GenericRestApiJsonModel;
 use stdClass;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 /**
- * Log errors reported by Ajax saved to the standard error log
+ * Log errors reported by Ajax saved to the app error log
  * - message
- * - severity (default=error)
+ * - severity accepted values (case insensitive): DEBUG, INFO, WARNING, ERROR, EXCEPTION, CRITICAL (default=ERROR)
  * - order of ajax call from one script
  * - page name that invoked the call
  *
@@ -79,14 +81,34 @@ class ApiErrorModel extends GenericRestApiJsonModel
      * @throws \Exception
      */
     private function executeBusinessLogic(): void
-    {
-        if ($this->superglobals->server['REQUEST_METHOD'] === 'POST') {
-            // todo log better - into log folder
-            error_log(($this->data->page ?? 'unknown-page') . ' ' . ($this->data->order ?? '-') . ' '
-                . ($this->data->severity ?? 'error') . ' ' . ($this->data->message ?? '(missing message)'));
-            $this->message = 'Error logged.';
-            return;
-        }
+{
+    if ($this->superglobals->server['REQUEST_METHOD'] !== 'POST') {
         throw new \Exception('Unexpected HTTP method');
     }
+
+    // Mapping of text severity -> Tracy\ILogger constant
+    $severityMap = [
+        'DEBUG'     => ILogger::DEBUG,
+        'INFO'      => ILogger::INFO,
+        'WARNING'   => ILogger::WARNING,
+        'ERROR'     => ILogger::ERROR,
+        'EXCEPTION' => ILogger::EXCEPTION,
+        'CRITICAL'  => ILogger::CRITICAL,
+    ];
+
+    $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));
+    $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
+
+    $message = sprintf(
+        '%s %s %s %s',
+        $this->data->page ?? 'unknown-page',
+        $this->data->order ?? '-',
+        $inputSeverity,
+        $this->data->message ?? '(missing message)'
+    );
+
+    Debugger::log($message, $severity);
+
+    $this->message = 'Error logged.';
+}
 }
