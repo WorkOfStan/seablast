@@ -17,4 +17,3 @@ window.Overlay = Overlay;
 //  const fileInput = document.getElementById("fileInput"); // dropzone
 //  const dropZone = $("#drop_zone"); // dropzone
 //  const overlay = new Overlay(env, bannerManager);
-  

@@ -28,7 +28,7 @@ $(() => {
    * @param {{ userRoute?: string }} [options]  Optional settings. If userRoute is provided and current path differs, it will redirect there on success; otherwise it just reloads the page to refresh the menu.
    * @returns {void}
    */
-window.sendAuthToken = (authToken, provider, errorLogger, options = {}) => {
+  window.sendAuthToken = (authToken, provider, errorLogger, options = {}) => {
     fetch(`${env.API_BASE_DIR}social-login`, {
       method: "POST",
       headers: {
