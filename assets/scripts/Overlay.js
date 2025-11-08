@@ -1,7 +1,7 @@
 "use strict";
 /* global $ */
 //import { BannerManager } from "../../vendor/seablast/seablast/assets/scripts/seablast.js";
-import { ButtonPanel } from "./ButtonPanel.js";
+import { ButtonPanel } from "./ButtonPanel.js"; // TODO inject instead of import!
 
 export class Overlay {
   /**

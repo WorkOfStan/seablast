@@ -1,7 +1,7 @@
 "use strict";
 /* global $, API_BASE, csrfToken, flags */
-
-import { ErrorLogger } from "./seablast.js";
+// expected by plugin Seablast\Auth
+// expects Environment.js and seablast.js
 
 /**
  * Globally available function to send the social login auth token to your backend for verification.
@@ -18,16 +18,17 @@ $(() => {
     flags,
     csrfToken,
   };
-  const errorLogger = new ErrorLogger(env.csrfToken, env.API_BASE);
 
   /**
    * Send the social login auth token to your backend for verification.
    *
-   * @param {string} authToken
-   * @param {string} provider
+   * @param {string} authToken  Social provider-issued auth token.
+   * @param {string} provider   Provider name, e.g. "google" | "facebook" .
+   * @param {{log: (message: string, level?: string) => void}} errorLogger  Logger with a .log(message, level) method.
+   * @param {{ userRoute?: string }} [options]  Optional settings. If userRoute is provided and current path differs, it will redirect there on success; otherwise it just reloads the page to refresh the menu.
    * @returns {void}
    */
-  window.sendAuthToken = (authToken, provider) => {
+window.sendAuthToken = (authToken, provider, errorLogger, options = {}) => {
     fetch(`${env.API_BASE_DIR}social-login`, {
       method: "POST",
       headers: {
@@ -42,14 +43,28 @@ $(() => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          // User is successfully logged in, handle accordingly
-          //console.log("Social login successful", data);
-          // TODO if not called from /user, go to /user {* AuthConstant::USER_ROUTE *}
-          location.reload(); // To update the menu
+          // User is successfully logged in, handle accordingly.
+          // If a specific user route is provided and we're not on it, navigate there; otherwise reload to update the menu.
+          // TODO ? if not called from /user, go to /user {* AuthConstant::USER_ROUTE *}
+          if (options.userRoute && location.pathname !== options.userRoute) {
+            location.assign(options.userRoute);
+          } else {
+            location.reload(); // To refresh the UI after login
+          }
         } else {
-          // Handle login failure
+          // Handle login failure.
+          if (errorLogger && typeof errorLogger.log === "function") {
+            errorLogger.log(
+              `Social login to ${provider} failed: ${JSON.stringify(data)}`,
+              "error",
+            );
+          }
+        }
+      })
+      .catch((err) => {
+        if (errorLogger && typeof errorLogger.log === "function") {
           errorLogger.log(
-            `Social login to ${provider} failed: ${JSON.stringify(data)}`,
+            `Network/parse error during social login to ${provider}: ${String(err)}`,
             "error",
           );
         }

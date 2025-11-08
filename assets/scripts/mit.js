@@ -24,8 +24,9 @@
  */
 /* global $, API_BASE, csrfToken, flags */
 
-import { Overlay } from "./Overlay.js";
-import { BannerManager } from "./seablast.js";
+//import { Overlay } from "./Overlay.js";
+//import { BannerManager } from "./seablast.js";
+// ES module seablast-bridge.js expected
 
 $(() => {
   /** @type import('Environment.js').Environment */

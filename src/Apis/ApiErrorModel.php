@@ -86,14 +86,14 @@ class ApiErrorModel extends GenericRestApiJsonModel
             throw new \Exception('Unexpected HTTP method');
         }
 
-    // Mapping of text severity -> Tracy\ILogger constant
+        // Mapping of text severity -> Tracy\ILogger constant
         $severityMap = [
-        'DEBUG'     => ILogger::DEBUG,
-        'INFO'      => ILogger::INFO,
-        'WARNING'   => ILogger::WARNING,
-        'ERROR'     => ILogger::ERROR,
-        'EXCEPTION' => ILogger::EXCEPTION,
-        'CRITICAL'  => ILogger::CRITICAL,
+            'DEBUG' => ILogger::DEBUG,
+            'INFO' => ILogger::INFO,
+            'WARNING' => ILogger::WARNING,
+            'ERROR' => ILogger::ERROR,
+            'EXCEPTION' => ILogger::EXCEPTION,
+            'CRITICAL' => ILogger::CRITICAL,
         ];
 
         $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));

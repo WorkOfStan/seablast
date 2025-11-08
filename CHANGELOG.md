@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- **BREAKING-CHANGE** errorLogger expected as the argument in send-auth-token.js: `window.sendAuthToken = (authToken, provider, errorLogger, options = {})`
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
