@@ -59,14 +59,12 @@
         </style>
     </head>
     <body>
-        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script>
-                const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}; {* todo: test deactivate language and social login stops working => moving API_BASE elsewhere *}
-                const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
-            </script>
-        {/if}
         <script>
+            const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
             const csrfToken = {$csrfToken};{* id:sb_json *}
+            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR',]}
+                {foreach $selectedFlags as $selected}{if $configuration->flag->status($selected)}{$selected},{/if}{/foreach}
+            ];
         </script>
         <header>
             <nav>

@@ -45,7 +45,6 @@ $(() => {
         if (data.success) {
           // User is successfully logged in, handle accordingly.
           // If a specific user route is provided and we're not on it, navigate there; otherwise reload to update the menu.
-          // TODO ? if not called from /user, go to /user {* AuthConstant::USER_ROUTE *}
           if (options.userRoute && location.pathname !== options.userRoute) {
             location.assign(options.userRoute);
           } else {
@@ -70,4 +69,4 @@ $(() => {
         }
       });
   };
-}); //$
+});

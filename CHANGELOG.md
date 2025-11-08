@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
-- **BREAKING-CHANGE** errorLogger expected as the argument in send-auth-token.js: `window.sendAuthToken = (authToken, provider, errorLogger, options = {})`
+- **BREAKING-CHANGE** errorLogger expected as an argument in send-auth-token.js: `window.sendAuthToken = (authToken, provider, errorLogger, options = {})`
+- JavaScript variables API_BASE and flags are always present in the default BlueprintWeb.latte (as various pages are expecting them and so it's not practical to add them only conditionally)
 
 ### `Deprecated` for soon-to-be removed features
 
