@@ -19,6 +19,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.13] - 2025-12-07
+
+refactor!: Require errorLogger argument in send-auth-token.js. Administer by route `/poseidon`.
+
+### Added
+
+- add: mit.js::initEditable();
+- add: working `/poseidon` and `/api/poseidon` routes for [admin.latte](views/admin.latte) using shared [seablast.css](assets/seablast.css)
+- add support for PHP/8.5 (deps already support PHP/8.5)
+
+### Changed
+
+- **BREAKING-CHANGE** errorLogger expected as an argument in send-auth-token.js: `window.sendAuthToken = (authToken, provider, errorLogger, options = {})`
+- JavaScript variables API_BASE and flags are always present in the default BlueprintWeb.latte (as various pages are expecting them and so it's not practical to add them only conditionally)
+
+### Fixed
+
+- fix: BlueprintWeb.latte csrfToken typo (which prevents edit fields in admin view)
+- fix: fix scheduled GitHub Actions by bumping seablast-actions to 0.2.7 to bump super-linter::v.8.2.0 to v.8.2.1
+
 ## [0.2.12] - 2025-09-12
 
 fix: **BREAKING-CHANGE** `id="bannerContainer"` to `id="banner-container"`
@@ -379,7 +399,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...HEAD?w=1
+[0.2.13]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...v0.2.13?w=1
 [0.2.12]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...v0.2.12?w=1
 [0.2.11.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...v0.2.11.1?w=1
 [0.2.11]: https://github.com/WorkOfStan/seablast/compare/v0.2.10.1...v0.2.11?w=1

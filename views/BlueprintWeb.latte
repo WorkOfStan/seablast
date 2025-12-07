@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html>{* expected variables: $csrfToken *}
 <html>
     <head>
         <title>{$title ?? 'Powered by Seablast'}</title>
@@ -59,15 +59,16 @@
         </style>
     </head>
     <body>
-        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script>
-                const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
-                const flags = ['I18n:SHOW_LANGUAGE_SELECTOR'];
-            </script>
-        {/if}
         <script>
-            const csrf_token = {$csrfToken};{* id:sb_json *}
+            const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
+            const csrfToken = {$csrfToken};{* id:sb_json *}
+            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR',]}
+                {foreach $selectedFlags as $selected}{if $configuration->flag->status($selected)}{$selected},{/if}{/foreach}
+            ];
         </script>
+        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
+        {/if}
         <header>
             <nav>
                 {include 'inherite.latte', latte => 'nav.latte'}
@@ -82,7 +83,6 @@
             {include 'inherite.latte', latte => 'footer.latte'}
         </footer>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
             {include '../../../../vendor/seablast/i18n/views/uls.js.latte'}
         {/if}
         {block script}{/block} {* Note: content of block script MUST use <script></script> *}

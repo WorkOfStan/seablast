@@ -6,13 +6,15 @@ namespace Seablast\Seablast\Apis;
 
 use Seablast\Seablast\Apis\GenericRestApiJsonModel;
 use stdClass;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 /**
- * Log errors reported by Ajax saved to the standard error log
- * - message
- * - severity (default=error)
- * - order of ajax call from one script
+ * Log errors reported by Ajax saved to the app error log with these informations:
  * - page name that invoked the call
+ * - order of ajax call from one script
+ * - severity accepted values (case insensitive): DEBUG, INFO, WARNING, ERROR, EXCEPTION, CRITICAL (default=ERROR)
+ * - message
  *
  * Usage:
  * conf/app.conf.php
@@ -80,13 +82,33 @@ class ApiErrorModel extends GenericRestApiJsonModel
      */
     private function executeBusinessLogic(): void
     {
-        if ($this->superglobals->server['REQUEST_METHOD'] === 'POST') {
-            // todo log better - into log folder
-            error_log(($this->data->page ?? 'unknown-page') . ' ' . ($this->data->order ?? '-') . ' '
-                . ($this->data->severity ?? 'error') . ' ' . ($this->data->message ?? '(missing message)'));
-            $this->message = 'Error logged.';
-            return;
+        if ($this->superglobals->server['REQUEST_METHOD'] !== 'POST') {
+            throw new \Exception('Unexpected HTTP method');
         }
-        throw new \Exception('Unexpected HTTP method');
+
+        // Mapping of text severity -> Tracy\ILogger constant
+        $severityMap = [
+            'DEBUG' => ILogger::DEBUG,
+            'INFO' => ILogger::INFO,
+            'WARNING' => ILogger::WARNING,
+            'ERROR' => ILogger::ERROR,
+            'EXCEPTION' => ILogger::EXCEPTION,
+            'CRITICAL' => ILogger::CRITICAL,
+        ];
+
+        $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));
+        $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
+
+        $message = sprintf(
+            '%s %s %s %s',
+            $this->data->page ?? 'unknown-page',
+            $this->data->order ?? '-',
+            $inputSeverity,
+            $this->data->message ?? '(missing message)'
+        );
+
+        Debugger::log($message, $severity);
+
+        $this->message = 'Error logged.';
     }
 }

@@ -1,0 +1,144 @@
+/* messages */
+#banner-container {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banner {
+  z-index: 1100; /* Ensure it's above other content incl. overlay */
+  padding: 10px 20px;
+  margin: 10px 20px;
+  color: #ededed; /* not white, so that always visible */
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+  width: 100%;
+  max-width: 800px; /* Max width of the individual banners */
+  position: relative; /* To position the button relative to the banner */
+}
+
+.banner.info {
+  background-color: #0069d9;
+}
+
+.banner.warning {
+  background-color: #dc3545;
+}
+
+.banner button {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  border: none;
+  background: none;
+  color: #ededed;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* messages animation, then slide to its position */
+@keyframes floatBanner {
+  0% {
+    transform: translateY(50vh);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.banner.floating {
+  animation: floatBanner 1.8s ease forwards;
+  position: fixed;
+  top: 0%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+/* .editable */
+.editable textarea {
+  cursor: pointer;
+  margin: 10px;
+  border: 10px solid skyblue;
+  padding: 10px;
+  resize: none; /* Prevents resizing of textarea */
+  border-radius: 5px;
+}
+
+/* overlay */
+div#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0 0 0 / 70%);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* So that text-counter is below */
+  flex-direction: column;
+  gap: 5px; /* Adds space between textarea and counter */
+}
+
+div#overlay textarea#overlayTextarea {
+  width: 60%;
+  height: 60%;
+  padding: 10px;
+}
+
+/* Counter of text in overlay */
+.text-counter {
+  font-size: 14px;
+  color: whitesmoke;
+}
+
+div.buttonPanel {
+  /* how does the panel look */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* buttons */
+button.responsive {
+  text-align: left;
+}
+
+button.button--toggle,
+button.responsive button.button--toggle {
+  text-align: center;
+}
+
+@media (width <= 980px) {
+  /* for Pixel7 MUST be at least 980px, less doesn't change it */
+  button.responsive {
+    font-size: xx-large; /* todo experiment */
+  }
+}
+
+button.button--cancel {
+  background-color: #c22; /* some light red */
+}
+
+button.button--delete {
+  color: red;
+}
+
+button.button--edit {
+  color: green;
+}
+
+button.button--save {
+  background-color: #66f; /* some light blue */
+}

@@ -31,7 +31,7 @@ SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 
 The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 
-- If model replies with `rest` property, API response is triggered instead of HTML UI. In that case, `httpCode` property is used as the response HTTP code.
+- If model replies with `rest` property, API response is triggered instead of HTML UI. If the default HTTP code should be changed, set it up in the `httpCode` property.
 - If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302 or 303 by the `httpCode` property.
 - If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
 
@@ -46,13 +46,18 @@ SeablastConstant::APP_MAPPING = route => [
 
 - Feel free to use the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}` which can be populated by your local `nav.latte` and `footer.latte`.
 
+### Administration
+
+- By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs same as used in Seablast\Auth) with different rights.
+- TODO: describe allocation of tables using `->setArrayString(SeablastConstant::ADMIN_TABLE_VIEW...`
+
 ## Authentication and authorisation
 
 - Roles are for access.
 - Routes can only be allowed for roles (never denied). I.e. access to a route can be restricted to certain roles.
 - Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
 - Groups are on top of it, e.g. for promotions, subscriptions etc.
-- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID.
+- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID and also USER_ID.
 
 ## Security
 
@@ -61,10 +66,11 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 ## Stack
 
 - PHP >=7.2 <8.5
-- [Latte](http://latte.nette.org/) ^2.11.7 || ^3: for templating
+- [Latte](http://latte.nette.org/) `>=2.10.8 <4`: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
-- [Tracy](https://github.com/nette/tracy) ^2.9.8 || ^2.10.9: for debugging
+- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
+- [jQuery] 3.7.1: as a JavaScript framework
 - [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
 
 ### ULS (Universal Language Selector jQuery library)

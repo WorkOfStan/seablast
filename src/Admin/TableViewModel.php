@@ -9,6 +9,7 @@ use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
 use Tracy\Debugger;
+use Webmozart\Assert\Assert;
 
 /**
  * Retrieve items from database.
@@ -194,6 +195,7 @@ WHERE
         // Fetch each row and add it to the $data array
         if (is_object($mysqliResult)) {
             while ($row = $mysqliResult->fetch_assoc()) {
+                Assert::true(is_string($row['id']) || is_int($row['id']));
                 $data[$row['id']] = $row;
             }
         }
