@@ -67,7 +67,7 @@
             ];
         </script>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
         {/if}
         <header>
             <nav>
