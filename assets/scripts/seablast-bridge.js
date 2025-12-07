@@ -2,9 +2,9 @@
 // seablast-bridge.js is ES modul and so are the scripts from which is imported below
 
 import { BannerManager } from "./seablast.js";
-import { ButtonPanel } from "./ButtonPanel.js";
+import { ButtonPanel } from "./button-panel.js";
 import { ErrorLogger } from "./seablast.js";
-import { Overlay } from "./Overlay.js";
+import { Overlay } from "./overlay.js";
 
 // Let's make these accessible for non-module scripts
 window.BannerManager = BannerManager;

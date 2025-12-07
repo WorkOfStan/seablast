@@ -1,7 +1,7 @@
 "use strict";
 /* global $, API_BASE, csrfToken, flags */
 // expected by plugin Seablast\Auth
-// expects Environment.js and seablast.js
+// expects environment.js and seablast.js
 
 /**
  * Globally available function to send the social login auth token to your backend for verification.
@@ -11,7 +11,7 @@
  * @returns {void}
  */
 $(() => {
-  /** @type import('./Environment.js').Environment */
+  /** @type import('./environment.js').Environment */
   const env = {
     API_BASE,
     API_BASE_DIR: `${API_BASE}/api/`,

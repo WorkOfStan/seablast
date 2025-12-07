@@ -29,7 +29,7 @@
 // ES module seablast-bridge.js expected
 
 $(() => {
-  /** @type import('Environment.js').Environment */
+  /** @type import('environment.js').Environment */
   const env = {
     API_BASE,
     API_BASE_DIR: `${API_BASE}/api/`,

@@ -70,6 +70,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
 - [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: for debugging
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
+- [jQuery] 3.7.1: as a JavaScript framework
 - [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
 
 ### ULS (Universal Language Selector jQuery library)

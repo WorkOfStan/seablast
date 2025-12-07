@@ -66,6 +66,9 @@
                 {foreach $selectedFlags as $selected}{if $configuration->flag->status($selected)}{$selected},{/if}{/foreach}
             ];
         </script>
+        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        {/if}
         <header>
             <nav>
                 {include 'inherite.latte', latte => 'nav.latte'}
@@ -80,7 +83,6 @@
             {include 'inherite.latte', latte => 'footer.latte'}
         </footer>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
             {include '../../../../vendor/seablast/i18n/views/uls.js.latte'}
         {/if}
         {block script}{/block} {* Note: content of block script MUST use <script></script> *}
