@@ -14,7 +14,7 @@ All planned changes to this project are documented in this file.
 
 ## CSS style
 
-- 251022, fix assets/seablast.css to use kebab-case and then allow again CSS validation
+- 251022, fix assets/seablast.css to use kebab-case and then allow the CSS validation again
 
 ```txt
      43:12  ✖  Expected keyframe name "floatBanner" to be kebab-case       keyframes-name-pattern

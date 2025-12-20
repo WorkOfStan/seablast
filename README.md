@@ -49,7 +49,183 @@ SeablastConstant::APP_MAPPING = route => [
 ### Administration
 
 - By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs same as used in Seablast\Auth) with different rights.
-- TODO: describe allocation of tables using `->setArrayString(SeablastConstant::ADMIN_TABLE_VIEW...`
+
+#### Admin Table Configuration
+
+This section describes how database tables and their columns are configured for **viewing and editing** in the admin interface, based on **user roles**.
+
+The configuration is **declarative** and role-driven.
+
+##### Core Concepts
+
+Admin table access is defined on **three levels**:
+
+1. **Role → Accessible tables**
+2. **Role → Table → Viewable columns**
+3. **Role → Table → Editable columns**
+
+Each level must be explicitly configured.
+
+##### 1. Granting Table Access to a Role
+
+Before a table can be displayed or edited, it must be **explicitly allowed** for the given role.
+
+##### Syntax
+
+```php
+->setArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_X,
+    ['table1', 'table2']
+)
+```
+
+##### Meaning
+
+* Defines which tables are visible to a role
+* If a table is not listed here, it will **not appear at all**, even if columns are defined later
+
+##### Example
+
+```php
+->setArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
+    ['audios', 'translations']
+)
+```
+
+The `EDITOR` role can access the `audios` and `translations` tables.
+
+##### 2. Defining Viewable Columns (READ-ONLY)
+
+Viewable columns are displayed in the admin table but **cannot be edited**.
+
+##### Syntax
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_X,
+    'table_name',
+    ['column1', 'column2']
+)
+```
+
+##### Meaning
+
+* Defines which columns are shown in the table
+* Columns listed here are **read-only**
+* Columns must **not** be duplicated in the EDIT section
+
+##### Example
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_ADMIN,
+    'users',
+    ['id', 'email', 'created', 'last_login']
+)
+```
+
+The admin can view these columns but cannot modify them.
+
+##### 3. Defining Editable Columns (WRITE)
+
+Editable columns appear as form fields and can be modified.
+
+##### Syntax
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_X,
+    'table_name',
+    ['editable_column1', 'editable_column2']
+)
+```
+
+##### Meaning
+
+* Defines which columns can be edited
+* Editable columns automatically appear in edit forms
+* Columns must **not** appear in the VIEW section
+
+##### Example
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_ADMIN,
+    'items',
+    ['metadata_text', 'active', 'parent_id', 'order']
+)
+```
+
+The admin can modify these fields.
+
+##### 4. Important Rule: Column Exclusivity
+
+> **A column may appear only once.**
+
+A column must be defined in **either**:
+
+* `VIEW`
+  **or**
+* `EDIT`
+
+Never in both.
+
+##### Reason
+
+* Prevents UI conflicts
+* Avoids ambiguous form behavior
+* Ensures clear permission boundaries
+
+##### 5. Configuration Overview
+
+| Level               | Method                  | Purpose                        |
+| ------------------- | ----------------------- | ------------------------------ |
+| Role → Tables       | `setArrayString()`      | Which tables a role can access |
+| Role → Table → VIEW | `setArrayArrayString()` | Read-only columns              |
+| Role → Table → EDIT | `setArrayArrayString()` | Editable columns               |
+
+---
+
+##### 6. Typical Workflow: Adding a New Table
+
+##### Step 1 – Allow table access
+
+```php
+->setArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
+    ['new_table']
+)
+```
+
+##### Step 2 – Define viewable columns
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
+    'new_table',
+    ['id', 'name']
+)
+```
+
+##### Step 3 – Define editable columns
+
+```php
+->setArrayArrayString(
+    SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_EDITOR,
+    'new_table',
+    ['name', 'active']
+)
+```
+
+##### Summary
+
+* Table access is **role-based**
+* Columns are explicitly split into **VIEW** and **EDIT**
+* A column may exist in **only one section**
+* Tables must be registered **before** defining columns
+
+This design guarantees predictable behavior, secure access control, and a clean admin UI.
 
 ## Authentication and authorisation
 
@@ -65,7 +241,7 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 
 ## Stack
 
-- PHP >=7.2 <8.5
+- PHP >=7.2 <8.6
 - [Latte](http://latte.nette.org/) `>=2.10.8 <4`: for templating
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
 - [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: for debugging
