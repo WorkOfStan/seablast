@@ -41,7 +41,7 @@ class SeablastModel
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             try {
                 $knowledge = $model->knowledge();
-                Assert::object($knowledge);
+                Assert::isInstanceOf($knowledge, \stdClass::class);
                 $this->viewParameters = $knowledge;
             } catch (Exceptions\DbmsException $e) {
                 // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown

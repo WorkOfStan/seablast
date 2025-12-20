@@ -105,6 +105,7 @@ class AdminHelper
         $columnTypes = [];
         while ($row = $result->fetch_object()) {
             Assert::scalar($row->DATA_TYPE);
+            Assert::scalar($row->COLUMN_NAME);
             $columnTypes[$row->COLUMN_NAME] = (string) $row->DATA_TYPE;
         }
         $result->free();

@@ -107,6 +107,7 @@ class SeablastModelTest extends TestCase
         $params = $model->getParameters();
 
         $this->assertTrue(property_exists($params, 'csrfToken'));
+        $this->assertIsString($params->csrfToken);
         $this->assertTrue(
             strlen($params->csrfToken) > 60,
             'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'

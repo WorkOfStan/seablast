@@ -306,7 +306,8 @@ class SeablastController
 
         return
             (!empty($server['HTTPS']) && is_string($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
-            (!empty($server['REQUEST_SCHEME']) && strtolower($server['REQUEST_SCHEME']) === 'https') ||
+            (!empty($server['REQUEST_SCHEME']) && is_string($server['REQUEST_SCHEME'])
+            && strtolower($server['REQUEST_SCHEME']) === 'https') ||
             (!empty($server['SERVER_PORT']) && $server['SERVER_PORT'] == '443') ||
             ($proxyHeaders && in_array($clientIp, $trustedProxies, true));
     }
@@ -475,7 +476,7 @@ class SeablastController
         // Authenticate: is there an identity manager to be used?
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
-            /* @phpstan-ignore-next-line Property $identity does not accept object. */
+            /* @xx phpstan-ignore-next-line Property $identity does not accept object. */
             $this->identity = new $identityManager($this->configuration->mysqli());
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());

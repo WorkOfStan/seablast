@@ -26,6 +26,7 @@ class SeablastConfigurationTest extends TestCase
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = APP_DIR . '/conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
+        $this->assertIsCallable($configurationClosure);
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
         $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
