@@ -9,6 +9,7 @@ use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\Superglobals;
 use stdClass;
 use Tracy\Debugger;
+use Webmozart\Assert\Assert;
 
 /**
  * Update editable fields in database
@@ -60,7 +61,9 @@ class ApiTableUpdateModel extends GenericRestApiJsonModel
         ) {
             return self::response(403, 'Nothing to edit.');
         }
+        Assert::string($this->data->val);
         $this->data->val = trim($this->data->val); // no reason to store empty lines or other whitespace around content
+        Assert::string($this->superglobals->get['key']);
         $column = $this->configuration->mysqli()->real_escape_string($this->superglobals->get['key']);
         $columnTypes = $this->adminHelper->columnTypes($this->configuration->getString('App:selected-table'));
         if (

@@ -185,32 +185,23 @@ Never in both.
 | Role → Table → VIEW | `setArrayArrayString()` | Read-only columns              |
 | Role → Table → EDIT | `setArrayArrayString()` | Editable columns               |
 
----
-
 ##### 6. Typical Workflow: Adding a New Table
 
-##### Step 1 – Allow table access
-
 ```php
+// Step 1 – Allow table access
 ->setArrayString(
     SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
     ['new_table']
 )
-```
 
-##### Step 2 – Define viewable columns
-
-```php
+// Step 2 – Define viewable columns
 ->setArrayArrayString(
     SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
     'new_table',
     ['id', 'name']
 )
-```
 
-##### Step 3 – Define editable columns
-
-```php
+// Step 3 – Define editable columns
 ->setArrayArrayString(
     SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_EDITOR,
     'new_table',

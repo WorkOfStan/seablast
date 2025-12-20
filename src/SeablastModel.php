@@ -40,13 +40,15 @@ class SeablastModel
             $model = new $className($this->controller->getConfiguration(), $superglobals);
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             try {
-                $this->viewParameters = $model->knowledge();
+                $knowledge = $model->knowledge();
+                Assert::object($knowledge);
+                $this->viewParameters = $knowledge;
             } catch (Exceptions\DbmsException $e) {
                 // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
                 $this->controller->getConfiguration()->showSqlBarPanel();
                 throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
             }
-            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
+            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);            
             Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be of stdClass type.");
         } else {
             Debugger::log('No model, no knowledge.', ILogger::DEBUG);

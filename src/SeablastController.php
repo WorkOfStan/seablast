@@ -298,12 +298,14 @@ class SeablastController
         $clientIp = $server['REMOTE_ADDR'] ?? '';
 
         $proxyHeaders = (
-            (!empty($server['HTTP_X_FORWARDED_PROTO']) && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https') ||
-            (!empty($server['HTTP_X_FORWARDED_SSL']) && strtolower($server['HTTP_X_FORWARDED_SSL']) === 'on')
-            );
+            (!empty($server['HTTP_X_FORWARDED_PROTO']) && is_string($server['HTTP_X_FORWARDED_PROTO'])
+              && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+            (!empty($server['HTTP_X_FORWARDED_SSL']) && is_string($server['HTTP_X_FORWARDED_SSL'])
+              && strtolower($server['HTTP_X_FORWARDED_SSL']) === 'on')
+        );
 
         return
-            (!empty($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
+            (!empty($server['HTTPS']) && is_string($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
             (!empty($server['REQUEST_SCHEME']) && strtolower($server['REQUEST_SCHEME']) === 'https') ||
             (!empty($server['SERVER_PORT']) && $server['SERVER_PORT'] == '443') ||
             ($proxyHeaders && in_array($clientIp, $trustedProxies, true));

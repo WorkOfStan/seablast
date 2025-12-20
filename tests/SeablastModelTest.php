@@ -32,6 +32,7 @@ class SeablastModelTest extends TestCase
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
+        $this->assertIsCallable($configurationClosure);
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
 

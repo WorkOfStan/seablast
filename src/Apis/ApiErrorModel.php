@@ -8,6 +8,7 @@ use Seablast\Seablast\Apis\GenericRestApiJsonModel;
 use stdClass;
 use Tracy\Debugger;
 use Tracy\ILogger;
+use Webmozart\Assert\Assert;
 
 /**
  * Log errors reported by Ajax saved to the app error log with these informations:
@@ -70,6 +71,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
             return $result;
         }
         $this->executeBusinessLogic();
+        Assert::object($result->rest);
         $result->rest->message = $this->message;
         return $result;
     }

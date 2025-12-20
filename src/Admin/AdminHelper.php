@@ -9,6 +9,7 @@ use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
+use Webmozart\Assert\Assert;
 
 /**
  * Helper methods for AdminModel, TableViewModel and ApiTableUpdateModel
@@ -103,6 +104,7 @@ class AdminHelper
 
         $columnTypes = [];
         while ($row = $result->fetch_object()) {
+            Assert::scalar($row->DATA_TYPE);
             $columnTypes[$row->COLUMN_NAME] = (string) $row->DATA_TYPE;
         }
         $result->free();
