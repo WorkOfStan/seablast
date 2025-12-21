@@ -81,8 +81,8 @@ Before a table can be displayed or edited, it must be **explicitly allowed** for
 
 ##### Meaning
 
-* Defines which tables are visible to a role
-* If a table is not listed here, it will **not appear at all**, even if columns are defined later
+- Defines which tables are visible to a role
+- If a table is not listed here, it will **not appear at all**, even if columns are defined later
 
 ##### Example
 
@@ -111,9 +111,9 @@ Viewable columns are displayed in the admin table but **cannot be edited**.
 
 ##### Meaning
 
-* Defines which columns are shown in the table
-* Columns listed here are **read-only**
-* Columns must **not** be duplicated in the EDIT section
+- Defines which columns are shown in the table
+- Columns listed here are **read-only**
+- Columns must **not** be duplicated in the EDIT section
 
 ##### Example
 
@@ -143,9 +143,9 @@ Editable columns appear as form fields and can be modified.
 
 ##### Meaning
 
-* Defines which columns can be edited
-* Editable columns automatically appear in edit forms
-* Columns must **not** appear in the VIEW section
+- Defines which columns can be edited
+- Editable columns automatically appear in edit forms
+- Columns must **not** appear in the VIEW section
 
 ##### Example
 
@@ -165,17 +165,17 @@ The admin can modify these fields.
 
 A column must be defined in **either**:
 
-* `VIEW`
+- `VIEW`
   **or**
-* `EDIT`
+- `EDIT`
 
 Never in both.
 
 ##### Reason
 
-* Prevents UI conflicts
-* Avoids ambiguous form behavior
-* Ensures clear permission boundaries
+- Prevents UI conflicts
+- Avoids ambiguous form behavior
+- Ensures clear permission boundaries
 
 ##### 5. Configuration Overview
 
@@ -211,10 +211,10 @@ Never in both.
 
 ##### Summary
 
-* Table access is **role-based**
-* Columns are explicitly split into **VIEW** and **EDIT**
-* A column may exist in **only one section**
-* Tables must be registered **before** defining columns
+- Table access is **role-based**
+- Columns are explicitly split into **VIEW** and **EDIT**
+- A column may exist in **only one section**
+- Tables must be registered **before** defining columns
 
 This design guarantees predictable behavior, secure access control, and a clean admin UI.
 
