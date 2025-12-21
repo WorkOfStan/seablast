@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
+- docs: describe admin table settings
+
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
@@ -16,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Removed` for now removed features
 
 ### `Fixed` for any bugfixes
+
+- fix: add assertions and typecastings to pass PHPStan static analysis at the `level: max` to make the code more robust
 
 ### `Security` in case of vulnerabilities
 
