@@ -476,8 +476,9 @@ class SeablastController
         // Authenticate: is there an identity manager to be used?
         if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
             $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
-            /* @xx phpstan-ignore-next-line Property $identity does not accept object. */
-            $this->identity = new $identityManager($this->configuration->mysqli());
+            /** @var IdentityManagerInterface $tempIdentity */
+            $tempIdentity = new $identityManager($this->configuration->mysqli());
+            $this->identity = $tempIdentity;
             if (method_exists($this->identity, 'setTablePrefix')) {
                 $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
             }

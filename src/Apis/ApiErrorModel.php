@@ -72,6 +72,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
         }
         $this->executeBusinessLogic();
         Assert::object($result->rest);
+        Assert::propertyExists($result->rest, 'message');
         $result->rest->message = $this->message;
         return $result;
     }
@@ -98,15 +99,23 @@ class ApiErrorModel extends GenericRestApiJsonModel
             'CRITICAL' => ILogger::CRITICAL,
         ];
 
-        $inputSeverity = strtoupper((string) ($this->data->severity ?? 'ERROR'));
+        $tempSeverity = $this->data->severity ?? 'ERROR';
+        Assert::string($tempSeverity);
+        $inputSeverity = strtoupper($tempSeverity);
         $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
 
+        $tempPage = $this->data->page ?? 'unknown-page';
+        Assert::scalar($tempPage);
+        $tempOrder = $this->data->order ?? '-';
+        Assert::scalar($tempOrder);
+        $tempMessage = $this->data->message ?? '(missing message)';
+        Assert::scalar($tempMessage);
         $message = sprintf(
             '%s %s %s %s',
-            $this->data->page ?? 'unknown-page',
-            $this->data->order ?? '-',
+            $tempPage,
+            $tempOrder,
             $inputSeverity,
-            $this->data->message ?? '(missing message)'
+            $tempMessage
         );
 
         Debugger::log($message, $severity);
