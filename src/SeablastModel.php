@@ -48,7 +48,7 @@ class SeablastModel
                 $this->controller->getConfiguration()->showSqlBarPanel();
                 throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
             }
-            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);            
+            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
             Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be of stdClass type.");
         } else {
             Debugger::log('No model, no knowledge.', ILogger::DEBUG);

@@ -79,12 +79,12 @@ class SeablastConfiguration
             $port = null;
         }
         Assert::string($phinx['environments'][$environment]['adapter']);
-Assert::string($phinx['environments'][$environment]['host']);
-Assert::string($phinx['environments'][$environment]['user']);
-Assert::string($phinx['environments'][$environment]['pass']);
-Assert::string($phinx['environments'][$environment]['name']);
-$tablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
-Assert::string($tablePrefix);
+        Assert::string($phinx['environments'][$environment]['host']);
+        Assert::string($phinx['environments'][$environment]['user']);
+        Assert::string($phinx['environments'][$environment]['pass']);
+        Assert::string($phinx['environments'][$environment]['name']);
+        $tablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
+        Assert::string($tablePrefix);
         return new DatabaseProperties(
             $phinx['environments'][$environment]['adapter'],
             $phinx['environments'][$environment]['host'], // todo fix localhost
