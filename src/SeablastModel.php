@@ -37,7 +37,13 @@ class SeablastModel
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($className);
             Assert::true(class_exists($className), "Class {$className} does not exist.");
-            $model = new $className($this->controller->getConfiguration(), $superglobals);
+            try {
+                $model = new $className($this->controller->getConfiguration(), $superglobals);
+            } catch (Exceptions\DbmsException $e) {
+                // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model
+                $this->controller->getConfiguration()->showSqlBarPanel();
+                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
+            }
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
             try {
                 $knowledge = $model->knowledge();
