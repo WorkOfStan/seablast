@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 - fix: add assertions and typecastings to pass PHPStan static analysis at the `level: max` to make the code more robust
-- make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model
+- make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model or any other Throwable (TypeError, Error, Exception) is thrown
 
 ### `Security` in case of vulnerabilities
 

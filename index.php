@@ -32,4 +32,11 @@ Debugger::enable(
 $superglobals = new Superglobals($_GET, $_POST, $_SERVER); // $_SESSION hasn't started, yet
 $controller = new SeablastController($setup->getConfiguration(), $superglobals);
 $superglobals->setSession($_SESSION); // as only now the session started
-new SeablastView(new SeablastModel($controller, $superglobals));
+try {
+    new SeablastView(new SeablastModel($controller, $superglobals));
+} catch (\Throwable $e) {
+    // catches TypeError, Error, Exception // TODO remove try/catch in SeablastView and around $model if obsoleted
+    // make sure that the database Tracy BarPanel is displayed
+    $setup->getConfiguration()->showSqlBarPanel();
+    throw $e;
+}
