@@ -214,10 +214,7 @@ class SeablastView
         if ($this->params->httpCode < 400) {
             return;
         }
-        //$httpBarPanelInfo = []; // 'Params' => $this->params
-        //if (isset($this->params->rest->message)) {
-        //    $httpBarPanelInfo['message'] = $this->params->rest->message;
-        //}
+
         $httpBarPanel = new BarPanelTemplate(
             'HTTP: ' . $this->params->httpCode,
             (
