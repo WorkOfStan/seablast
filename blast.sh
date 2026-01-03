@@ -109,8 +109,8 @@ run_phpstan() {
 	display_header "-- Installing PHPStan (via Webmozart Assert plugin to allow for Assertions during static analysis) --"
 	composer require --dev phpstan/phpstan-webmozart-assert --prefer-dist --no-progress --with-all-dependencies
 	if [[ -f "phpunit.xml" ]]; then
-        display_header "-- As PHPUnit>=7 is used the PHPUnit plugin is used for better compatibility ... --"
-	    composer require --dev phpstan/phpstan-phpunit --prefer-dist --no-progress --with-all-dependencies
+		display_header "-- As PHPUnit>=7 is used the PHPUnit plugin is used for better compatibility ... --"
+		composer require --dev phpstan/phpstan-phpunit --prefer-dist --no-progress --with-all-dependencies
 	else
 		display_warning "NO phpunit.xml CONFIGURATION, no PHPStan PHPUnit plugin required"
 	fi
@@ -125,7 +125,7 @@ run_phpstan() {
 # Removes PHPStan package
 phpstan_remove() {
 	display_header "-- Removing PHPStan package --"
-    # It doesn't matter if phpstan/phpstan-phpunit was not required before
+	# It doesn't matter if phpstan/phpstan-phpunit was not required before
 	composer remove --dev phpstan/phpstan-phpunit
 	composer remove --dev phpstan/phpstan-webmozart-assert
 }
