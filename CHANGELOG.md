@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- ci(blast.sh): test for presence of phpunit.xml before requiring phpstan/phpstan-phpunit
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
