@@ -129,6 +129,7 @@ WHERE
             $whereClauses = [];
             for ($i = 0; $i < count($conditions); $i++) {
                 if (!empty($conditions[$i])) {
+                    Assert::string($conditions[$i]);
                     $condDetails = $this->splitStringByFirstPipe($conditions[$i]);
                     if (!is_null($condDetails)) {
                         $conditionDetails[] = $condDetails;

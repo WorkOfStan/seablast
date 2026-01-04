@@ -158,6 +158,7 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             return;
         }
         // CSRF validation
+        Assert::scalar($this->data->csrfToken);
         $csrfToken = new CsrfToken('sb_json', (string) $this->data->csrfToken);
         $csrfTokenManager = new CsrfTokenManager();
         if (!$csrfTokenManager->isTokenValid($csrfToken)) {

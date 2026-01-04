@@ -32,6 +32,7 @@ class SeablastModelTest extends TestCase
         $this->configuration = new SeablastConfiguration();
         $defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
+        $this->assertIsCallable($configurationClosure);
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
 
@@ -106,6 +107,7 @@ class SeablastModelTest extends TestCase
         $params = $model->getParameters();
 
         $this->assertTrue(property_exists($params, 'csrfToken'));
+        $this->assertIsString($params->csrfToken);
         $this->assertTrue(
             strlen($params->csrfToken) > 60,
             'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'

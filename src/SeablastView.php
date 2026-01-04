@@ -37,6 +37,10 @@ class SeablastView
             throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated
         }
         if (isset($this->params->rest)) {
+            Assert::true(
+                is_array($this->params->rest) || is_object($this->params->rest),
+                '$this->params->rest expects array<mixed>|object but is: ' . gettype($this->params->rest)
+            );
             // API
             $this->renderJson($this->params->rest);
         } elseif (!isset($this->params->redirectionUrl)) {
@@ -196,16 +200,28 @@ class SeablastView
      */
     private function showHttpErrorPanel(): void
     {
-        if (!isset($this->params->httpCode) || ($this->params->httpCode < 400)) {
+        // must exist
+        if (!isset($this->params->httpCode)) {
             return;
         }
-        //$httpBarPanelInfo = []; // 'Params' => $this->params
-        //if (isset($this->params->rest->message)) {
-        //    $httpBarPanelInfo['message'] = $this->params->rest->message;
-        //}
+
+        // assert scalar (throws InvalidArgumentException if not)
+        Assert::scalar($this->params->httpCode, 'httpCode must be scalar.');
+
+        // cast + test
+        $this->params->httpCode = (int) $this->params->httpCode;
+
+        if ($this->params->httpCode < 400) {
+            return;
+        }
+
         $httpBarPanel = new BarPanelTemplate(
-            'HTTP: ' . (int) $this->params->httpCode,
-            isset($this->params->rest->message) ? ['message' => $this->params->rest->message] : []
+            'HTTP: ' . $this->params->httpCode,
+            (
+                (($this->params->rest instanceof \stdClass) || is_object($this->params->rest))
+                && isset($this->params->rest->message)
+            )
+            ? ['message' => $this->params->rest->message] : []
         );
         $httpBarPanel->setError();
         Debugger::getBar()->addPanel($httpBarPanel);

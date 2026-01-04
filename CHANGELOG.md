@@ -19,6 +19,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.14] - 2026-01-04
+
+feat: show database Tracy BarPanel for any Throwable
+
+### Added
+
+- docs: describe admin table settings
+
+### Changed
+
+- ci(blast.sh): test for presence of phpunit.xml before requiring phpstan/phpstan-phpunit
+- feat: use nicer under-construction.html page
+
+### Fixed
+
+- fix: add assertions and typecastings to pass PHPStan static analysis at the `level: max` to make the code more robust
+- make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model or any other Throwable (TypeError, Error, Exception) is thrown
+
 ## [0.2.13] - 2025-12-07
 
 refactor!: Require errorLogger argument in send-auth-token.js. Administer by route `/poseidon`.
@@ -399,7 +417,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...HEAD?w=1
+[0.2.14]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...v0.2.14?w=1
 [0.2.13]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...v0.2.13?w=1
 [0.2.12]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...v0.2.12?w=1
 [0.2.11.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.11...v0.2.11.1?w=1

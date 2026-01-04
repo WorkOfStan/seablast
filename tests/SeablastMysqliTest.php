@@ -34,6 +34,7 @@ class SeablastMysqliTest extends TestCase
         $configuration = new SeablastConfiguration();
         $defaultConfig = __DIR__ . '/../conf/default.conf.php';
         $configurationClosure = require $defaultConfig;
+        $this->assertIsCallable($configurationClosure);
         $configurationClosure($configuration);
         $this->assertEquals('views', $configuration->getString(SeablastConstant::LATTE_TEMPLATE));
         $configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);

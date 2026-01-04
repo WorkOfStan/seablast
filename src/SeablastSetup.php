@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Seablast\Seablast;
 
+use Webmozart\Assert\Assert;
+
 class SeablastSetup
 {
     use \Nette\SmartObject;
@@ -47,6 +49,7 @@ class SeablastSetup
     {
         if (file_exists($configurationFilename)) {
             $configurationClosure = require $configurationFilename;
+            Assert::isCallable($configurationClosure);
             $configurationClosure($this->configuration);
         }
     }

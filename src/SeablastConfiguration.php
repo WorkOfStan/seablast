@@ -78,6 +78,13 @@ class SeablastConfiguration
         } else {
             $port = null;
         }
+        Assert::string($phinx['environments'][$environment]['adapter']);
+        Assert::string($phinx['environments'][$environment]['host']);
+        Assert::string($phinx['environments'][$environment]['user']);
+        Assert::string($phinx['environments'][$environment]['pass']);
+        Assert::string($phinx['environments'][$environment]['name']);
+        $tablePrefix = $phinx['environments'][$environment]['table_prefix'] ?? '';
+        Assert::string($tablePrefix);
         return new DatabaseProperties(
             $phinx['environments'][$environment]['adapter'],
             $phinx['environments'][$environment]['host'], // todo fix localhost
@@ -85,7 +92,7 @@ class SeablastConfiguration
             $phinx['environments'][$environment]['pass'],
             $phinx['environments'][$environment]['name'],
             $port,
-            $phinx['environments'][$environment]['table_prefix'] ?? ''
+            $tablePrefix
         );
     }
 
@@ -111,9 +118,16 @@ class SeablastConfiguration
     private static function dbmsReadPhinx(): array
     {
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
-            throw new DbmsException('Provide credentials in conf/phinx.local.php to use database');
+            throw new DbmsException('Provide credentials in conf/phinx.local.php to use database.');
         }
-        return require APP_DIR . '/conf/phinx.local.php';
+        $config = require APP_DIR . '/conf/phinx.local.php';
+        // Runtime assertion as require can return anything
+        try {
+            Assert::isArray($config, 'Phinx config must return an array.');
+        } catch (\InvalidArgumentException $e) {
+            throw new DbmsException($e->getMessage(), 0, $e);
+        }
+        return $config;
     }
 
     /**
