@@ -60,7 +60,7 @@ setup_environment() {
 
 	# conf/phinx.local.php or at least conf/phinx.dist.php is required
 	if [[ ! -f "conf/phinx.local.php" ]]; then
-		[[ ! -f "conf/phinx.dist.php" ]] && display_warning "phinx config is required for a Seablast app" && exit 0
+		[[ ! -f "conf/phinx.dist.php" ]] && display_warning "conf/phinx.dist.php template is required for a Seablast app" && exit 0
 		cp -p conf/phinx.dist.php conf/phinx.local.php && display_warning "Check/modify the newly created conf/phinx.local.php"
 		exit 0
 	fi
