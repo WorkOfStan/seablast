@@ -240,7 +240,9 @@ class SeablastController
         //        ? '' : pathinfo($scriptName, PATHINFO_DIRNAME),
         //    '/vendor/seablast/seablast'
         //);
-        return $appPath;
+        // The path MUST at least be the root slash,
+        // otherwise session_set_cookie_params $path param defaults to the current directory, not the path to the app
+        return ($appPath === '') ? '/' : $appPath;
     }
 
     /**
