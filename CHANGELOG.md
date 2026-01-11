@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
+- add `SB:ADMIN_COLOR_FIELDS` as list of fields that contain color for admin editing of database tables, so that input type color is better than textarea
+
 ### `Changed` for changes in existing functionality
 
 ### `Deprecated` for soon-to-be removed features
