@@ -218,6 +218,14 @@ Never in both.
 
 This design guarantees predictable behavior, secure access control, and a clean admin UI.
 
+#### Color editor may be used for indicated fields instead of a textarea
+
+```php
+        ->setArrayString(SeablastConstant::ADMIN_COLOR_FIELDS, [
+            'color_main', // audios.color_main
+        ])
+```
+
 ## Authentication and authorisation
 
 - Roles are for access.

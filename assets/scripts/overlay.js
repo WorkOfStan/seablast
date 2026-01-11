@@ -1,6 +1,6 @@
 "use strict";
 /* global $ */
-// TODO inject instead of import!
+// TODO inject button-panel instead of importing it
 import { ButtonPanel } from "./button-panel.js";
 
 export class Overlay {
@@ -61,14 +61,11 @@ export class Overlay {
       }
     }));
 
-// todo const editorEl
     // Create editor (textarea or color input)
-    let editorEl;
-    if (this.editorType === "color") {
-      editorEl = $('<input type="color" id="overlayColorInput" />').val(initialValue);
-    } else {
-      editorEl = $('<textarea id="overlayTextarea"></textarea>').val(initialValue);
-    }
+    const editorEl =
+    (this.editorType === "color")
+      ? $('<input type="color" id="overlayColorInput" />').val(initialValue)
+    : $('<textarea id="overlayTextarea"></textarea>').val(initialValue);
 
     // Create the button panel
     const buttonPanel = new ButtonPanel();
@@ -130,35 +127,28 @@ export class Overlay {
       editorEl.on("input", updateCounter);
       updateCounter(); // Update counter on load
     } else {
-      console.log('col edit');
       // COLOR editor
+      // Note: multiple Escapes are needed to leave the color edit. An Escape handler could be added.
       buttonPanel.addButton("Uložit", "responsive button--save", () => this.save());
 overlayDiv.append(editorEl).append(buttonPanel.element);
 $("body").append(overlayDiv);
-console.log('docusY');
-// Zabraň tomu, aby kliky na input “propadaly” do overlay
+// Prevent clicks on the input from propagating to the overlay
 editorEl.on("click mousedown pointerdown", (e) => e.stopPropagation());
-console.log('docusX');
 // Focus
 editorEl.trigger("focus");
-console.log('docus');
 // Pokus o okamžité otevření pickeru (funguje v části browserů)
 const input = editorEl[0];
 try {
-  console.log('try');
   if (typeof input.showPicker === "function") {
-    console.log('showPicker');
-    input.showPicker();      // Chromium-based (novější)
+    input.showPicker();      // Chromium-based browsers (newer versions)
   } else {
-    console.log('click');
-    input.click();           // fallback (někde funguje)
+    input.click();           // Fallback (works in some browsers)
   }
 } catch (e) {
-  console.log('manually');
-  // některé prohlížeče to bloknou – pak se musí kliknout ručně
+  // Some browsers block this – user must click manually
 }
 
-// Doporučené UX: uložit hned po změně barvy
+// Recommended UX: save immediately after the color changes
 editorEl.on("change", () => this.save());
     }
   }
@@ -171,7 +161,6 @@ editorEl.on("change", () => this.save());
     let compareNew = rawNewValue;
     let compareOld = this.currentText;
 
-// todo is color normalization needed??? stupid value is #000000 anyway, right?
     if (this.editorType === "color") {
       compareNew = (this.normalizeHexColor(rawNewValue) ?? rawNewValue).toLowerCase();
       compareOld = (this.normalizeHexColor(this.currentText) ?? this.currentText).toLowerCase();

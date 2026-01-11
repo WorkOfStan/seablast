@@ -9,7 +9,6 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
-use Webmozart\Assert\Assert;
 
 /**
  * Retrieve items from database
@@ -38,8 +37,6 @@ class AdminModel implements SeablastModelInterface
         $this->adminHelper = new AdminHelper($this->configuration, $this->superglobals);
         $this->adminHelper->populateSelectedTable();
         if ($this->configuration->exists(SeablastConstant::APP_SELECTED_TABLE)) {
-            // In Latte the literal must be used
-            Assert::eq(SeablastConstant::APP_SELECTED_TABLE, 'SB:APP_SELECTED_TABLE');
             $this->tableContent = new TableViewModel($this->configuration, $this->superglobals);
         }
     }
