@@ -105,7 +105,8 @@ class SeablastController
                         ) {
                             $this->configuration->setString(
                                 SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
-                                $this->getAppPath()
+                                // empty path defaults to the current directory, while the path to the app is required
+                                ($this->getAppPath() === '') ? '/' : $this->getAppPath()
                             );
                         }
                         //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
@@ -484,7 +485,8 @@ class SeablastController
             }
             if (method_exists($this->identity, 'setCookiePath')) {
                 Debugger::barDump('Cookie Path injection', 'Controller to Identity');
-                $this->identity->setCookiePath($this->getAppPath());
+                // empty path defaults to the current directory, while the path to the app is required
+                $this->identity->setCookiePath(($this->getAppPath() === '') ? '/' : $this->getAppPath());
             } else {
                 Debugger::barDump('Cookie Path NOT INJECTED, i.e. remains default', 'Controller to Identity');
             }
