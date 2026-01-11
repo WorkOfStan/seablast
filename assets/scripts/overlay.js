@@ -1,7 +1,7 @@
 "use strict";
 /* global $ */
-//import { BannerManager } from "../../vendor/seablast/seablast/assets/scripts/seablast.js";
-import { ButtonPanel } from "./button-panel.js"; // TODO inject instead of import!
+// TODO inject button-panel instead of importing it
+import { ButtonPanel } from "./button-panel.js";
 
 export class Overlay {
   /**
@@ -21,6 +21,10 @@ export class Overlay {
     this.currentText = ""; // Store the original text. It's only assigned once in create().
     /** @type {?JQuery} editedElement */
     this.editedElement = null;
+    /** @type {"text"|"color"} */
+    this.editorType = "text";
+    /** @type {string} */
+    this.editorSelector = "textarea#overlayTextarea";
     /** @type {?JQuery} overlayDiv */
     this.overlayDiv = null;
   }
@@ -32,102 +36,163 @@ export class Overlay {
   create(element) {
     this.editedElement = element;
 
-    this.apiUrl = `${this.env.API_BASE}/${element.data("api")}`; // Note: api URL expected to work in the app root directory
+    // Note: api URL expected to work in the app root directory
+    this.apiUrl = `${this.env.API_BASE}/${element.data("api")}`;
     this.apiParamName = element.data("api-parameter");
 
-    this.currentText = this.editedElement.text(); // Store the original text. It's only assigned here.
+    // Store the original text. It's only assigned here.
+    this.currentText = this.editedElement.text();
     //console.log("currentText", this.currentText); // debug
-    const overlayDiv = (this.overlayDiv = $("<div/>", { id: "overlay" }).on(
+    // Detect editor type
+    this.editorType = element.hasClass("color-edit") ? "color" : "text";
+    this.editorSelector =
+      this.editorType === "color"
+        ? "input#overlayColorInput"
+        : "textarea#overlayTextarea";
+
+    // Prepare initial value
+    let initialValue = this.currentText;
+    if (this.editorType === "color") {
+      initialValue = this.normalizeHexColor(this.currentText) ?? "#000000";
+    }
+
+    const overlayDiv = (this.overlayDiv = $("<div>", { id: "overlay" }).on(
       "click",
       (e) => {
         if (e.target === e.currentTarget) {
-          // only if we clicked outside textarea and other elements
+          // only if we clicked outside editor and other elements
           this.save();
         }
       },
     ));
 
-    // Create textarea
-    const textarea = $('<textarea id="overlayTextarea">').val(this.currentText);
-
-    // Create counter div BELOW the textarea // TODO make it optional, e.g. if there's a data-counter="znaků slov"
-    const counterDiv = $('<div class="text-counter">')
-      .append('<span id="charCount">0</span> znaků | ')
-      .append('<span id="wordCount">0</span> slov');
+    // Create editor (textarea or color input)
+    const editorEl =
+      this.editorType === "color"
+        ? $('<input type="color" id="overlayColorInput" />').val(initialValue)
+        : $('<textarea id="overlayTextarea"></textarea>').val(initialValue);
 
     // Create the button panel
     const buttonPanel = new ButtonPanel();
-
-    // Add the cancel button
     buttonPanel.addCancelButton(overlayDiv);
 
-    buttonPanel.addButton(
-      "Uložit text",
-      "responsive button--save",
-      () => this.save(),
-      "Ctrl+Enter",
-    );
+    if (this.editorType === "text") {
+      // Create counter div BELOW the textarea
+      // TODO make it optional, e.g. if there's a data-counter="znaků slov"
+      const counterDiv = $('<div class="text-counter">')
+        .append('<span id="charCount">0</span> znaků | ')
+        .append('<span id="wordCount">0</span> slov');
 
-    if (this.env.flags.includes("ui_allowAI")) {
-      buttonPanel.addButton("AI návrh textu", "responsive", () => {
-        const processedTextarea = $("textarea#overlayTextarea");
-        if (processedTextarea && processedTextarea.val()) {
-          this.sendTextToAI(processedTextarea.val())
-            .then((aiResponse) => {
-              // quick solution. TODO: visually appealing
-              processedTextarea.val(
-                (confirm(
-                  "Nahradit tímto textem (nebo jen přidat)? " + aiResponse,
-                )
-                  ? ""
-                  : processedTextarea.val() + " - ") + aiResponse,
-              );
-            })
-            .catch((error) => {
-              console.error("An error occurred:", error);
-              this.bannerManager.addBanner(
-                "Chyba při zpracování textu.",
-                "warning",
-              );
-            });
+      buttonPanel.addButton(
+        "Uložit text",
+        "responsive button--save",
+        () => this.save(),
+        "Ctrl+Enter",
+      );
+
+      if (this.env.flags.includes("ui_allowAI")) {
+        buttonPanel.addButton("AI návrh textu", "responsive", () => {
+          const processedTextarea = $("textarea#overlayTextarea");
+          if (processedTextarea && processedTextarea.val()) {
+            this.sendTextToAI(processedTextarea.val())
+              .then((aiResponse) => {
+                // quick solution. TODO: visually appealing
+                processedTextarea.val(
+                  (confirm(
+                    "Nahradit tímto textem (nebo jen přidat)? " + aiResponse,
+                  )
+                    ? ""
+                    : processedTextarea.val() + " - ") + aiResponse,
+                );
+              })
+              .catch((error) => {
+                console.error("An error occurred:", error);
+                this.bannerManager.addBanner(
+                  "Chyba při zpracování textu.",
+                  "warning",
+                );
+              });
+          } else {
+            console.error("No area to process");
+          }
+        });
+      }
+
+      // Append elements **in the correct order**: textarea -> counter -> buttons
+      overlayDiv
+        .append(editorEl)
+        .append(counterDiv)
+        .append(buttonPanel.element);
+      $("body").append(overlayDiv);
+
+      editorEl.trigger("focus");
+
+      // **Function to update counter**
+      const updateCounter = () => {
+        const text = editorEl.val();
+        const charCount = text.length;
+        const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+        $("#charCount").text(charCount);
+        $("#wordCount").text(wordCount);
+      };
+
+      // **Bind event to textarea input**
+      editorEl.on("input", updateCounter);
+      updateCounter(); // Update counter on load
+    } else {
+      // COLOR editor
+      // Note: multiple Escapes are needed to leave the color edit. An Escape handler could be added.
+      buttonPanel.addButton("Uložit", "responsive button--save", () =>
+        this.save(),
+      );
+      overlayDiv.append(editorEl).append(buttonPanel.element);
+      $("body").append(overlayDiv);
+      // Prevent clicks on the input from propagating to the overlay
+      editorEl.on("click mousedown pointerdown", (e) => e.stopPropagation());
+      // Focus
+      editorEl.trigger("focus");
+      // Pokus o okamžité otevření pickeru (funguje v části browserů)
+      const input = editorEl[0];
+      try {
+        if (typeof input.showPicker === "function") {
+          input.showPicker(); // Chromium-based browsers (newer versions)
         } else {
-          console.error("No area to process");
+          input.click(); // Fallback (works in some browsers)
         }
-      });
+      } catch (e) {
+        // Some browsers block this – user must click manually
+      }
+
+      // Recommended UX: save immediately after the color changes
+      editorEl.on("change", () => this.save());
     }
-
-    // Append elements **in the correct order**: textarea -> counter -> buttons
-    overlayDiv.append(textarea).append(counterDiv).append(buttonPanel.element);
-    $("body").append(overlayDiv);
-    textarea.trigger("focus");
-
-    // **Function to update counter**
-    const updateCounter = () => {
-      const text = textarea.val();
-      const charCount = text.length;
-      const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
-      $("#charCount").text(charCount);
-      $("#wordCount").text(wordCount);
-    };
-
-    // **Bind event to textarea input**
-    textarea.on("input", updateCounter);
-    updateCounter(); // Update counter on load
   }
 
   save() {
-    const newText = String($("textarea#overlayTextarea").val());
-    //console.log("newText", newText); // debug
+    const rawNewValue = String($(this.editorSelector).val());
 
-    // don't save if the val was not actually changed to save bandwith
-    if (newText === this.currentText) {
+    // Don't save if the val was not actually changed to save bandwidth
+    // Normalize compare for color
+    let compareNew = rawNewValue;
+    let compareOld = this.currentText;
+
+    if (this.editorType === "color") {
+      compareNew = (
+        this.normalizeHexColor(rawNewValue) ?? rawNewValue
+      ).toLowerCase();
+      compareOld = (
+        this.normalizeHexColor(this.currentText) ?? this.currentText
+      ).toLowerCase();
+    }
+
+    if (compareNew === compareOld) {
       console.log("No changes detected, skipping save.");
       this.overlayDiv?.remove();
       return;
     }
 
     const postData = {
-      [this.apiParamName]: newText,
+      [this.apiParamName]: rawNewValue,
       csrfToken: this.env.csrfToken,
     };
 
@@ -138,29 +203,47 @@ export class Overlay {
       data: JSON.stringify(postData),
       success: (response) => {
         console.log("Data sent successfully. Received: ", response);
-        // put the new value to the current tile while returning proper new line
-        this.editedElement?.html(newText.replace(/\n/g, "<br>\n"));
+
+        if (this.editorType === "color") {
+          const normalized = this.normalizeHexColor(rawNewValue) ?? rawNewValue;
+          this.editedElement?.text(normalized);
+
+          // Volitelné: ať je hned barva vidět (zruš, pokud nechceš)
+          this.editedElement?.css("background-color", normalized);
+        } else {
+          // put the new value to the current tile while returning proper new line
+          this.editedElement?.html(rawNewValue.replace(/\n/g, "<br>\n"));
+        }
+
         // close the overlay
         this.overlayDiv?.remove();
+
         // if there's a text overflow, refresh the page (or remove overflowing tiles and recreate them)
-        // TODO if the text gets shorter,  no refresh, so remaining studs
-        // Clone the original div and modify it for measuring text fit
-        const $clone = this.editedElement
-          .clone()
-          .css({
-            visibility: "hidden",
-            position: "absolute",
-            "max-height": "none",
-            width: this.editedElement.width(), // Ensure the width is the same
-          })
-          .appendTo("body");
-        $clone.html(this.editedElement.html());
-        // Quickly find just the limit of overflowing text not to start with the complete text
-        if ($clone.outerHeight() > this.editedElement.height()) {
-          console.log("Reloading as oH>eE.h"); // TODO really reload here? It reloads poseidon with .editable also. Why?
-          location.reload();
+        // TODO if the text gets shorter, no refresh, so remaining studs
+
+        // Overflow check dává smysl jen pro text
+        if (this.editorType === "text") {
+          // Clone the original div and modify it for measuring text fit
+          const $clone = this.editedElement
+            .clone()
+            .css({
+              visibility: "hidden",
+              position: "absolute",
+              "max-height": "none",
+              width: this.editedElement.width(), // Ensure the width is the same
+            })
+            .appendTo("body");
+
+          $clone.html(this.editedElement.html());
+
+          // Quickly find just the limit of overflowing text not to start with the complete text
+          if ($clone.outerHeight() > this.editedElement.height()) {
+            console.log("Reloading as oH>eE.h");
+            // TODO really reload here? It reloads poseidon with .editable also. Why?
+            location.reload();
+          }
+          $clone.remove();
         }
-        $clone.remove();
       },
       // Arrow functions do not have their own this; they inherit it from the enclosing scope.
       error: (xhr, status, error) => {
@@ -175,6 +258,28 @@ export class Overlay {
   }
 
   /**
+   * @param {string} v
+   * @returns {string|null} "#rrggbb" nebo null
+   */
+  normalizeHexColor(v) {
+    if (!v) return null;
+    const s = String(v).trim().toLowerCase();
+
+    // "#abc" -> "#aabbcc"
+    const m3 = s.match(/^#([0-9a-f]{3})$/i);
+    if (m3) {
+      const a = m3[1].split("");
+      return "#" + a.map((ch) => ch + ch).join("");
+    }
+
+    // "#aabbcc"
+    const m6 = s.match(/^#([0-9a-f]{6})$/i);
+    if (m6) return "#" + m6[1];
+
+    return null;
+  }
+
+  /**
    * todo - this pt function shouldn't be part of universal
    *
    * @param {string} text
@@ -182,10 +287,12 @@ export class Overlay {
    */
   async sendTextToAI(text) {
     console.log("You entered: " + text);
+
     const dataToSend = {
       csrfToken: this.env.csrfToken,
       userInput: text,
     };
+
     // Return the fetch promise directly
     const response = await fetch(this.env.API_BASE_DIR + "text", {
       method: "POST",
@@ -199,9 +306,11 @@ export class Overlay {
       // If the response is not 2xx, throw an error
       throw new Error("Network response was not ok");
     }
-    const result_1 = await response.json();
+
+    const result = await response.json();
     console.log("User input: " + text);
-    return result_1.eloquentResponse;
+
     // Catch the error outside to differentiate ok vs error response
+    return result.eloquentResponse;
   }
 }

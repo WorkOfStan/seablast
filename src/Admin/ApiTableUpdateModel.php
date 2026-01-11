@@ -6,6 +6,7 @@ namespace Seablast\Seablast\Admin;
 
 use Seablast\Seablast\Apis\GenericRestApiJsonModel;
 use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Superglobals;
 use stdClass;
 use Tracy\Debugger;
@@ -65,7 +66,9 @@ class ApiTableUpdateModel extends GenericRestApiJsonModel
         $this->data->val = trim($this->data->val); // no reason to store empty lines or other whitespace around content
         Assert::string($this->superglobals->get['key']);
         $column = $this->configuration->mysqli()->real_escape_string($this->superglobals->get['key']);
-        $columnTypes = $this->adminHelper->columnTypes($this->configuration->getString('App:selected-table'));
+        $columnTypes = $this->adminHelper->columnTypes(
+            $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+        );
         if (
             (
                 in_array(
@@ -96,10 +99,12 @@ class ApiTableUpdateModel extends GenericRestApiJsonModel
         //UPDATE `app_items` SET `active` = '0' WHERE `app_items`.`id` = 2;
         // todo SQL statement would be safer
         $mysqliResult = $this->configuration->mysqli()->query(
-            'UPDATE `' . $this->configuration->dbmsTablePrefix() . $this->configuration->getString('App:selected-table')
+            'UPDATE `' . $this->configuration->dbmsTablePrefix()
+            . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
             . '` SET `' . $column . "` = '"
             . $this->configuration->mysqli()->real_escape_string($this->data->val) . "' WHERE `"
-            . $this->configuration->dbmsTablePrefix() . $this->configuration->getString('App:selected-table')
+            . $this->configuration->dbmsTablePrefix()
+            . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
             . '`.`id` = ' . $id
         );
         if ($mysqliResult && $this->configuration->mysqli()->warning_count) {

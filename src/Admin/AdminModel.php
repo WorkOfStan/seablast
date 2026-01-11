@@ -36,7 +36,7 @@ class AdminModel implements SeablastModelInterface
         $this->superglobals = $superglobals;
         $this->adminHelper = new AdminHelper($this->configuration, $this->superglobals);
         $this->adminHelper->populateSelectedTable();
-        if ($this->configuration->exists('App:selected-table')) {
+        if ($this->configuration->exists(SeablastConstant::APP_SELECTED_TABLE)) {
             $this->tableContent = new TableViewModel($this->configuration, $this->superglobals);
         }
     }

@@ -36,9 +36,7 @@ class AdminHelper
     }
 
     /**
-     * Populates 'App:selected-table' by the allowed selected table
-     *
-     * TODO replace 'App:selected-table' by SeablastConstant
+     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table
      *
      * @return void
      */
@@ -47,11 +45,12 @@ class AdminHelper
         // Admin sees both Admin and Content tables; Content admin sees just the Content
         $this->allowedTables = $this->getAllowedTables();
 
-        // if there's a requested table and the user has access to it, populate string 'App:selected-table'
+        // if there's a requested table and the user has access to it,
+        // populate string SeablastConstant::APP_SELECTED_TABLE
         if (
             is_string($this->superglobals->get['t']) && in_array($this->superglobals->get['t'], $this->allowedTables)
         ) {
-            $this->configuration->setString('App:selected-table', $this->superglobals->get['t']);
+            $this->configuration->setString(SeablastConstant::APP_SELECTED_TABLE, $this->superglobals->get['t']);
         }
     }
 
@@ -121,7 +120,7 @@ class AdminHelper
      */
     public function getAllowedColumns(): array
     {
-        // todo if 'App:selected-table' not defined, try to get it and if not possible throw \Exception
+        // todo if SeablastConstant::APP_SELECTED_TABLE not defined, try to get it and if not possible throw \Exception
         $cols = [];
         // todo refactor by recursion or smaller method
         foreach ([SeablastConstant::ADMIN_TABLE_VIEW, SeablastConstant::ADMIN_TABLE_EDIT] as $accessRightsTypes) {
@@ -134,10 +133,10 @@ class AdminHelper
                 $arr = $this->configuration->getArrayArrayString(
                     $accessRightsTypes . SeablastConstant::USER_ROLE_EDITOR
                 );
-                if (array_key_exists($this->configuration->getString('App:selected-table'), $arr)) {
+                if (array_key_exists($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE), $arr)) {
                     $colsContent = [
                         (($accessRightsTypes === SeablastConstant::ADMIN_TABLE_VIEW) ? 'view' : 'edit') =>
-                        $arr[$this->configuration->getString('App:selected-table')]
+                        $arr[$this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)]
                     ];
                     $cols = array_merge($cols, $colsContent);
                 }
@@ -151,10 +150,10 @@ class AdminHelper
                 $arr = $this->configuration->getArrayArrayString(
                     $accessRightsTypes . SeablastConstant::USER_ROLE_ADMIN
                 );
-                if (array_key_exists($this->configuration->getString('App:selected-table'), $arr)) {
+                if (array_key_exists($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE), $arr)) {
                     $colsAdmin = [
                         (($accessRightsTypes === SeablastConstant::ADMIN_TABLE_VIEW) ? 'view' : 'edit') =>
-                        $arr[$this->configuration->getString('App:selected-table')]
+                        $arr[$this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)]
                     ];
                     $cols = array_merge($cols, $colsAdmin);
                 }

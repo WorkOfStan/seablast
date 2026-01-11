@@ -17,9 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
-- set cookie path to the app in the domain root to at least '/'
-
 ### `Security` in case of vulnerabilities
+
+## [0.2.15] - 2026-01-11
+
+fix: set cookie path to the app in the domain root to at least '/'
+
+### Added
+
+- add `SB:ADMIN_COLOR_FIELDS` as list of fields that contain color for admin editing of database tables, so that input type color is better than textarea
+- such field with color shows this colour in background
+
+### Fixed
+
+- set cookie path to the app in the domain root to at least '/'
 
 ## [0.2.14] - 2026-01-04
 
@@ -419,7 +430,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...HEAD?w=1
+[0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1
 [0.2.14]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...v0.2.14?w=1
 [0.2.13]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...v0.2.13?w=1
 [0.2.12]: https://github.com/WorkOfStan/seablast/compare/v0.2.11.1...v0.2.12?w=1

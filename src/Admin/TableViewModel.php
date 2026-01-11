@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Admin;
 
 use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
@@ -112,7 +113,7 @@ WHERE
         Debugger::barDump($columns, 'columns');
 
         // dev
-        $foreignKeys = $this->foreignKeys($this->configuration->getString('App:selected-table'));
+        $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         Debugger::barDump($foreignKeys, 'foreignKeys');
 
         // Get order and conditions from GET parameters
@@ -122,7 +123,9 @@ WHERE
         $sql = '';
         if (isset($this->superglobals->get['condition']) && is_array($this->superglobals->get['condition'])) {
             $conditions = $this->superglobals->get['condition'];
-            $columnTypes = $this->adminHelper->columnTypes($this->configuration->getString('App:selected-table'));
+            $columnTypes = $this->adminHelper->columnTypes(
+                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+            );
             // TODO equals operator by column type
             // Add conditions and order clauses (this logic can be expanded as needed)
             // Add WHERE clauses based on conditions (this is simplified for the example)
@@ -187,8 +190,8 @@ WHERE
         $fields = implode('`,`', $columns);
         $mysqliResult = $this->configuration->mysqli()->query(
             'SELECT `' . $fields . '` '
-            . 'FROM `' . $this->configuration->dbmsTablePrefix() . $this->configuration->getString('App:selected-table')
-            . '` '
+            . 'FROM `' . $this->configuration->dbmsTablePrefix()
+            . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE) . '` '
             . $sql
             . ' LIMIT 0,50'
         );

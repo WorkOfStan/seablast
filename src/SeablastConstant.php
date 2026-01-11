@@ -121,12 +121,12 @@ class SeablastConstant
      */
     public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
     /**
-     * @var string int to forced update of external CSS and JavaScript files
+     * @var string int to forced update of external CSS and JavaScript files. The literal is expected in Latte.
      * TODO use this in seablast-dist
      */
     public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';
     /**
-     * @var string string The absolute URL of the root of the application
+     * @var string string The absolute URL of the root of the application. The literal is expected in Latte.
      */
     public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
     /**
@@ -178,6 +178,10 @@ class SeablastConstant
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
     /**
+     * @var string string[] list of fields that contain color, so that input type color is better than textarea
+     */
+    public const ADMIN_COLOR_FIELDS = 'SB:ADMIN_COLOR_FIELDS';
+    /**
      * @var string string prefix for tables with fields available for edit for roleId
      */
     public const ADMIN_TABLE_EDIT = 'SB:ADMIN_TABLE_EDIT';
@@ -185,6 +189,10 @@ class SeablastConstant
      * @var string string prefix for tables with fields available for view for roleId
      */
     public const ADMIN_TABLE_VIEW = 'SB:ADMIN_TABLE_VIEW';
+    /**
+     * @var string string table name selected for admin edit. The literal is expected in Latte.
+     */
+    public const APP_SELECTED_TABLE = 'SB:APP_SELECTED_TABLE';
     /**
      * @var string int error HTTP code
      */

@@ -110,7 +110,7 @@
                 <tbody>
                     <tr n:foreach="$table as $row">
                         {* todo is row['id'] universal row identification? *}
-                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('App:selected-table')}&key={$key}&id={$row['id']}"{/if}>{$value}</td>
+                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} color-edit{/if}{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('SB:APP_SELECTED_TABLE')}&key={$key}&id={$row['id']}"{/if}{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} style="background-color:{$value|noescape};"{/if}>{$value}</td>
                     </tr>
                 </tbody>
             </table>
