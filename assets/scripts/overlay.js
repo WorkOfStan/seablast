@@ -46,7 +46,9 @@ export class Overlay {
     // Detect editor type
     this.editorType = element.hasClass("color-edit") ? "color" : "text";
     this.editorSelector =
-      this.editorType === "color" ? "input#overlayColorInput" : "textarea#overlayTextarea";
+      this.editorType === "color"
+        ? "input#overlayColorInput"
+        : "textarea#overlayTextarea";
 
     // Prepare initial value
     let initialValue = this.currentText;
@@ -54,18 +56,21 @@ export class Overlay {
       initialValue = this.normalizeHexColor(this.currentText) ?? "#000000";
     }
 
-    const overlayDiv = (this.overlayDiv = $("<div>", { id: "overlay" }).on("click", (e) => {
-      if (e.target === e.currentTarget) {
-        // only if we clicked outside editor and other elements
-        this.save();
-      }
-    }));
+    const overlayDiv = (this.overlayDiv = $("<div>", { id: "overlay" }).on(
+      "click",
+      (e) => {
+        if (e.target === e.currentTarget) {
+          // only if we clicked outside editor and other elements
+          this.save();
+        }
+      },
+    ));
 
     // Create editor (textarea or color input)
     const editorEl =
-    (this.editorType === "color")
-      ? $('<input type="color" id="overlayColorInput" />').val(initialValue)
-    : $('<textarea id="overlayTextarea"></textarea>').val(initialValue);
+      this.editorType === "color"
+        ? $('<input type="color" id="overlayColorInput" />').val(initialValue)
+        : $('<textarea id="overlayTextarea"></textarea>').val(initialValue);
 
     // Create the button panel
     const buttonPanel = new ButtonPanel();
@@ -93,14 +98,19 @@ export class Overlay {
               .then((aiResponse) => {
                 // quick solution. TODO: visually appealing
                 processedTextarea.val(
-                  (confirm("Nahradit tímto textem (nebo jen přidat)? " + aiResponse)
+                  (confirm(
+                    "Nahradit tímto textem (nebo jen přidat)? " + aiResponse,
+                  )
                     ? ""
                     : processedTextarea.val() + " - ") + aiResponse,
                 );
               })
               .catch((error) => {
                 console.error("An error occurred:", error);
-                this.bannerManager.addBanner("Chyba při zpracování textu.", "warning");
+                this.bannerManager.addBanner(
+                  "Chyba při zpracování textu.",
+                  "warning",
+                );
               });
           } else {
             console.error("No area to process");
@@ -109,7 +119,10 @@ export class Overlay {
       }
 
       // Append elements **in the correct order**: textarea -> counter -> buttons
-      overlayDiv.append(editorEl).append(counterDiv).append(buttonPanel.element);
+      overlayDiv
+        .append(editorEl)
+        .append(counterDiv)
+        .append(buttonPanel.element);
       $("body").append(overlayDiv);
 
       editorEl.trigger("focus");
@@ -129,27 +142,29 @@ export class Overlay {
     } else {
       // COLOR editor
       // Note: multiple Escapes are needed to leave the color edit. An Escape handler could be added.
-      buttonPanel.addButton("Uložit", "responsive button--save", () => this.save());
-overlayDiv.append(editorEl).append(buttonPanel.element);
-$("body").append(overlayDiv);
-// Prevent clicks on the input from propagating to the overlay
-editorEl.on("click mousedown pointerdown", (e) => e.stopPropagation());
-// Focus
-editorEl.trigger("focus");
-// Pokus o okamžité otevření pickeru (funguje v části browserů)
-const input = editorEl[0];
-try {
-  if (typeof input.showPicker === "function") {
-    input.showPicker();      // Chromium-based browsers (newer versions)
-  } else {
-    input.click();           // Fallback (works in some browsers)
-  }
-} catch (e) {
-  // Some browsers block this – user must click manually
-}
+      buttonPanel.addButton("Uložit", "responsive button--save", () =>
+        this.save(),
+      );
+      overlayDiv.append(editorEl).append(buttonPanel.element);
+      $("body").append(overlayDiv);
+      // Prevent clicks on the input from propagating to the overlay
+      editorEl.on("click mousedown pointerdown", (e) => e.stopPropagation());
+      // Focus
+      editorEl.trigger("focus");
+      // Pokus o okamžité otevření pickeru (funguje v části browserů)
+      const input = editorEl[0];
+      try {
+        if (typeof input.showPicker === "function") {
+          input.showPicker(); // Chromium-based browsers (newer versions)
+        } else {
+          input.click(); // Fallback (works in some browsers)
+        }
+      } catch (e) {
+        // Some browsers block this – user must click manually
+      }
 
-// Recommended UX: save immediately after the color changes
-editorEl.on("change", () => this.save());
+      // Recommended UX: save immediately after the color changes
+      editorEl.on("change", () => this.save());
     }
   }
 
@@ -162,8 +177,12 @@ editorEl.on("change", () => this.save());
     let compareOld = this.currentText;
 
     if (this.editorType === "color") {
-      compareNew = (this.normalizeHexColor(rawNewValue) ?? rawNewValue).toLowerCase();
-      compareOld = (this.normalizeHexColor(this.currentText) ?? this.currentText).toLowerCase();
+      compareNew = (
+        this.normalizeHexColor(rawNewValue) ?? rawNewValue
+      ).toLowerCase();
+      compareOld = (
+        this.normalizeHexColor(this.currentText) ?? this.currentText
+      ).toLowerCase();
     }
 
     if (compareNew === compareOld) {
@@ -225,7 +244,7 @@ editorEl.on("change", () => this.save());
           }
           $clone.remove();
         }
-      }, 
+      },
       // Arrow functions do not have their own this; they inherit it from the enclosing scope.
       error: (xhr, status, error) => {
         console.error("Error sending data:", status, error);
