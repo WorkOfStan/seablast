@@ -220,6 +220,8 @@ This design guarantees predictable behavior, secure access control, and a clean 
 
 #### Color editor may be used for indicated fields instead of a textarea
 
+Also such field with color shows this colour in background.
+
 ```php
         ->setArrayString(SeablastConstant::ADMIN_COLOR_FIELDS, [
             'color_main', // audios.color_main
