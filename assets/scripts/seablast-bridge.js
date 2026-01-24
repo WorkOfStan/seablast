@@ -1,6 +1,7 @@
 "use strict";
 // seablast-bridge.js is ES modul and so are the scripts from which is imported below
 
+// Note: update ?v= for the imported JavaScripts when changed
 import { BannerManager } from "./seablast.js";
 import { ButtonPanel } from "./button-panel.js";
 import { ErrorLogger } from "./seablast.js";

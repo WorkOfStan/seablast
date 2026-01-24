@@ -16,8 +16,8 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 ## Configuration
 
 - the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
-- if [Seablast/Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use its configuration
-- if [Seablast/I18n](https://github.com/WorkOfStan/seablast-i18n) extension is present (i.e. referenced in composer.json), use its configuration
+- if [Seablast Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use also its configuration
+- if [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n) extension is present (i.e. referenced in composer.json), use also its configuration
 - everything can be overriden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
@@ -48,7 +48,7 @@ SeablastConstant::APP_MAPPING = route => [
 
 ### Administration
 
-- By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs same as used in Seablast\Auth) with different rights.
+- By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs are the same as used in Seablast Auth) with different rights.
 
 #### Admin Table Configuration
 
@@ -177,15 +177,36 @@ Never in both.
 - Avoids ambiguous form behavior
 - Ensures clear permission boundaries
 
-##### 5. Configuration Overview
+##### 5. Granting Insert/Delete Row Permissions on a Table to a Role
+
+Before a user can insert or delete a row in a table, it must be **explicitly allowed** for the given role.
+Be careful with the `DELETE_ROW` permission: deleting a category may trigger a cascading delete.
+The `INSERT_ROW` permission only makes sense when the user also has the `EDIT` permission.
+
+##### Syntax
+
+```php
+->setArrayString(
+    SeablastConstant::ADMIN_TABLE_DELETE_ROW . SeablastConstant::USER_ROLE_X,
+    ['table1', 'table2']
+)
+->setArrayString(
+    SeablastConstant::ADMIN_TABLE_INSERT_ROW . SeablastConstant::USER_ROLE_X,
+    ['table1', 'table2']
+)
+```
+
+##### 6. Configuration Overview
 
 | Level               | Method                  | Purpose                        |
 | ------------------- | ----------------------- | ------------------------------ |
 | Role → Tables       | `setArrayString()`      | Which tables a role can access |
+| Role → Tables       | `setArrayString()`      | Which tables a role can insert rows into |
+| Role → Tables       | `setArrayString()`      | Which tables a role can delete rows from |
 | Role → Table → VIEW | `setArrayArrayString()` | Read-only columns              |
 | Role → Table → EDIT | `setArrayArrayString()` | Editable columns               |
 
-##### 6. Typical Workflow: Adding a New Table
+##### 7. Typical Workflow: Adding a New Table
 
 ```php
 // Step 1 – Allow table access
@@ -218,9 +239,10 @@ Never in both.
 
 This design guarantees predictable behavior, secure access control, and a clean admin UI.
 
-#### Color editor may be used for indicated fields instead of a textarea
+#### Color editor for selected fields
 
-Also such field with color shows this colour in background.
+Fields that use the color editor (instead of a textarea) also display the selected color as the background.
+This feature applies to all fields with the same name across all tables (field names MUST be unambiguous).
 
 ```php
         ->setArrayString(SeablastConstant::ADMIN_COLOR_FIELDS, [
@@ -231,7 +253,7 @@ Also such field with color shows this colour in background.
 ## Authentication and authorisation
 
 - Roles are for access.
-- Routes can only be allowed for roles (never denied). I.e. access to a route can be restricted to certain roles.
+- Routes can be restricted to specific roles (allow-list only; no denies).
 - Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
 - Groups are on top of it, e.g. for promotions, subscriptions etc.
 - RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID and also USER_ID.
@@ -243,12 +265,12 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 ## Stack
 
 - PHP >=7.2 <8.6
-- [Latte](http://latte.nette.org/) `>=2.10.8 <4`: for templating
-- [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): for database backend
-- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: for debugging
-- [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): for ensuring strict PHP rules
-- [jQuery] 3.7.1: as a JavaScript framework
-- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): for language switching (used by [Seablast\i18n](https://github.com/WorkOfStan/seablast-i18n))
+- [Latte](http://latte.nette.org/) `>=2.10.8 <4`: For templating.
+- [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): For database backend.
+- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: For debugging.
+- [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): A trait that helps enforce strict PHP behavior.
+- [jQuery](https://jquery.com/) 3.7.1: As a JavaScript framework.
+- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): For language switching (used by [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n)).
 
 ### ULS (Universal Language Selector jQuery library)
 
@@ -306,9 +328,9 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 | --------- | -------------------------------------------------------------------------------------------------------------------- |
 | .github/  | Automations                                                                                                          |
 | assets/   | Web assets available for browser (such as shared scripts)                                                            |
-| cache/    | Latte cache - this is just for development as production-wise, there will be cache/ directory in the root of the app |
+| cache/    | Latte cache - this is just for development as production-wise, there will be `cache/` directory in the root of the app |
 | conf/     | Default configuration for a Seablast app and for PHPStan                                                             |
-| log/      | Logs - this one is just for development; as production-wise, there will be `log` directory in the root of the app    |
+| log/      | Logs - this one is just for development; as production-wise, there will be `log/` directory in the root of the app    |
 | src/      | Seablast classes                                                                                                     |
 | tests/    | PHPUnit tests                                                                                                        |
 | views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)    |
