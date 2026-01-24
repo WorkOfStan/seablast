@@ -48,7 +48,9 @@ SeablastConstant::APP_MAPPING = route => [
 
 ### Administration
 
-- By default the route `/poseidon` displays the app administration. It is available only to the admin=1, editor=2 (their IDs are the same as used in Seablast Auth) with different rights.
+- By default the route `/poseidon` displays the app administration.
+It is available only to the admin=1, editor=2 (their IDs are the same as used in Seablast Auth) with different rights.
+Note: admin can view/edit everything that editor can, so for admin you need to declare only what they can do on top of it.
 
 #### Admin Table Configuration
 

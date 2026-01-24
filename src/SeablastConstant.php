@@ -19,7 +19,8 @@ class SeablastConstant
      */
     public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
     /**
-     * @var string Output JSON as HTML instead of application/json so that Tracy is displayed
+     * @var string So that Tracy is displayed 1) Output JSON as HTML instead of application/json;
+     * 2) turns off refresh after inserting new row in admin.latte.
      */
     public const FLAG_DEBUG_JSON = 'SB:debug:json';
     /**
