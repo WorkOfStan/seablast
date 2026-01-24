@@ -198,13 +198,13 @@ The `INSERT_ROW` permission only makes sense when the user also has the `EDIT` p
 
 ##### 6. Configuration Overview
 
-| Level               | Method                  | Purpose                        |
-| ------------------- | ----------------------- | ------------------------------ |
-| Role → Tables       | `setArrayString()`      | Which tables a role can access |
+| Level               | Method                  | Purpose                                  |
+| ------------------- | ----------------------- | ---------------------------------------- |
+| Role → Tables       | `setArrayString()`      | Which tables a role can access           |
 | Role → Tables       | `setArrayString()`      | Which tables a role can insert rows into |
 | Role → Tables       | `setArrayString()`      | Which tables a role can delete rows from |
-| Role → Table → VIEW | `setArrayArrayString()` | Read-only columns              |
-| Role → Table → EDIT | `setArrayArrayString()` | Editable columns               |
+| Role → Table → VIEW | `setArrayArrayString()` | Read-only columns                        |
+| Role → Table → EDIT | `setArrayArrayString()` | Editable columns                         |
 
 ##### 7. Typical Workflow: Adding a New Table
 
@@ -324,16 +324,16 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 
 ## Framework directory description
 
-| Directory | Description                                                                                                          |
-| --------- | -------------------------------------------------------------------------------------------------------------------- |
-| .github/  | Automations                                                                                                          |
-| assets/   | Web assets available for browser (such as shared scripts)                                                            |
+| Directory | Description                                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| .github/  | Automations                                                                                                            |
+| assets/   | Web assets available for browser (such as shared scripts)                                                              |
 | cache/    | Latte cache - this is just for development as production-wise, there will be `cache/` directory in the root of the app |
-| conf/     | Default configuration for a Seablast app and for PHPStan                                                             |
-| log/      | Logs - this one is just for development; as production-wise, there will be `log/` directory in the root of the app    |
-| src/      | Seablast classes                                                                                                     |
-| tests/    | PHPUnit tests                                                                                                        |
-| views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)    |
+| conf/     | Default configuration for a Seablast app and for PHPStan                                                               |
+| log/      | Logs - this one is just for development; as production-wise, there will be `log/` directory in the root of the app     |
+| src/      | Seablast classes                                                                                                       |
+| tests/    | PHPUnit tests                                                                                                          |
+| views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)      |
 
 ## Testing
 
