@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
-feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+- feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+- feat: add deletable and insertable as properties returned by AdminModel::knowledge
 
 ### `Changed` for changes in existing functionality
 
