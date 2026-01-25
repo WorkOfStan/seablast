@@ -36,7 +36,7 @@ class AdminHelper
     }
 
     /**
-     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table
+     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table.
      *
      * @return void
      */
@@ -80,7 +80,9 @@ class AdminHelper
                 $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
             }
         }
-
+        if (SeablastConstant::SB_LOGGING_LEVEL >= 5) { // Log as severity DEBUG
+            Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
+        }
         return $tables;
     }
 
@@ -115,7 +117,9 @@ class AdminHelper
         }
         $result->free();
         $stmt->close();
-        Debugger::barDump($columnTypes, 'columnTypes');
+        if (SeablastConstant::SB_LOGGING_LEVEL >= 5) { // Log as severity DEBUG
+            Debugger::barDump($columnTypes, 'columnTypes');
+        }
         return $columnTypes;
     }
 
