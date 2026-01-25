@@ -80,7 +80,7 @@ class AdminHelper
                 $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
             }
         }
-        if (SeablastConstant::SB_LOGGING_LEVEL >= 5) { // Log as severity DEBUG
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG
             Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
         }
         return $tables;
@@ -117,7 +117,7 @@ class AdminHelper
         }
         $result->free();
         $stmt->close();
-        if (SeablastConstant::SB_LOGGING_LEVEL >= 5) { // Log as severity DEBUG
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG
             Debugger::barDump($columnTypes, 'columnTypes');
         }
         return $columnTypes;
