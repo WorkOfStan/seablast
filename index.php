@@ -37,7 +37,7 @@ try {
 //} catch (\Seablast\Seablast\Exceptions\DbmsException $e) {
 //                // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
 //                $this->controller->getConfiguration()->showSqlBarPanel();
-//                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);    
+//                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
 } catch (\PDOException $e) {
     // make sure that the database Tracy BarPanel with error is displayed when PDOException is thrown
     $setup->getConfiguration()->pdo()->indicateDatabaseError();

@@ -68,7 +68,7 @@ class SeablastPdo extends PDO
                 ILogger::ERROR
             );
     }
-    
+
     /**
      * PDOException may not be caught by SeablastPdo, so index.php can trigger it directly.
      *
