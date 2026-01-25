@@ -68,6 +68,16 @@ class SeablastPdo extends PDO
                 ILogger::ERROR
             );
     }
+    
+    /**
+     * PDOException may not be caught by SeablastPdo, so index.php can trigger it directly.
+     *
+     * @return void
+     */
+    public function indicateDatabaseError(): void
+    {
+            $this->databaseError = true;
+    }
 
     /**
      * Determines if the query is read-only.
