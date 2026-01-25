@@ -34,6 +34,15 @@ $controller = new SeablastController($setup->getConfiguration(), $superglobals);
 $superglobals->setSession($_SESSION); // as only now the session started
 try {
     new SeablastView(new SeablastModel($controller, $superglobals));
+//} catch (\Seablast\Seablast\Exceptions\DbmsException $e) {
+//                // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
+//                $this->controller->getConfiguration()->showSqlBarPanel();
+//                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
+} catch (\PDOException $e) {
+    // make sure that the database Tracy BarPanel with error is displayed when PDOException is thrown
+    $setup->getConfiguration()->pdo()->indicateDatabaseError();
+    $setup->getConfiguration()->showSqlBarPanel();
+    throw $e;
 } catch (\Throwable $e) {
     // catches TypeError, Error, Exception // TODO remove try/catch in SeablastView and around $model if obsoleted
     // make sure that the database Tracy BarPanel is displayed

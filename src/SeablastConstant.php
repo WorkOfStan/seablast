@@ -19,7 +19,8 @@ class SeablastConstant
      */
     public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
     /**
-     * @var string Output JSON as HTML instead of application/json so that Tracy is displayed
+     * @var string So that Tracy is displayed 1) Output JSON as HTML instead of application/json;
+     * 2) turns off refresh after inserting new row in admin.latte.
      */
     public const FLAG_DEBUG_JSON = 'SB:debug:json';
     /**
@@ -182,9 +183,17 @@ class SeablastConstant
      */
     public const ADMIN_COLOR_FIELDS = 'SB:ADMIN_COLOR_FIELDS';
     /**
+     * @var string string prefix for tables with DELETE row allowed for edit for roleId
+     */
+    public const ADMIN_TABLE_DELETE_ROW = 'SB:ADMIN_TABLE_DELETE_ROW';
+    /**
      * @var string string prefix for tables with fields available for edit for roleId
      */
     public const ADMIN_TABLE_EDIT = 'SB:ADMIN_TABLE_EDIT';
+    /**
+     * @var string string prefix for tables with INSERT row allowed for edit for roleId
+     */
+    public const ADMIN_TABLE_INSERT_ROW = 'SB:ADMIN_TABLE_INSERT_ROW';
     /**
      * @var string string prefix for tables with fields available for view for roleId
      */

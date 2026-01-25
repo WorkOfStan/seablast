@@ -62,13 +62,12 @@
         <script>
             const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
             const csrfToken = {$csrfToken};{* id:sb_json *}
-            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR',]}
+            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR','SB:debug:json']}
                 {foreach $selectedFlags as $selected}{if $configuration->flag->status($selected)}{$selected},{/if}{/foreach}
             ];
         </script>
-        {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
-        {/if}
+        {* jQuery is required if 'I18n:SHOW_LANGUAGE_SELECTOR' and for admin.latte, therefore it's linked by default. If you want ultraminimalist blueprint without jQuery, use your own within your app *}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}        
         <header>
             <nav>
                 {include 'inherite.latte', latte => 'nav.latte'}

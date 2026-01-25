@@ -36,14 +36,14 @@ class AdminHelper
     }
 
     /**
-     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table
+     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table.
      *
      * @return void
      */
     public function populateSelectedTable(): void
     {
         // Admin sees both Admin and Content tables; Content admin sees just the Content
-        $this->allowedTables = $this->getAllowedTables();
+        $this->allowedTables = $this->getAllowedTables(SeablastConstant::ADMIN_TABLE_VIEW);
 
         // if there's a requested table and the user has access to it,
         // populate string SeablastConstant::APP_SELECTED_TABLE
@@ -55,27 +55,35 @@ class AdminHelper
     }
 
     /**
-     * Returns list of tables that the particular user can see and/or edit.
+     * Returns a list of tables that the current user can view, edit, or otherwise has permissions for.
      *
+     * @param string $permission E.g. SeablastConstant::ADMIN_TABLE_VIEW, SeablastConstant::ADMIN_TABLE_DELETE_ROW
      * @return array<string>
      */
-    private function getAllowedTables(): array
+    public function getAllowedTables(string $permission): array
     {
-        return array_merge(
-            in_array(
-                $this->configuration->getInt(SeablastConstant::USER_ROLE_ID),
-                [1, 2]
-            ) ? $this->configuration->getArrayString(
-                SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR
-            ) : [],
-            in_array(
-                $this->configuration->getInt(SeablastConstant::USER_ROLE_ID),
-                [1]
-            ) ? $this->configuration->getArrayString(
-                // TODO get rid of USER_ROLE_ADMIN _EDITOR etc in favor of integer id ?
-                SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_ADMIN
-            ) : []
-        );
+        // suffixes that are allowed for that USER_ROLE_ID
+        $roleSuffixes = [
+            1 => [
+                SeablastConstant::USER_ROLE_EDITOR,
+                SeablastConstant::USER_ROLE_ADMIN,
+            ],
+            2 => [
+                SeablastConstant::USER_ROLE_EDITOR,
+            ],
+        ];
+
+        $tables = [];
+
+        foreach ($roleSuffixes[$this->configuration->getInt(SeablastConstant::USER_ROLE_ID)] as $suffix) {
+            if ($this->configuration->exists($permission . $suffix)) {
+                $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
+            }
+        }
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG
+            Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
+        }
+        return $tables;
     }
 
     /**
@@ -109,7 +117,9 @@ class AdminHelper
         }
         $result->free();
         $stmt->close();
-        Debugger::barDump($columnTypes, 'columnTypes');
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG
+            Debugger::barDump($columnTypes, 'columnTypes');
+        }
         return $columnTypes;
     }
 

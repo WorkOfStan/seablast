@@ -19,6 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.16] - 2026-01-25
+
+feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+
+### Added
+
+- feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+- feat: add deletable and insertable as properties returned by AdminModel::knowledge
+- feat: add TracyBar PDO error status for cases where a PDOException isn't caught by SeablastPdo, allowing index.php to trigger it directly.
+
+### Changed
+
+- feat: refer to jquery/3.7.1 in BlueprintWeb.latte always
+- feat: use various permissions to AdminHelper::getAllowedTables
+
 ## [0.2.15] - 2026-01-11
 
 fix: set cookie path to the app in the domain root to at least '/'
@@ -430,7 +445,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...HEAD?w=1
+[0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1
 [0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1
 [0.2.14]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...v0.2.14?w=1
 [0.2.13]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...v0.2.13?w=1

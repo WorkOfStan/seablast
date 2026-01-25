@@ -55,12 +55,22 @@ class AdminModel implements SeablastModelInterface
                 $columns = [];
                 $conditionDetails = [];
                 $editable = [];
+                $deletable = false;
+                $insertable = false;
             } else {
                 $knowledge = (array) $this->tableContent->knowledge();
                 $table =  $knowledge['table'];
                 $columns = $knowledge['columns'];
                 $editable = $knowledge['editable'];
                 $conditionDetails = $knowledge['conditionDetails'];
+                $deletable = in_array(
+                    $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE),
+                    $this->adminHelper->getAllowedTables(SeablastConstant::ADMIN_TABLE_DELETE_ROW)
+                );
+                $insertable = in_array(
+                    $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE),
+                    $this->adminHelper->getAllowedTables(SeablastConstant::ADMIN_TABLE_INSERT_ROW)
+                );
             }
 
             return (object) [
@@ -88,8 +98,11 @@ class AdminModel implements SeablastModelInterface
                     'editable' => $editable,
                     'conditionDetails' => $conditionDetails,
                     'table' => $table,
+                    'deletable' => $deletable,
+                    'insertable' => $insertable,
             ];
         }
+        // TODO return 405 instead
         throw new \Exception(
             'Wrong HTTP method request: ' . (string) print_r($this->superglobals->server['REQUEST_METHOD'], true)
         );
