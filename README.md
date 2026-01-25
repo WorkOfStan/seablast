@@ -62,7 +62,7 @@ The configuration is **declarative** and role-driven.
 
 Admin table access is defined on **three levels**:
 
-1. **Role → Accessible tables**
+1. **Role → Accessible tables** (plus permissions for DELETE_ROW or INSERT_ROW)
 2. **Role → Table → Viewable columns**
 3. **Role → Table → Editable columns**
 
@@ -248,7 +248,7 @@ This feature applies to all fields with the same name across all tables (field n
 
 ```php
         ->setArrayString(SeablastConstant::ADMIN_COLOR_FIELDS, [
-            'color_main', // audios.color_main
+            'color_main', // audios.color_main but also item.color_main which still makes sense
         ])
 ```
 

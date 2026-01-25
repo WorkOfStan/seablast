@@ -9,13 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
-- feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
-- feat: add deletable and insertable as properties returned by AdminModel::knowledge
-
 ### `Changed` for changes in existing functionality
-
-- feat: refer to jquery/3.7.1 in BlueprintWeb.latte always
-- feat: use various permissions to AdminHelper::getAllowedTables
 
 ### `Deprecated` for soon-to-be removed features
 
@@ -24,6 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [0.2.16] - 2026-01-25
+
+feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+
+### Added
+
+- feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
+- feat: add deletable and insertable as properties returned by AdminModel::knowledge
+
+### Changed
+
+- feat: refer to jquery/3.7.1 in BlueprintWeb.latte always
+- feat: use various permissions to AdminHelper::getAllowedTables
 
 ## [0.2.15] - 2026-01-11
 
@@ -436,7 +444,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...HEAD?w=1
+[0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1
 [0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1
 [0.2.14]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...v0.2.14?w=1
 [0.2.13]: https://github.com/WorkOfStan/seablast/compare/v0.2.12...v0.2.13?w=1
