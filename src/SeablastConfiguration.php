@@ -108,6 +108,9 @@ class SeablastConfiguration
             //throw new DbmsException('Initiate db first.');
             // Let's create a preferred database connection.
             $this->pdoCreate();
+            if (is_null($this->connectionTablePrefix)) {
+                throw new DbmsException('Could not properly initate a PDO database interface.');
+            }
         }
         return $this->connectionTablePrefix;
     }
