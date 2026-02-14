@@ -41,7 +41,7 @@ class SeablastPdo extends PDO
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
         } catch (PDOException $e) {
-            throw new DbmsException("Connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
+            throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
     }
 
