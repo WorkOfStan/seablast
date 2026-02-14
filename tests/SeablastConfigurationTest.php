@@ -79,7 +79,13 @@ class SeablastConfigurationTest extends TestCase
 
         $config = new SeablastConfiguration();
         $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
-        $config->dbmsTablePrefix();
+        try {
+            $config->dbmsTablePrefix();
+            $this->fail('Expected DbmsException was not thrown.');
+        } catch (DbmsException $e) {
+            fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
+            $this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+        }
     }
 
     public function testExists(): void
