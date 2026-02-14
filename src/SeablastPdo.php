@@ -36,13 +36,14 @@ class SeablastPdo extends PDO
      */
     public function __construct(string $dsn, string $username, string $password, array $options = [])
     {
-        try {
+        // TODO return try-catch
+//        try {
             parent::__construct($dsn, $username, $password, $options);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
-        } catch (PDOException $e) {
-            throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
-        }
+//        } catch (PDOException $e) {
+//            throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
+//        }
     }
 
     /**
