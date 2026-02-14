@@ -37,6 +37,7 @@ class SeablastPdo extends PDO
     public function __construct(string $dsn, string $username, string $password, array $options = [])
     {
         // TODO return try-catch
+        echo "user: `{$username}` pass: `{$password}`";
         try {
             parent::__construct($dsn, $username, $password, $options);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
