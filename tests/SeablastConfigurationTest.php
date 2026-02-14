@@ -79,6 +79,7 @@ class SeablastConfigurationTest extends TestCase
 
         $config = new SeablastConfiguration();
         $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
+        $config->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that PDO is created successfully
         try {
             $config->dbmsTablePrefix();
             //$this->fail('Expected DbmsException was not thrown.');
