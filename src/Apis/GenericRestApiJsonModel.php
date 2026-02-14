@@ -171,13 +171,13 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     }
 
     /**
-     * Simple API response.
+     * Simple API response with httpCode and message.
      *
      * @param int $httpCode
      * @param string $message
      * @return stdClass
      */
-    protected static function response(int $httpCode, string $message): stdClass
+    public static function response(int $httpCode, string $message): stdClass
     {
         return (object) [
                 'httpCode' => $httpCode,

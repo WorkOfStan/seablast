@@ -19,6 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17] - 2026-02-14
+
+feat: allow calling `configuration->dbmsTablePrefix()` before a database interface initialization
+
+### Added
+
+- add a public method `GenericRestApiJsonModel::response()` returning a simple knowledge response which contains just httpCode and message.
+- add `SeablastConstant::ADMIN_DROP_AUDIO_FIELDS` to hold the list of fields that might contain mp3 to upload through the admin UI
+
+### Changed
+
+- feat: calling `configuration->dbmsTablePrefix()` before initating either `configuration->mysqli()` or `configuration->pdo()` doesn't throw an exception anymore, but initiates a preferred database interface - PDO
+- fix: move seablast-bridge.js at the before `<header/>` in `BlueprintWeb.latte`, so that ErrorLogger, BannerManager, ButtonPanel and Overlay are initialized prior any code that might be included by an app
+
 ## [0.2.16] - 2026-01-25
 
 feat: add `ADMIN_TABLE_DELETE_ROW` and `ADMIN_TABLE_INSERT_ROW` permissions
@@ -445,7 +459,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...HEAD?w=1
+[0.2.17]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...v0.2.17?w=1
 [0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1
 [0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1
 [0.2.14]: https://github.com/WorkOfStan/seablast/compare/v0.2.13...v0.2.14?w=1

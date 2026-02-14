@@ -103,8 +103,11 @@ class SeablastConfiguration
      */
     public function dbmsTablePrefix(): string
     {
+        Debugger::barDump('DBMS TABLE PREFIX');//debug
         if (is_null($this->connectionTablePrefix)) {
-            throw new DbmsException('Initiate db first.');
+            //throw new DbmsException('Initiate db first.');
+            // Let's create a preferred database connection.
+            $this->pdoCreate();
         }
         return $this->connectionTablePrefix;
     }
@@ -117,6 +120,7 @@ class SeablastConfiguration
      */
     private static function dbmsReadPhinx(): array
     {
+        Debugger::barDump('DBMS READ PHINX');//debug
         if (!file_exists(APP_DIR . '/conf/phinx.local.php')) {
             throw new DbmsException('Provide credentials in conf/phinx.local.php to use database.');
         }
@@ -262,6 +266,8 @@ class SeablastConfiguration
      */
     private function mysqliCreate(): void
     {
+                Debugger::barDump('MYSQLI CREATE');//debug
+
         $phinx = $this->dbmsExtractProperties();
         $this->mysqli = new SeablastMysqli(
             $phinx->host, // todo fix localhost
@@ -302,6 +308,7 @@ class SeablastConfiguration
      */
     public function pdo(): SeablastPdo
     {
+        Debugger::barDump('DBMS PDO');//debug
         //Lazy initialisation
         if (!$this->pdoStatus()) {
             Debugger::barDump('Creating PDO database connection');
@@ -319,6 +326,7 @@ class SeablastConfiguration
      */
     private function pdoCreate(): void
     {
+        Debugger::barDump('DBMS PDO CREATE');//debug
         $phinx = $this->dbmsExtractProperties();
         //PDO("mysql:host=localhost;dbname=DB;charset=UTF8")
         $this->pdo = new SeablastPdo(
