@@ -287,7 +287,7 @@ Tracy logs through Seablast\logger, which provides verbosity control.
 ### Changed
 
 - use [Seablast\Logger](https://github.com/WorkOfStan/seablast-logger), a [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with verbosity control, as a logger for Tracy.
-- following SQL statements are not logged: DESCRIB, DO, EXPLAIN as they do not change the table data
+- following SQL statements are not logged: DESCRIBE, DO, EXPLAIN as they do not change the table data
 
 ### Fixed
 
@@ -399,7 +399,7 @@ CSRF, model returns object (not array anymore), directories are in plural
 ### Added
 
 - show HTTP code error Tracy BarPanel
-- /api/error is always available (if not overriden): Log errors reported by Ajax saved to the standard error log
+- /api/error is always available (if not overridden): Log errors reported by Ajax saved to the standard error log
 
 ### Changed **BREAKING**
 

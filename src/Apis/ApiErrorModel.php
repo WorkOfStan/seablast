@@ -11,7 +11,7 @@ use Tracy\ILogger;
 use Webmozart\Assert\Assert;
 
 /**
- * Log errors reported by Ajax saved to the app error log with these informations:
+ * Log errors reported by Ajax saved to the app error log with these information:
  * - page name that invoked the call
  * - order of ajax call from one script
  * - severity accepted values (case insensitive): DEBUG, INFO, WARNING, ERROR, EXCEPTION, CRITICAL (default=ERROR)
