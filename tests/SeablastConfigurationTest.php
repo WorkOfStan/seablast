@@ -84,9 +84,10 @@ class SeablastConfigurationTest extends TestCase
             $config->dbmsTablePrefix();
             //$this->fail('Expected DbmsException was not thrown.');
         } catch (DbmsException $e) {
-            echo "DbmsException caught";
-            fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
-            $this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+//            echo "DbmsException caught";
+//            fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
+//            $this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+            $this->fail("DbmsException caught" . $e->getMessage());
         } catch (\Throwable $e) {
             // Catch-all: wrong exception type
             fwrite(
@@ -99,7 +100,7 @@ class SeablastConfigurationTest extends TestCase
                 . ' with message: ' . $e->getMessage()
             );
         }
-        $this->fail('something else shouLD HAPPEN');
+        $this->assertInstanceOf(\Seablast\Seablast\SeablastPdo::class, $config->pdo());
     }
 
     public function testExists(): void
