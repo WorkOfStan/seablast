@@ -20,7 +20,7 @@ class SeablastPdo extends PDO
     private $databaseError = false;
     /** @var string */
     private $logPath;
-    /** @var string[] */
+    /** @var array<string> */
     private $statementList = [];
     /** @var string */
     private $user = 'unidentified';
@@ -37,13 +37,13 @@ class SeablastPdo extends PDO
     public function __construct(string $dsn, string $username, string $password, array $options = [])
     {
         // TODO return try-catch
-//        try {
+        try {
             parent::__construct($dsn, $username, $password, $options);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
-//        } catch (PDOException $e) {
-//            throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
-//        }
+        } catch (PDOException $e) {
+            throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
+        }
     }
 
     /**
