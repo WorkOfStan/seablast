@@ -85,6 +85,17 @@ class SeablastConfigurationTest extends TestCase
         } catch (DbmsException $e) {
             fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
             $this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+        } catch (\Throwable $e) {
+            // Catch-all: wrong exception type
+            fwrite(
+                STDERR,
+                'Unexpected exception ' . get_class($e) . ': ' . $e->getMessage() . PHP_EOL
+            );
+
+            $this->fail(
+                'Expected ' . DbmsException::class . ', got ' . get_class($e)
+                . ' with message: ' . $e->getMessage()
+            );
         }
     }
 
