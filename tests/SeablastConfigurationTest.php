@@ -75,7 +75,7 @@ class SeablastConfigurationTest extends TestCase
      */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
-        $this->expectException(DbmsException::class); // before pdo get initialized automatically
+        //$this->expectException(DbmsException::class); // before pdo get initialized automatically
 
         $config = new SeablastConfiguration();
         $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
@@ -97,6 +97,7 @@ class SeablastConfigurationTest extends TestCase
                 . ' with message: ' . $e->getMessage()
             );
         }
+        $this->fail('something else shouLD HAPPEN');
     }
 
     public function testExists(): void
