@@ -26,4 +26,4 @@ graph TD
     H --> |No rest attribute| J[Output HTML using Template]
 ```
 
-This diagram illustrates the flow from setup through to final output, highlighting key decision points and interactions between components in the Seablast framework.
+The diagram above illustrates the flow from setup through to final output, highlighting key decision points and interactions between components in the Seablast framework.
