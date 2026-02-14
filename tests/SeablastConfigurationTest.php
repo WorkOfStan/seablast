@@ -69,14 +69,16 @@ class SeablastConfigurationTest extends TestCase
 //    }
 
     /**
-     * if not initialized or if no connection TODO really?
+     * If a database interface is not initialized before calling dbmsTablePrefix.
+     *
      * @return void
      */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
-        $this->expectException(DbmsException::class);
+        $this->expectException(DbmsException::class); // before pdo get initialized automatically
 
         $config = new SeablastConfiguration();
+        $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
         $config->dbmsTablePrefix();
     }
 

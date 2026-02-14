@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.17] - 2026-02-14
 
-feat: allow calling `configuration->dbmsTablePrefix()` before a database interface initialization
+feat: allow calling `dbmsTablePrefix()` before database initialization
 
 ### Added
 
