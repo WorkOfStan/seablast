@@ -30,7 +30,7 @@ feat: allow calling `dbmsTablePrefix()` before database initialization
 
 ### Changed
 
-- feat: calling `configuration->dbmsTablePrefix()` before initating either `configuration->mysqli()` or `configuration->pdo()` doesn't throw an exception anymore, but initiates a preferred database interface - PDO
+- feat: calling `configuration->dbmsTablePrefix()` before initiating either `configuration->mysqli()` or `configuration->pdo()` doesn't throw an exception anymore, but initiates a preferred database interface - PDO
 - fix: move seablast-bridge.js at the before `<header/>` in `BlueprintWeb.latte`, so that ErrorLogger, BannerManager, ButtonPanel and Overlay are initialized prior any code that might be included by an app
 
 ## [0.2.16] - 2026-01-25
