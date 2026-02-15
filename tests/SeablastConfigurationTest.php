@@ -75,7 +75,7 @@ class SeablastConfigurationTest extends TestCase
      */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
-        //$this->expectException(DbmsException::class); // before pdo get initialized automatically
+        //$this->expectException(DbmsException::class); // till 0.2.16 mysqli or pdo had to be initialized manually
 
         $config = new SeablastConfiguration();
         $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
@@ -84,9 +84,9 @@ class SeablastConfigurationTest extends TestCase
             $config->dbmsTablePrefix();
             //$this->fail('Expected DbmsException was not thrown.');
         } catch (DbmsException $e) {
-//            echo "DbmsException caught";
-//            fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
-//            $this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+            //echo "DbmsException caught";
+            //fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
+            //$this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
             $this->fail("DbmsException caught" . $e->getMessage());
         } catch (\Throwable $e) {
             // Catch-all: wrong exception type
