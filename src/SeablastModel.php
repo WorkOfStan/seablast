@@ -37,23 +37,23 @@ class SeablastModel
             /** @phpstan-ignore staticMethod.alreadyNarrowedType */
             Assert::string($className);
             Assert::true(class_exists($className), "Class {$className} does not exist.");
-            try {
+            //try {
                 $model = new $className($this->controller->getConfiguration(), $superglobals);
-            } catch (Exceptions\DbmsException $e) {
-                // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model
-                $this->controller->getConfiguration()->showSqlBarPanel();
-                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
-            }
+            //} catch (Exceptions\DbmsException $e) {
+            //    // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown in the model
+            //    $this->controller->getConfiguration()->showSqlBarPanel();
+            //    throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
+            //}
             Assert::methodExists($model, 'knowledge', "{$className} model MUST have method knowledge()");
-            try {
+            //try {
                 $knowledge = $model->knowledge();
                 Assert::isInstanceOf($knowledge, \stdClass::class);
                 $this->viewParameters = $knowledge;
-            } catch (Exceptions\DbmsException $e) {
-                // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
-                $this->controller->getConfiguration()->showSqlBarPanel();
-                throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
-            }
+            //} catch (Exceptions\DbmsException $e) {
+            //    // make sure that the database Tracy BarPanel is displayed when DbmsException is thrown
+            //    $this->controller->getConfiguration()->showSqlBarPanel();
+            //    throw new Exceptions\DbmsException($e->getMessage(), $e->getCode(), $e);
+            //}
             Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
             Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be of stdClass type.");
         } else {
