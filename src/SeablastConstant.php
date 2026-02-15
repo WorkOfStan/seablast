@@ -183,6 +183,10 @@ class SeablastConstant
      */
     public const ADMIN_COLOR_FIELDS = 'SB:ADMIN_COLOR_FIELDS';
     /**
+     * @var string string[] list of fields that might contain mp3 to upload
+     */
+    public const ADMIN_DROP_AUDIO_FIELDS = 'SB:ADMIN_DROP_AUDIO_FIELDS';
+    /**
      * @var string string prefix for tables with DELETE row allowed for edit for roleId
      */
     public const ADMIN_TABLE_DELETE_ROW = 'SB:ADMIN_TABLE_DELETE_ROW';

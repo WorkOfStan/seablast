@@ -5,7 +5,6 @@ import { ButtonPanel } from "./button-panel.js";
 
 export class Overlay {
   /**
-   *
    * @param {import('Environment.js').Environment} env
    * @param {BannerManager} bannerManager
    */
@@ -168,6 +167,10 @@ export class Overlay {
     }
   }
 
+  /**
+   * Send new value to a server API
+   * @returns {void}
+   */
   save() {
     const rawNewValue = String($(this.editorSelector).val());
 
@@ -208,7 +211,7 @@ export class Overlay {
           const normalized = this.normalizeHexColor(rawNewValue) ?? rawNewValue;
           this.editedElement?.text(normalized);
 
-          // Volitelné: ať je hned barva vidět (zruš, pokud nechceš)
+          // Optional: let the color show immediately
           this.editedElement?.css("background-color", normalized);
         } else {
           // put the new value to the current tile while returning proper new line
@@ -259,7 +262,7 @@ export class Overlay {
 
   /**
    * @param {string} v
-   * @returns {string|null} "#rrggbb" nebo null
+   * @returns {string|null} "#rrggbb" or null
    */
   normalizeHexColor(v) {
     if (!v) return null;

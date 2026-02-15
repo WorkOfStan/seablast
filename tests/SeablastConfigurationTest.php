@@ -69,15 +69,38 @@ class SeablastConfigurationTest extends TestCase
 //    }
 
     /**
-     * if not initialized or if no connection TODO really?
+     * If a database interface is not initialized before calling dbmsTablePrefix.
+     *
      * @return void
      */
     public function testDbmsTablePrefixThrowsExceptionIfNotInitialized(): void
     {
-        $this->expectException(DbmsException::class);
+        //$this->expectException(DbmsException::class); // till 0.2.16 mysqli or pdo had to be initialized manually
 
         $config = new SeablastConfiguration();
-        $config->dbmsTablePrefix();
+        $config->setString(SeablastConstant::SB_CHARSET_DATABASE, 'utf8'); // same as in default.conf.php
+        $config->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing'); // so that PDO is created successfully
+        try {
+            $config->dbmsTablePrefix();
+            //$this->fail('Expected DbmsException was not thrown.');
+        } catch (DbmsException $e) {
+            //echo "DbmsException caught";
+            //fwrite(STDERR, $e->getMessage() . PHP_EOL); // or echo, but STDERR is usually more reliable
+            //$this->assertNotSame('', $e->getMessage()); // or assertSame('...', $e->getMessage())
+            $this->fail("DbmsException caught" . $e->getMessage());
+        } catch (\Throwable $e) {
+            // Catch-all: wrong exception type
+            fwrite(
+                STDERR,
+                'Unexpected exception ' . get_class($e) . ': ' . $e->getMessage() . PHP_EOL
+            );
+
+            $this->fail(
+                'Expected ' . DbmsException::class . ', got ' . get_class($e)
+                . ' with message: ' . $e->getMessage()
+            );
+        }
+        $this->assertInstanceOf(\Seablast\Seablast\SeablastPdo::class, $config->pdo());
     }
 
     public function testExists(): void

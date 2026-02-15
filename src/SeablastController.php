@@ -512,7 +512,7 @@ class SeablastController
             if (is_null($this->identity)) {
                 throw new \Exception('Identity manager expected.');
             }
-            // Identity required, if not autheticated => 401
+            // Identity required, if not authenticated => 401
             if (!$this->configuration->flag->status(SeablastConstant::FLAG_USER_IS_AUTHENTICATED)) {
                 try { // Seamless log in page if prepared
                     if (!empty($this->configuration->getString(SeablastConstant::APP_MAPPING_401))) {

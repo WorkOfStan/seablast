@@ -28,7 +28,7 @@ export class ButtonPanel {
       // setTimeout seems to be ignored by Android Chrome
       setTimeout(() => {
         // 'this' refers to the 'this' value from the surrounding scope
-        // Code to execute after 700ms so that user doesn't click the button appering below
+        // Code to execute after 700ms so that user doesn't click the button appearing below
         $(this).closest(".buttonPanel").toggleClass("dont-hide");
       }, 700);
     });

@@ -38,10 +38,15 @@ class SeablastViewTest extends TestCase
         $configurationClosure($this->configuration);
         $this->assertEquals('views', $this->configuration->getString(SeablastConstant::LATTE_TEMPLATE));
 
-        $this->configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
-        // todo Contoller must apply this settings -- but SeablastView is not invoked at all?!?!?!?!?
-        $this->configuration->setInt('testHttpCode', 200); // for MockModel
-        $this->configuration->setString('testRest', '{"a": "b"}'); // for MockJsonModel
+        $this->configuration
+            ->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5)
+            // for MockModel
+            ->setInt('testHttpCode', 200)
+            // for MockJsonModel
+            ->setString('testRest', '{"a": "b"}')
+            // UI - BlueprintWeb.latte (used during PHPUnit tests) is expecting this variable to be set
+            ->setInt(SeablastConstant::SB_WEB_FORCE_ASSET_VERSION, 1)
+        ;
 
         $superglobalsMock = new Superglobals(
             [],

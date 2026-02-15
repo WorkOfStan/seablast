@@ -4,7 +4,7 @@
         <title>{$title ?? 'Powered by Seablast'}</title>
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            {include '../../../../vendor/seablast/i18n/views/uls.css.latte'}
+            {include $configuration->getString('SB_APP_ROOT_DIR') . '/vendor/seablast/i18n/views/uls.css.latte'}
         {/if}
         <style>
             body {
@@ -67,13 +67,14 @@
             ];
         </script>
         {* jQuery is required if 'I18n:SHOW_LANGUAGE_SELECTOR' and for admin.latte, therefore it's linked by default. If you want ultraminimalist blueprint without jQuery, use your own within your app *}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
+        <script type="module" src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/seablast-bridge.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* so that seablast objects are ready before app code *}
         <header>
             <nav>
                 {include 'inherite.latte', latte => 'nav.latte'}
             </nav>
         </header>
-        {*<div id="banner-container"></div>*}
+        <div id="banner-container"></div>
         <main>
             {block mainblock}{/block}
         </main>
@@ -82,7 +83,7 @@
             {include 'inherite.latte', latte => 'footer.latte'}
         </footer>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            {include '../../../../vendor/seablast/i18n/views/uls.js.latte'}
+            {include $configuration->getString('SB_APP_ROOT_DIR') . '/vendor/seablast/i18n/views/uls.js.latte'}
         {/if}
         {block script}{/block} {* Note: content of block script MUST use <script></script> *}
     </body>

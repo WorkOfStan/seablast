@@ -16,7 +16,7 @@ use Webmozart\Assert\Assert;
  * Count active pages by user.
  * Route pt/user-pages
  *
- * TODO figure out whether part of it may be in Seablast or it is always app dependant
+ * TODO figure out whether part of it may be in Seablast or it is always app dependent
  */
 class AdminUserPagesModel implements SeablastModelInterface
 {
