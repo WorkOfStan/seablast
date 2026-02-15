@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.2.17] - 2026-02-14
+## [0.2.17] - 2026-02-15
 
 feat: allow calling `dbmsTablePrefix()` before database initialization
 
@@ -32,6 +32,7 @@ feat: allow calling `dbmsTablePrefix()` before database initialization
 
 - feat: calling `configuration->dbmsTablePrefix()` before initiating either `configuration->mysqli()` or `configuration->pdo()` doesn't throw an exception anymore, but initiates a preferred database interface - PDO
 - fix: move seablast-bridge.js at the before `<header/>` in `BlueprintWeb.latte`, so that ErrorLogger, BannerManager, ButtonPanel and Overlay are initialized prior any code that might be included by an app
+- refactor: remove try-catch displaying the database Tracy BarPanel from SeablastModel and SeablastView as it is handled sufficiently in `index.php`.
 
 ## [0.2.16] - 2026-01-25
 
