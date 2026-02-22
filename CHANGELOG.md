@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.17.1] - 2026-02-22
 
-fix: use correct constant SB_APP_ROOT_ABSOLUTE_URL in BlueprintWeb.latte
+fix: use file system path for `uls.*.latte` in BlueprintWeb.latte (instead of web server path)
 
 ## [0.2.17] - 2026-02-15
 
