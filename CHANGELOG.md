@@ -25,7 +25,8 @@ fix: use file system path for `uls.*.latte` in BlueprintWeb.latte
 
 ### Changed
 
-- change Lato font na Source Sans 3 which shows diacritics (such as `č`) properly
+- change font Lato to Source Sans 3 which shows diacritics (such as `č`) properly
+- refactor: move style from BlueprintWeb.latte to default.css
 
 ### Fixed
 

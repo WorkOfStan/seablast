@@ -9,63 +9,7 @@
             {* Note: cannot use $configuration->getString('SB_APP_ROOT_ABSOLUTE_URL') as the path is for file system, not for web server *}
             {include '../../../../vendor/seablast/i18n/views/uls.css.latte'}
         {/if}
-        <style>
-            body {
-                font-family:
-                    "Source Sans 3",
-                    system-ui,
-                    -apple-system,
-                    "Segoe UI",
-                    Arial,
-                    sans-serif;
-                margin: 0;
-                padding: 0;
-                color: #333;
-            }
-
-            header {
-                background-color: #f8f8f8;
-                padding: 10px 0;
-            }
-
-            nav ul {
-                list-style-type: none;
-                padding: 0;
-                margin: 0;
-                text-align: center;
-            }
-
-            nav li {
-                display: inline;
-                margin-right: 20px;
-            }
-
-            nav a {
-                text-decoration: none;
-                color: #333;
-            }
-
-            footer {
-                background-color: #f8f8f8;
-                text-align: center;
-                padding: 20px 0;
-            }
-
-            #hamburger-menu {
-                display: none;
-                cursor: pointer;
-            }
-
-            @media (max-width: 600px) {
-                #hamburger-menu {
-                    display: block;
-                }
-
-                nav ul {
-                    display: none;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/styles/default.css?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}">
     </head>
     <body>
         <script>
