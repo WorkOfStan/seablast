@@ -46,7 +46,7 @@ jobs:
         with:
           message: true
           # to accept dependabot/github_actions/*
-          # branch: false
+          branch: false
           author-name: true
           author-email: true
           job-summary: true

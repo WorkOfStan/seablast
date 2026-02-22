@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17.1] - 2026-02-22
+
+fix: use file system path for `uls.*.latte` in BlueprintWeb.latte
+
+### Changed
+
+- change font Lato to Source Sans 3 which shows diacritics (such as `č`) properly
+- refactor: move style from BlueprintWeb.latte to default.css
+
+### Fixed
+
+- fix: use file system path for `uls.*.latte` in BlueprintWeb.latte (instead of web server path)
+
 ## [0.2.17] - 2026-02-15
 
 feat: allow calling `dbmsTablePrefix()` before database initialization
@@ -460,7 +473,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...HEAD?w=1
+[0.2.17.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...v0.2.17.1?w=1
 [0.2.17]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...v0.2.17?w=1
 [0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1
 [0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1
