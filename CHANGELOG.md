@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17.1] - 2026-02-22
+
+fix: use correct constant SB_APP_ROOT_ABSOLUTE_URL in BlueprintWeb.latte
+
 ## [0.2.17] - 2026-02-15
 
 feat: allow calling `dbmsTablePrefix()` before database initialization
@@ -460,7 +464,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...HEAD?w=1
+[0.2.17.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...v0.2.17.1?w=1
 [0.2.17]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...v0.2.17?w=1
 [0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1
 [0.2.15]: https://github.com/WorkOfStan/seablast/compare/v0.2.14...v0.2.15?w=1

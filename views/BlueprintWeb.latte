@@ -4,7 +4,7 @@
         <title>{$title ?? 'Powered by Seablast'}</title>
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            {include $configuration->getString('SB_APP_ROOT_DIR') . '/vendor/seablast/i18n/views/uls.css.latte'}
+            {include $configuration->getString('SB_APP_ROOT_ABSOLUTE_URL') . '/vendor/seablast/i18n/views/uls.css.latte'}
         {/if}
         <style>
             body {
@@ -83,7 +83,7 @@
             {include 'inherite.latte', latte => 'footer.latte'}
         </footer>
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
-            {include $configuration->getString('SB_APP_ROOT_DIR') . '/vendor/seablast/i18n/views/uls.js.latte'}
+            {include $configuration->getString('SB_APP_ROOT_ABSOLUTE_URL') . '/vendor/seablast/i18n/views/uls.js.latte'}
         {/if}
         {block script}{/block} {* Note: content of block script MUST use <script></script> *}
     </body>
