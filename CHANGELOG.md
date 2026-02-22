@@ -21,7 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.17.1] - 2026-02-22
 
-fix: use file system path for `uls.*.latte` in BlueprintWeb.latte (instead of web server path)
+fix: use file system path for `uls.*.latte` in BlueprintWeb.latte
+
+### Changed
+
+- change Lato font na Source Sans 3 which shows diacritics (such as `č`) properly
+
+### Fixed
+
+- fix: use file system path for `uls.*.latte` in BlueprintWeb.latte (instead of web server path)
 
 ## [0.2.17] - 2026-02-15
 
