@@ -18,7 +18,7 @@ class SeablastPdo extends PDO
 
     /** @var bool */
     private $databaseError = false;
-    /** @var string */
+    /** @var ?string */
     private $logPath;
     /** @var array<string> */
     private $statementList = [];
@@ -39,7 +39,11 @@ class SeablastPdo extends PDO
         try {
             parent::__construct($dsn, $username, $password, $options);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
+            if (Debugger::$logDirectory !== null) {
+                $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
+            } else {
+                $this->logPath = null;
+            }
         } catch (PDOException $e) {
             throw new DbmsException("SeablastPdo connection failed: " . $e->getMessage(), (int)$e->getCode(), $e);
         }
@@ -99,6 +103,10 @@ class SeablastPdo extends PDO
      */
     private function logQuery(string $query): void
     {
+        if ($this->logPath === null) {
+            return;
+        }
+
         error_log(
             $query . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']' . PHP_EOL,
             3,

@@ -566,10 +566,24 @@ class SeablastController
                 return;
             }
             Assert::scalar($this->superglobals->get[$this->mapping['code']]);
-            // TODO secure against injection
+            $code = (string) $this->superglobals->get[$this->mapping['code']];
+            if (
+                $code === ''
+                || preg_match('/[\x00-\x1F\x7F\'"`\\\\;#]/', $code) === 1
+                || strpos($code, '--') !== false
+                || strpos($code, '/*') !== false
+                || strpos($code, '*/') !== false
+            ) {
+                Debugger::barDump(
+                    "Route {$this->uriPath} contains invalid string parameter {$this->mapping['code']}",
+                    '404 Not found'
+                );
+                $this->page40x('Stránka neexistuje.');
+                return;
+            }
             $this->configuration->setString(
                 SeablastConstant::SB_GET_ARGUMENT_CODE,
-                (string) $this->superglobals->get[$this->mapping['code']]
+                $code
             );
         }
         // if the id or code value is wrong, it MUST fail later in the model
