@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17.2] - 2026-03-15
+
+fix: ignore logQuery when Debugger not initiated
+
+### Fixed
+
+- fix: ignore logQuery when Debugger not initiated (in the context of a GitHub Action)
+
+### Security
+
+- harden using `$this->superglobals->get[$this->mapping['code']]`
+
 ## [0.2.17.1] - 2026-02-22
 
 fix: use file system path for `uls.*.latte` in BlueprintWeb.latte
@@ -473,7 +485,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...HEAD?w=1
+[0.2.17.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...v0.2.17.2?w=1
 [0.2.17.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...v0.2.17.1?w=1
 [0.2.17]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...v0.2.17?w=1
 [0.2.16]: https://github.com/WorkOfStan/seablast/compare/v0.2.15...v0.2.16?w=1

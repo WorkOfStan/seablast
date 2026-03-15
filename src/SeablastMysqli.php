@@ -24,7 +24,7 @@ class SeablastMysqli extends mysqli
 
     /** @var bool true if any of the SQL statements ended in an error state */
     private $databaseError = false;
-    /** @var string */
+    /** @var ?string */
     private $logPath;
     /** @var string[] For Tracy Bar Panel. */
     private $statementList = [];
@@ -62,10 +62,12 @@ class SeablastMysqli extends mysqli
                 'Connection to database failed with error #' . $this->connect_errno . ' ' . $this->connect_error
             );
         }
-        // Use Debugger::$logDirectory instead of APP_DIR . '/log'
-        var_dump('deb:log');
-        var_dump(Debugger::$logDirectory);
-        $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
+
+        if (Debugger::$logDirectory !== null) {
+            $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
+        } else {
+            $this->logPath = null;
+        }
     }
 
     /**
@@ -114,7 +116,11 @@ class SeablastMysqli extends mysqli
      */
     private function logQuery(string $query): void
     {
-        //mb_ereg_replace does not destroy multi-byte characters such as character Č
+        if ($this->logPath === null) {
+            return;
+        }
+
+        // mb_ereg_replace does not destroy multi-byte characters such as character C.
         error_log(
             mb_ereg_replace("\r\n|\r|\n", ' ', $query) . ' -- [' . date('Y-m-d H:i:s') . '] [' . $this->user . ']'
             . PHP_EOL,
@@ -177,7 +183,7 @@ class SeablastMysqli extends mysqli
         $trimmedQuery = trim($query);
         if (!$this->isReadDataTypeQuery($trimmedQuery)) {
             // Log queries that may change data
-            // TODO jak NELOGOVAT hesla? Použít queryNoLog() nebo nějaká chytristika?
+            // TODO how not to log passwords? Use queryNoLog() or some heuristics?
             $this->logQuery($trimmedQuery);
         }
         try {
