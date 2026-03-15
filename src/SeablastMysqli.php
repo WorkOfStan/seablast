@@ -63,6 +63,8 @@ class SeablastMysqli extends mysqli
             );
         }
         // Use Debugger::$logDirectory instead of APP_DIR . '/log'
+        var_dump('deb:log');
+        var_dump(Debugger::$logDirectory);
         $this->logPath = Debugger::$logDirectory . '/query_' . date('Y-m') . '.log';
     }
 
