@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+- fix XSS in `Overlay`: text editor now HTML-escapes user input before inserting it into `.html(...)` on success (while preserving new lines as `<br>`), so injected tags/scripts are rendered as text and are not executed in the browser.
+
 ## [0.2.17.2] - 2026-03-15
 
 fix: ignore logQuery when Debugger not initiated

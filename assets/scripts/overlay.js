@@ -168,6 +168,21 @@ export class Overlay {
   }
 
   /**
+   * Escape text for safe HTML insertion.
+   *
+   * @param {string} value
+   * @returns {string}
+   */
+  static escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  /**
    * Send new value to a server API
    * @returns {void}
    */
@@ -215,7 +230,9 @@ export class Overlay {
           this.editedElement?.css("background-color", normalized);
         } else {
           // put the new value to the current tile while returning proper new line
-          this.editedElement?.html(rawNewValue.replace(/\n/g, "<br>\n"));
+          this.editedElement?.html(
+            Overlay.escapeHtml(rawNewValue).replace(/\n/g, "<br>\n"),
+          );
         }
 
         // close the overlay
