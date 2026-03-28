@@ -17,7 +17,8 @@
     "robmorgan/phinx": "^0.12.13 || ^0.13.4 || ^0.14.0 || ^0.15.5 || ^0.16.5"
   },
   "suggest": {
-    "seablast/auth": "No-password authentication and authorisation extension for Seablast for PHP"
+    "seablast/auth": "No-password authentication and authorisation extension for Seablast for PHP",
+    "seablast/i18n": "A lightweight internationalization (i18n) module to effortlessly provide multilingual support and manage user language preferences"
   },
   "license": "MIT",
   "authors": [

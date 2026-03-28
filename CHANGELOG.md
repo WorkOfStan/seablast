@@ -19,6 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17.3] - 2026-03-29
+
+fix: fix XSS in `Overlay`
+
+### Added
+
+- add `./blast.sh clean` command to preview and remove temporary cache and audio marker files after explicit `YES` confirmation
+
+### Changed
+
+- harden `blast.sh` with `set -euo pipefail`, safe `--base-url` parsing and non-fatal curl reachability warnings
+
+### Fixed
+
+- suppress PHP/8.4 deprecation for `SeablastPdo::query()` by adding `#[\ReturnTypeWillChange]` while preserving PHP/7.2 compatibility
+- avoid `Undefined array key "t"` warning in `AdminHelper::populateSelectedTable()` when no table is selected in the query string
+
+### Security
+
 - fix XSS in `Overlay`: text editor now HTML-escapes user input before inserting it into `.html(...)` on success (while preserving new lines as `<br>`), so injected tags/scripts are rendered as text and are not executed in the browser.
 
 ## [0.2.17.2] - 2026-03-15
@@ -487,7 +506,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...HEAD?w=1
+[0.2.17.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...v0.2.17.3?w=1
 [0.2.17.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...v0.2.17.2?w=1
 [0.2.17.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...v0.2.17.1?w=1
 [0.2.17]: https://github.com/WorkOfStan/seablast/compare/v0.2.16...v0.2.17?w=1

@@ -162,6 +162,7 @@ class SeablastPdo extends PDO
      * @return PDOStatement|false
      * @throws DbmsException
      */
+    #[\ReturnTypeWillChange]
     public function query(string $query, ?int $fetchMode = null, ...$fetchModeArgs)
     {
         $trimmedQuery = trim($query);
