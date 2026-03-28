@@ -157,7 +157,7 @@ class SeablastView
                     return $translator->translate($s);
                 });
                 //Debugger::barDump($latte, 'after filter');
-            }            
+            }
             /*} else {
                 // for Latte 3, i.e. PHP/8.0-8.4
                 //$translator = new MyTranslator($lang);
