@@ -6,7 +6,7 @@ It is written for two audiences:
 - maintainers changing the framework itself
 - applications that build on top of Seablast and need to understand its real runtime contract
 
-This document describes the current behavior of the codebase, including important caveats that are not obvious from the marketing-level README alone.
+This document describes the current behavior of the codebase, including important caveats that are not obvious from the marketing-level `README.md` alone.
 
 ## What Seablast Is
 
@@ -312,7 +312,7 @@ SQL bar panels are rendered after output selection so that database diagnostics 
 
 These points are worth keeping in mind when maintaining or integrating Seablast:
 
-- The controller currently performs direct path matching. Friendly URL database resolution and redirector logic are still marked as TODO in code.
+- The controller currently performs direct path matching. Friendly URL database resolution and redirector logic are still marked as `TODO` in code.
 - Route misses currently fall back to `/error`, which means missing API routes are not automatically rendered as JSON.
 - The bundled templates are functional defaults, not a complete design system.
 - `README.md` contains the broad usage story, but this file should remain the source of truth for framework internals and hidden contracts.
