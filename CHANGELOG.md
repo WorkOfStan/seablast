@@ -26,10 +26,12 @@ fix: fix XSS in `Overlay`
 ### Added
 
 - add `./blast.sh clean` command to preview and remove temporary cache and audio marker files after explicit `YES` confirmation
+- add `CLAUDE.md` as a maintainer and application-integration guide that documents Seablast bootstrap, routing, model/view contracts, admin behavior, and current implementation caveats
 
 ### Changed
 
-- harden `blast.sh` with `set -euo pipefail`, safe `--base-url` parsing and non-fatal curl reachability warnings
+- harden `blast.sh` with `set -euo pipefail`, safe `--base-url` parsing and non-fatal cURL reachability warnings
+- limit Latte `>=2.10.8 <3.1` as the implementation of filters differs between Latte 3.0 and 3.1
 
 ### Fixed
 

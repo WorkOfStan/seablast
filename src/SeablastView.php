@@ -148,7 +148,8 @@ class SeablastView
             Debugger::barDump($translatorClass, 'Translate class');
             $translator = new $translatorClass($this->model->getConfiguration());
 
-            // for Latte 2 and 3
+            // Todo make thorough testing for upgrade to Latte 3.1
+            // for Latte 2 and 3.0
             if (method_exists($translator, 'translate')) {
                 //Debugger::barDump('Translator exists');
                 Debugger::barDump($latte, 'before filter');
@@ -156,7 +157,7 @@ class SeablastView
                     return $translator->translate($s);
                 });
                 //Debugger::barDump($latte, 'after filter');
-            }
+            }            
             /*} else {
                 // for Latte 3, i.e. PHP/8.0-8.4
                 //$translator = new MyTranslator($lang);
