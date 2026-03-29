@@ -44,13 +44,12 @@ class AdminHelper
     {
         // Admin sees both Admin and Content tables; Content admin sees just the Content
         $this->allowedTables = $this->getAllowedTables(SeablastConstant::ADMIN_TABLE_VIEW);
+        $selectedTable = $this->superglobals->get['t'] ?? null;
 
         // if there's a requested table and the user has access to it,
         // populate string SeablastConstant::APP_SELECTED_TABLE
-        if (
-            is_string($this->superglobals->get['t']) && in_array($this->superglobals->get['t'], $this->allowedTables)
-        ) {
-            $this->configuration->setString(SeablastConstant::APP_SELECTED_TABLE, $this->superglobals->get['t']);
+        if (is_string($selectedTable) && in_array($selectedTable, $this->allowedTables, true)) {
+            $this->configuration->setString(SeablastConstant::APP_SELECTED_TABLE, $selectedTable);
         }
     }
 
