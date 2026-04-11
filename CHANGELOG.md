@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- fix: clamp the standalone `under-construction.html` page to the mobile viewport and clip root overflow so phones do not pan into empty space around the centered card
+
 ### `Security` in case of vulnerabilities
 
 ## [0.2.17.3] - 2026-03-29
