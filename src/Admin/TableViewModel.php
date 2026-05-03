@@ -68,6 +68,76 @@ class TableViewModel implements SeablastModelInterface
         return array(substr($string, 0, $position), substr($string, $position + 1));
     }
 
+    /// compare to             $columnTypes = $this->adminHelper->columnTypes(
+    //                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+    //          );
+
+    /**
+     * Get boolean-like columns of a table.
+     *
+     * @param string $tableName
+     * @return array<string, bool>
+     */
+    private function booleanLikeColumns(string $tableName): array
+    {
+        $columns = $this->columnTypes($tableName);
+        Debugger::barDump($columns, 'column Types new');
+        $result = [];
+
+        foreach ($columns as $column) {
+            Assert::scalar($column['COLUMN_NAME']);
+            $columnName = (string) $column['COLUMN_NAME'];
+            $result[$columnName] = !empty($column['IS_BOOLEAN_LIKE']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get information about table columns including their SQL type.
+     *
+     * @param string $tableName
+     * @return array<int, array<string, mixed>>
+     */
+    private function columnTypes(string $tableName): array
+    {
+        $fullTableName = $this->configuration->dbmsTablePrefix() . $tableName;
+
+        $query = "SELECT
+        COLUMN_NAME,
+        DATA_TYPE,
+        COLUMN_TYPE,
+        IS_NULLABLE,
+        COLUMN_DEFAULT,
+        COLUMN_KEY,
+        EXTRA
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = '" . $this->configuration->mysqli()->real_escape_string($fullTableName) . "'
+    ORDER BY ORDINAL_POSITION;";
+
+        $result = $this->configuration->mysqli()->query($query);
+        $columnTypes = [];
+
+        if ($result && is_object($result)) {
+            while ($row = $result->fetch_assoc()) {
+                $columnType = isset($row['COLUMN_TYPE']) ? strtolower((string) $row['COLUMN_TYPE']) : '';
+                $dataType = isset($row['DATA_TYPE']) ? strtolower((string) $row['DATA_TYPE']) : '';
+
+                $row['IS_BOOLEAN_LIKE'] = (
+                    $columnType === 'tinyint(1)' || $columnType === 'tinyint(1) unsigned' || $columnType === 'bit(1)' //
+                    || $dataType === 'boolean' || $dataType === 'bool'
+                    ) ? 1 : 0;
+
+                $columnTypes[] = $row;
+            }
+
+            $result->free();
+        }
+
+        return $columnTypes;
+    }
+
     /**
      * Get the foreign keys information.
      *
@@ -115,7 +185,10 @@ WHERE
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         Debugger::barDump($foreignKeys, 'foreignKeys');
-
+        Debugger::barDump(
+            $this->booleanLikeColumns($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)),
+            'boolean like'
+        );
         // Get order and conditions from GET parameters
         $order = isset($this->superglobals->get['order']) ? $this->superglobals->get['order'] : '';
         $conditions = [];
@@ -126,6 +199,7 @@ WHERE
             $columnTypes = $this->adminHelper->columnTypes(
                 $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
             );
+            Debugger::barDump($columnTypes, 'column Types Existing');
             // TODO equals operator by column type
             // Add conditions and order clauses (this logic can be expanded as needed)
             // Add WHERE clauses based on conditions (this is simplified for the example)
@@ -193,7 +267,8 @@ WHERE
             . 'FROM `' . $this->configuration->dbmsTablePrefix()
             . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE) . '` '
             . $sql
-            . ' LIMIT 0,50'
+            // todo allow paging
+            . ' LIMIT 0,200'
         );
         $data = [];
         // Fetch each row and add it to the $data array
@@ -204,12 +279,12 @@ WHERE
             }
         }
         return (object) [
-            // meta-data
-            'columns' => $columns,
-            'editable' => $cols['edit'] ?? [],
-            'conditionDetails' => $conditionDetails,
-            // data
-            'table' => $data,
+                // meta-data
+                'columns' => $columns,
+                'editable' => $cols['edit'] ?? [],
+                'conditionDetails' => $conditionDetails,
+                // data
+                'table' => $data,
         ];
     }
 }

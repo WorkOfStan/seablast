@@ -22,6 +22,14 @@
         --accent2: #7c5cff;
       }
 
+      html {
+        width: 100%;
+        min-height: 100%;
+        overflow: hidden;
+        overflow: clip;
+        overscroll-behavior: none;
+      }
+
       * {
         box-sizing: border-box;
       }
@@ -29,6 +37,9 @@
       body {
         margin: 0;
         min-height: 100vh;
+        min-height: 100svh;
+        width: 100%;
+        position: relative;
         font-family:
           "Source Sans 3",
           system-ui,
@@ -43,8 +54,10 @@
           linear-gradient(160deg, var(--bg1), var(--bg2));
         display: grid;
         place-items: center;
-        padding: 24px;
+        padding: clamp(16px, 4vw, 24px);
         overflow: hidden;
+        overflow: clip;
+        overscroll-behavior: none;
       }
 
       /* subtle floating blobs */

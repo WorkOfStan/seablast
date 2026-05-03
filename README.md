@@ -267,9 +267,9 @@ All JSON calls and form submits MUST contain `csrfToken` handed over to the view
 ## Stack
 
 - PHP >=7.2 <8.6
-- [Latte](http://latte.nette.org/) `>=2.10.8 <4`: For templating.
+- [Latte](http://latte.nette.org/) `>=2.10.8 <3.1`: For templating.
 - [MySQL](https://dev.mysql.com/)/[MariaDB](http://mariadb.com): For database backend.
-- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9`: For debugging.
+- [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9 || ^2.11.0`: For debugging.
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): A trait that helps enforce strict PHP behavior.
 - [jQuery](https://jquery.com/) 3.7.1: As a JavaScript framework.
 - [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): For language switching (used by [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n)).
