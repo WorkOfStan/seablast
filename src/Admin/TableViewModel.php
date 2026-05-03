@@ -125,7 +125,8 @@ class TableViewModel implements SeablastModelInterface
                 $dataType = isset($row['DATA_TYPE']) ? strtolower((string) $row['DATA_TYPE']) : '';
 
                 $row['IS_BOOLEAN_LIKE'] = (
-                    $columnType === 'tinyint(1)' || $columnType === 'tinyint(1) unsigned' || $columnType === 'bit(1)' || $dataType === 'boolean' || $dataType === 'bool'
+                    $columnType === 'tinyint(1)' || $columnType === 'tinyint(1) unsigned' || $columnType === 'bit(1)' //
+                    || $dataType === 'boolean' || $dataType === 'bool'
                     ) ? 1 : 0;
 
                 $columnTypes[] = $row;
@@ -184,7 +185,10 @@ WHERE
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         Debugger::barDump($foreignKeys, 'foreignKeys');
-        Debugger::barDump($this->booleanLikeColumns($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)), 'boolean like');
+        Debugger::barDump(
+            $this->booleanLikeColumns($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)),
+            'boolean like'
+        );
         // Get order and conditions from GET parameters
         $order = isset($this->superglobals->get['order']) ? $this->superglobals->get['order'] : '';
         $conditions = [];
