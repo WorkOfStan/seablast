@@ -85,6 +85,7 @@ class TableViewModel implements SeablastModelInterface
         $result = [];
 
         foreach ($columns as $column) {
+            Assert::scalar($column['COLUMN_NAME']);
             $columnName = (string) $column['COLUMN_NAME'];
             $result[$columnName] = !empty($column['IS_BOOLEAN_LIKE']);
         }
