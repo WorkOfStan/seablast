@@ -17,9 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
-- fix: clamp the standalone `under-construction.html` page to the mobile viewport and clip root overflow so phones do not pan into empty space around the centered card
-
 ### `Security` in case of vulnerabilities
+
+## [0.2.17.4] - 2026-05-03
+
+feat: allow up to 200 records listed in admin view
+
+### Changed
+
+- TableViewModel.php: change limit from 50 to 200 records to be listed in admin view
+
+### Fixed
+
+- fix: clamp the standalone `under-construction.html` page to the mobile viewport and clip root overflow so phones do not pan into empty space around the centered card
 
 ## [0.2.17.3] - 2026-03-29
 
@@ -510,7 +520,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.4...HEAD?w=1
+[0.2.17.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...v0.2.17.4?w=1
 [0.2.17.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...v0.2.17.3?w=1
 [0.2.17.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...v0.2.17.2?w=1
 [0.2.17.1]: https://github.com/WorkOfStan/seablast/compare/v0.2.17...v0.2.17.1?w=1
