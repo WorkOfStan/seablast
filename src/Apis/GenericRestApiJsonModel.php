@@ -23,6 +23,9 @@ class GenericRestApiJsonModel implements SeablastModelInterface
 {
     use \Nette\SmartObject;
 
+    /** @var int Maximum JSON request body size in bytes */
+    protected const JSON_INPUT_MAX_BYTES = 1048576;
+
     /** @ var array<mixed> Resulting knowledge. */
     //todo move to SBdist//private $businessLogicResult;
 
@@ -88,15 +91,30 @@ class GenericRestApiJsonModel implements SeablastModelInterface
      */
     private function processInput(): void
     {
+        $jsonInputInjected = $this->configuration->exists(SeablastConstant::JSON_INPUT);
+        if (!$jsonInputInjected) {
+            if ($this->contentLengthExceedsLimit()) {
+                $this->rejectInput(413, 'JSON input exceeds the maximum allowed size.');
+                return;
+            }
+            if (!$this->hasJsonContentType()) {
+                $this->rejectInput(415, 'Unsupported content type.');
+                return;
+            }
+        }
         // Read JSON from standard input if not pre-prepared
-        $jsonInput = $this->configuration->exists(SeablastConstant::JSON_INPUT)
+        $jsonInput = $jsonInputInjected
             ? $this->configuration->getString(SeablastConstant::JSON_INPUT)
-            : file_get_contents('php://input');
+            : $this->readJsonInput();
         if (!is_string($jsonInput)) {
             Debugger::barDump(["Either JSON_INPUT or php://input isn't string", $jsonInput], 'ERROR on input');
             Debugger::log("Either JSON_INPUT or php://input isn't string", ILogger::ERROR);
             $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid input';
+            return;
+        }
+        if (strlen($jsonInput) > static::JSON_INPUT_MAX_BYTES) {
+            $this->rejectInput(413, 'JSON input exceeds the maximum allowed size.');
             return;
         }
         $jsonDecoded = json_decode($jsonInput);
@@ -168,6 +186,78 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             $this->message = 'CSRF token mismatch';
             return;
         }
+    }
+
+    /**
+     * Checks whether the announced request body size is too large.
+     *
+     * @return bool
+     */
+    private function contentLengthExceedsLimit(): bool
+    {
+        if (!isset($this->superglobals->server['CONTENT_LENGTH'])) {
+            return false;
+        }
+        if (!is_scalar($this->superglobals->server['CONTENT_LENGTH'])) {
+            return false;
+        }
+        $contentLength = trim((string) $this->superglobals->server['CONTENT_LENGTH']);
+        if ($contentLength === '' || !ctype_digit($contentLength)) {
+            return false;
+        }
+        return (int) $contentLength > static::JSON_INPUT_MAX_BYTES;
+    }
+
+    /**
+     * Checks whether request Content-Type is JSON.
+     *
+     * @return bool
+     */
+    private function hasJsonContentType(): bool
+    {
+        $contentType = $this->superglobals->server['CONTENT_TYPE']
+            ?? $this->superglobals->server['HTTP_CONTENT_TYPE']
+            ?? '';
+        if (!is_scalar($contentType)) {
+            return false;
+        }
+        $mediaTypeParts = explode(';', (string) $contentType, 2);
+        $mediaType = strtolower(trim($mediaTypeParts[0]));
+        if ($mediaType === 'application/json') {
+            return true;
+        }
+        return strpos($mediaType, '/') !== false && substr($mediaType, -5) === '+json';
+    }
+
+    /**
+     * Read only the maximum accepted JSON bytes plus one byte to detect overflow.
+     *
+     * @return string|false
+     */
+    private function readJsonInput()
+    {
+        $stream = fopen('php://input', 'rb');
+        if ($stream === false) {
+            return false;
+        }
+        $jsonInput = fread($stream, static::JSON_INPUT_MAX_BYTES + 1);
+        fclose($stream);
+        return $jsonInput;
+    }
+
+    /**
+     * Populate a generic API validation error.
+     *
+     * @param int $httpCode
+     * @param string $message
+     * @return void
+     */
+    private function rejectInput(int $httpCode, string $message): void
+    {
+        Debugger::barDump($message, 'ERROR on input');
+        Debugger::log($message, ILogger::ERROR);
+        $this->httpCode = $httpCode;
+        $this->message = $message;
     }
 
     /**

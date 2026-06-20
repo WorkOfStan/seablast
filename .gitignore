@@ -3,10 +3,11 @@
 !/cache/.htaccess
 /log/*
 !/log/.htaccess
-/.sass-cache/
+/.composer-cache
 /.php_cs.cache
 /.php-cs-fixer.cache
 /.phpunit.result.cache
+/.sass-cache/
 
 #disable private local files
 *.local.php

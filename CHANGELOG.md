@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+- Harden JSON API input handling with content-type and body-size checks before decoding, and hide Composer/root dot metadata through Apache rules.
+
 ## [0.2.17.4] - 2026-05-03
 
 feat: allow up to 200 records listed in admin view

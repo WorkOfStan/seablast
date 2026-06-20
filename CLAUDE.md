@@ -139,6 +139,8 @@ Important consequences:
 Current behavior:
 
 - requires `REQUEST_METHOD` in `Superglobals->server`
+- for real HTTP input, requires JSON `Content-Type` before reading the body
+- rejects real or injected JSON input over 1 MiB before decoding
 - reads JSON from `php://input`, or from `SeablastConstant::JSON_INPUT` when injected for tests
 - accepts only a decoded JSON object
 - requires `csrfToken`
@@ -148,6 +150,8 @@ Default error behavior:
 
 - `400` for invalid JSON or wrong payload shape
 - `401` for missing or invalid CSRF token
+- `413` for JSON request bodies over 1 MiB
+- `415` for missing or non-JSON `Content-Type`
 
 Applications extending this class should call `parent::knowledge()` first and stop when it already returns `httpCode >= 400`.
 

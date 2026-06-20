@@ -9,6 +9,8 @@ RewriteRule ^src(/|$) - [R=404,L]
 RedirectMatch 404 \/tests\/
 RedirectMatch 404 \/views\/
 # hide these files
+RedirectMatch 404 (^|/)composer\.(json|lock)$
+RedirectMatch 404 (^|/)\.phpunit\.result\.cache$
 RedirectMatch 404 phpstan\.neon\.dist
 RedirectMatch 404 phpunit\.xml
 # hide files with these extensions
@@ -17,4 +19,5 @@ RedirectMatch 404 \.neon$
 RedirectMatch 404 \.sh$
 RedirectMatch 404 \.yml$
 # hide all the files in any directory that have no filename but only an extension (like .prettierignore)
-RedirectMatch 404 /(\.[^.]+)$
+# hide all dotfiles in any directory, including multi-dot files like .phpunit.result.cache
+RedirectMatch 404 (^|/)\.[^/]+$

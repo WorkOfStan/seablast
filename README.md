@@ -263,6 +263,7 @@ This feature applies to all fields with the same name across all tables (field n
 ## Security
 
 All JSON calls and form submits MUST contain `csrfToken` handed over to the view layer in the `$csrfToken` string latte variable.
+JSON API calls using `GenericRestApiJsonModel` MUST send a JSON `Content-Type` header and stay within the default 1 MiB request body limit.
 
 ## Stack
 
