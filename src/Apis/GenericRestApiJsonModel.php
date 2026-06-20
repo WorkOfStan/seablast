@@ -240,7 +240,9 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         if ($stream === false) {
             return false;
         }
-        $jsonInput = fread($stream, static::JSON_INPUT_MAX_BYTES + 1);
+        $readLength = static::JSON_INPUT_MAX_BYTES + 1;
+        Assert::greaterThanEq($readLength, 1);
+        $jsonInput = fread($stream, $readLength);
         fclose($stream);
         return $jsonInput;
     }

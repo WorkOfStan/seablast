@@ -2,6 +2,7 @@
 
 [![Total Downloads](https://img.shields.io/packagist/dt/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 [![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
+[![Polish the code](https://github.com/WorkOfStan/seablast/actions/workflows/polish-the-code.yml/badge.svg)](https://github.com/WorkOfStan/seablast/actions/workflows/polish-the-code.yml)
 
 This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex, yet easy to maintain, web application by configuration ONLY:
 

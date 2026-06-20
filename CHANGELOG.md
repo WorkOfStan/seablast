@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- Fix PHPStan type inference for the bounded JSON API input read length.
+
 ### `Security` in case of vulnerabilities
 
 - Harden JSON API input handling with content-type and body-size checks before decoding, and hide Composer/root dot metadata through Apache rules.

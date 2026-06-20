@@ -29,16 +29,14 @@ class GenericRestApiJsonModelTest extends TestCase
     {
         $knowledge = $this->knowledgeForInjectedJson('{}');
 
-        $this->assertSame(401, $knowledge->httpCode);
-        $this->assertSame('CSRF token missing', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 401, 'CSRF token missing');
     }
 
     public function testInjectedJsonOverLimitReturnsPayloadTooLarge(): void
     {
         $knowledge = $this->knowledgeForInjectedJson(str_repeat(' ', self::JSON_INPUT_MAX_BYTES + 1));
 
-        $this->assertSame(413, $knowledge->httpCode);
-        $this->assertSame('JSON input exceeds the maximum allowed size.', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 413, 'JSON input exceeds the maximum allowed size.');
     }
 
     public function testUnsupportedContentTypeReturnsUnsupportedMediaType(): void
@@ -47,16 +45,14 @@ class GenericRestApiJsonModelTest extends TestCase
             'CONTENT_TYPE' => 'text/plain',
         ]);
 
-        $this->assertSame(415, $knowledge->httpCode);
-        $this->assertSame('Unsupported content type.', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 415, 'Unsupported content type.');
     }
 
     public function testMissingContentTypeReturnsUnsupportedMediaType(): void
     {
         $knowledge = $this->knowledgeForServer();
 
-        $this->assertSame(415, $knowledge->httpCode);
-        $this->assertSame('Unsupported content type.', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 415, 'Unsupported content type.');
     }
 
     public function testStructuredJsonContentTypeWithParametersIsAccepted(): void
@@ -65,8 +61,7 @@ class GenericRestApiJsonModelTest extends TestCase
             'CONTENT_TYPE' => 'application/problem+json; charset=utf-8',
         ]);
 
-        $this->assertSame(400, $knowledge->httpCode);
-        $this->assertSame('Syntax error', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 400, 'Syntax error');
     }
 
     public function testContentLengthOverLimitReturnsPayloadTooLarge(): void
@@ -76,16 +71,22 @@ class GenericRestApiJsonModelTest extends TestCase
             'CONTENT_LENGTH' => (string) (self::JSON_INPUT_MAX_BYTES + 1),
         ]);
 
-        $this->assertSame(413, $knowledge->httpCode);
-        $this->assertSame('JSON input exceeds the maximum allowed size.', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 413, 'JSON input exceeds the maximum allowed size.');
     }
 
     public function testMalformedJsonUnderLimitKeepsExistingParseError(): void
     {
         $knowledge = $this->knowledgeForInjectedJson('{');
 
-        $this->assertSame(400, $knowledge->httpCode);
-        $this->assertSame('Syntax error', $knowledge->rest->message);
+        $this->assertRestResponse($knowledge, 400, 'Syntax error');
+    }
+
+    private function assertRestResponse(stdClass $knowledge, int $httpCode, string $message): void
+    {
+        $this->assertSame($httpCode, $knowledge->httpCode);
+        $rest = $knowledge->rest;
+        $this->assertInstanceOf(stdClass::class, $rest);
+        $this->assertSame($message, $rest->message);
     }
 
     private function knowledgeForInjectedJson(string $jsonInput): stdClass
