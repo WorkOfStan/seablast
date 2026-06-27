@@ -229,7 +229,7 @@ WHERE
                 $booleanLikeColumnNames[] = $columnName;
             }
         }
-        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG        
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 4) { // Dump when severity INFO
             Debugger::barDump($cols, 'cols');
             Debugger::barDump($columns, 'columns');
             Debugger::barDump($foreignKeys, 'foreignKeys'); // dev    
