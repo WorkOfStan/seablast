@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- Introduce AGENTS.md and CLAUDE.md DRY combination
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 - Fix PHPStan type inference for the bounded JSON API input read length.
+- Validate admin boolean-like columns against stored values before exposing boolean metadata.
+- Expose only true boolean-like admin column names to the table view model.
 
 ### `Security` in case of vulnerabilities
 

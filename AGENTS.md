@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file is the maintainer and integration guide for `seablast/seablast`.
 It is written for two audiences:
@@ -353,7 +353,7 @@ If a change affects framework behavior that applications depend on, update all o
 
 - `README.md` for public usage guidance
 - `CHANGELOG.md` for release notes
-- `CLAUDE.md` for maintainer and integration detail
+- `AGENTS.md` for maintainer and integration detail
 - tests where the behavior is asserted
 
 That keeps Seablast honest for both maintainers and downstream applications.

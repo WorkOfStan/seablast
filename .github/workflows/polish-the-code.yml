@@ -33,11 +33,12 @@ jobs:
     # Limit the running time
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # checkout PR HEAD commit
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0 # required for merge-base check
+          # required for merge-base check
+          fetch-depth: 0
           persist-credentials: false
       - uses: commit-check/commit-check-action@v2
         env:
@@ -54,7 +55,7 @@ jobs:
 
   # Note: https://docs.github.com/en/actions/using-workflows/reusing-workflows The strategy property is not supported in any job that calls a reusable workflow.
   php-composer-unit-stan:
-    uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@v0.2.10
+    uses: WorkOfStan/seablast-actions/.github/workflows/php-composer-dependencies-reusable.yml@v0.2.11
     with:
       # JSON
       php-version: '["7.2", "7.3", "7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]'
@@ -95,11 +96,11 @@ jobs:
 
   super-linter:
     needs: phpcs-phpcbf
-    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.10
+    uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@v0.2.11
     with:
       # exclude third-party code
       filter-regex-exclude: ".*/assets/uls/.*"
       runs-on: "ubuntu-latest"
-      # todo fix fix assets/seablast.css and then allow again CSS validation
+      # todo fix assets/seablast.css and then allow again CSS validation
       validate-css: false
       validate-spell-codespell: true

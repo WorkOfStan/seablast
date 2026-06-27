@@ -4,13 +4,11 @@
 /log/*
 !/log/.htaccess
 /.composer-cache
-/.php_cs.cache
-/.php-cs-fixer.cache
-/.phpunit.result.cache
+/.*.cache
 /.sass-cache/
 
 #disable private local files
-*.local.php
+*.local.*
 
 #disable composer-managed libraries
 /vendor/
