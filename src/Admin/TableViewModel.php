@@ -222,9 +222,11 @@ WHERE
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         Debugger::barDump($foreignKeys, 'foreignKeys');
         $booleanLikeColumnNames = [];
-        foreach ($this->booleanLikeColumns(
-            $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
-        ) as $columnName => $isBooleanLike) {
+        foreach (
+            $this->booleanLikeColumns(
+                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+            ) as $columnName => $isBooleanLike
+        ) {
             if ($isBooleanLike) {
                 $booleanLikeColumnNames[] = $columnName;
             }
