@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+feat: expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
+
 ### `Added` for new features
+
+- expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
 
 ### `Changed` for changes in existing functionality
 

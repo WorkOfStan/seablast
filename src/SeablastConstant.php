@@ -179,6 +179,10 @@ class SeablastConstant
      */
     public const USER_GROUPS = 'SB:USER_GROUPS';
     /**
+     * @var string string[] list of fields that are boolean, hence should be represented by a checkbox
+     */
+    public const ADMIN_BOOLEAN_FIELDS = 'SB:ADMIN_BOOLEAN_FIELDS';
+    /**
      * @var string string[] list of fields that contain color, so that input type color is better than textarea
      */
     public const ADMIN_COLOR_FIELDS = 'SB:ADMIN_COLOR_FIELDS';

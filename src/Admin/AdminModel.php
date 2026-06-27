@@ -59,7 +59,7 @@ class AdminModel implements SeablastModelInterface
                 $insertable = false;
             } else {
                 $knowledge = (array) $this->tableContent->knowledge();
-                $table =  $knowledge['table'];
+                $table = $knowledge['table'];
                 $columns = $knowledge['columns'];
                 $editable = $knowledge['editable'];
                 $conditionDetails = $knowledge['conditionDetails'];
@@ -71,6 +71,8 @@ class AdminModel implements SeablastModelInterface
                     $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE),
                     $this->adminHelper->getAllowedTables(SeablastConstant::ADMIN_TABLE_INSERT_ROW)
                 );
+                // TableViewModel produce it, admin.latte consumes it
+                $this->configuration->setArrayString(SeablastConstant::ADMIN_BOOLEAN_FIELDS, $knowledge['booleanLike']);
             }
 
             return (object) [

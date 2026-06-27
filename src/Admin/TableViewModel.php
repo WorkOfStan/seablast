@@ -214,13 +214,10 @@ WHERE
     public function knowledge(): stdClass
     {
         $cols = $this->adminHelper->getAllowedColumns();
-        Debugger::barDump($cols, 'cols');
         $columns = array_merge($cols['view'] ?? [], $cols['edit'] ?? []);
-        Debugger::barDump($columns, 'columns');
-
+    
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
-        Debugger::barDump($foreignKeys, 'foreignKeys');
         // Boolean like columns uses a checkbox in the admin.latte
         $booleanLikeColumnNames = [];
         foreach (
@@ -231,6 +228,12 @@ WHERE
             if ($isBooleanLike) {
                 $booleanLikeColumnNames[] = $columnName;
             }
+        }
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG        
+            Debugger::barDump($cols, 'cols');
+            Debugger::barDump($columns, 'columns');
+            Debugger::barDump($foreignKeys, 'foreignKeys'); // dev    
+            Debugger::barDump($booleanLikeColumnNames, 'booleanLike');
         }
         // Get order and conditions from GET parameters
         $order = isset($this->superglobals->get['order']) ? $this->superglobals->get['order'] : '';
