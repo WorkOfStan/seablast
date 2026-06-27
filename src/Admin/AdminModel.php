@@ -72,7 +72,8 @@ class AdminModel implements SeablastModelInterface
                     $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE),
                     $this->adminHelper->getAllowedTables(SeablastConstant::ADMIN_TABLE_INSERT_ROW)
                 );
-                /* x* @phpstan-ignore staticMethod.alreadyNarrowedType */
+                Assert::isArray($knowledge['booleanLike']);
+                /* x* @phpstan-ignore staticMethod.alreadyNarrowedType */                
                 Assert::allString($knowledge['booleanLike']);
                 // TableViewModel produce it, admin.latte consumes it
                 $this->configuration->setArrayString(SeablastConstant::ADMIN_BOOLEAN_FIELDS, $knowledge['booleanLike']);
