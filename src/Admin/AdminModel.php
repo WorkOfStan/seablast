@@ -9,6 +9,7 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastModelInterface;
 use Seablast\Seablast\Superglobals;
 use stdClass;
+use Webmozart\Assert\Assert;
 
 /**
  * Retrieve items from database
