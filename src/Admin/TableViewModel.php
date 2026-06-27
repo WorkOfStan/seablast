@@ -221,6 +221,7 @@ WHERE
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         Debugger::barDump($foreignKeys, 'foreignKeys');
+        // Boolean like columns uses a checkbox in the admin.latte
         $booleanLikeColumnNames = [];
         foreach (
             $this->booleanLikeColumns(
