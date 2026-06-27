@@ -215,7 +215,7 @@ WHERE
     {
         $cols = $this->adminHelper->getAllowedColumns();
         $columns = array_merge($cols['view'] ?? [], $cols['edit'] ?? []);
-    
+
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
         // Boolean like columns uses a checkbox in the admin.latte
@@ -232,7 +232,7 @@ WHERE
         if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 4) { // Dump when severity INFO
             Debugger::barDump($cols, 'cols');
             Debugger::barDump($columns, 'columns');
-            Debugger::barDump($foreignKeys, 'foreignKeys'); // dev    
+            Debugger::barDump($foreignKeys, 'foreignKeys'); // dev
             Debugger::barDump($booleanLikeColumnNames, 'booleanLike');
         }
         // Get order and conditions from GET parameters
