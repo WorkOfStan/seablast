@@ -41,7 +41,9 @@ class TemplateSecurityTest extends TestCase
                     'crossorigin="anonymous"',
                     $scriptTag,
                     sprintf(
-                        'External script tag in %s must use anonymous CORS: %s', basename($templateFile), $scriptTag
+                        'External script tag in %s must use anonymous CORS: %s',
+                        basename($templateFile),
+                        $scriptTag
                     )
                 );
                 if (array_key_exists($scriptUrl, $expectedIntegrityByUrl)) {
@@ -49,8 +51,8 @@ class TemplateSecurityTest extends TestCase
                         sprintf('integrity="%s"', $expectedIntegrityByUrl[$scriptUrl]),
                         $scriptTag,
                         sprintf(
-                            'External script tag in %s must use the expected SRI hash: %s', 
-                            basename($templateFile), 
+                            'External script tag in %s must use the expected SRI hash: %s',
+                            basename($templateFile),
                             $scriptTag
                         )
                     );
