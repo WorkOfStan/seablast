@@ -20,7 +20,7 @@
             ];
         </script>
         {* jQuery is required if 'I18n:SHOW_LANGUAGE_SELECTOR' and for admin.latte, therefore it's linked by default. If you want ultraminimalist blueprint without jQuery, use your own within your app *}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>{* MUST be before send-auth-token and other scripts referred to within mainblock *}
         <script type="module" src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/seablast-bridge.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* so that seablast objects are ready before app code *}
         <header>
             <nav>

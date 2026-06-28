@@ -68,9 +68,10 @@ class TableViewModel implements SeablastModelInterface
         return array(substr($string, 0, $position), substr($string, $position + 1));
     }
 
-    /// compare to             $columnTypes = $this->adminHelper->columnTypes(
-    //                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
-    //          );
+    private function escapeIdentifier(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
 
     /**
      * Get boolean-like columns of a table.
@@ -92,6 +93,10 @@ class TableViewModel implements SeablastModelInterface
 
         return $result;
     }
+
+    /// TODO compare to $columnTypes = $this->adminHelper->columnTypes(
+    //                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+    //          ); ... isn't there an opportunity for a DRY refactor?
 
     /**
      * Get information about table columns including their SQL type.
@@ -118,21 +123,52 @@ class TableViewModel implements SeablastModelInterface
 
         $result = $this->configuration->mysqli()->query($query);
         $columnTypes = [];
+        $booleanLikeColumnIndexes = [];
 
         if ($result && is_object($result)) {
             while ($row = $result->fetch_assoc()) {
                 $columnType = isset($row['COLUMN_TYPE']) ? strtolower((string) $row['COLUMN_TYPE']) : '';
                 $dataType = isset($row['DATA_TYPE']) ? strtolower((string) $row['DATA_TYPE']) : '';
-
-                $row['IS_BOOLEAN_LIKE'] = (
+                Assert::scalar($row['COLUMN_NAME']);
+                $columnName = (string) $row['COLUMN_NAME'];
+                $isBooleanLike = (
                     $columnType === 'tinyint(1)' || $columnType === 'tinyint(1) unsigned' || $columnType === 'bit(1)' //
                     || $dataType === 'boolean' || $dataType === 'bool'
-                    ) ? 1 : 0;
+                );
+                $row['IS_BOOLEAN_LIKE'] = $isBooleanLike ? 1 : 0;
+                if ($isBooleanLike) {
+                    $booleanLikeColumnIndexes[$columnName] = count($columnTypes);
+                }
 
                 $columnTypes[] = $row;
             }
 
             $result->free();
+        }
+
+        if (!empty($booleanLikeColumnIndexes)) {
+            $checks = [];
+            foreach (array_keys($booleanLikeColumnIndexes) as $i => $columnName) {
+                $checks[] = 'COALESCE(MIN(' . $this->escapeIdentifier($columnName)
+                    . ' IS NULL OR ' . $this->escapeIdentifier($columnName)
+                    . ' IN (0,1)), 1) AS ' . $this->escapeIdentifier('b' . $i);
+            }
+
+            $booleanCheckResult = $this->configuration->mysqli()->query(
+                'SELECT ' . implode(', ', $checks)
+                . ' FROM ' . $this->escapeIdentifier($fullTableName)
+            );
+
+            if ($booleanCheckResult && is_object($booleanCheckResult)) {
+                $booleanCheckRow = $booleanCheckResult->fetch_assoc();
+                if (is_array($booleanCheckRow)) {
+                    foreach (array_keys($booleanLikeColumnIndexes) as $i => $columnName) {
+                        $columnTypes[$booleanLikeColumnIndexes[$columnName]]['IS_BOOLEAN_LIKE'] =
+                            !empty($booleanCheckRow['b' . $i]) ? 1 : 0;
+                    }
+                }
+                $booleanCheckResult->free();
+            }
         }
 
         return $columnTypes;
@@ -146,7 +182,7 @@ class TableViewModel implements SeablastModelInterface
      */
     private function foreignKeys(string $tableName): array
     {
-        //Query to List Foreign Keys in a Specific Table
+        // Query to List Foreign Keys in a Specific Table
         $query = "SELECT 
     TABLE_NAME, 
     COLUMN_NAME, 
@@ -178,17 +214,27 @@ WHERE
     public function knowledge(): stdClass
     {
         $cols = $this->adminHelper->getAllowedColumns();
-        Debugger::barDump($cols, 'cols');
         $columns = array_merge($cols['view'] ?? [], $cols['edit'] ?? []);
-        Debugger::barDump($columns, 'columns');
 
         // dev
         $foreignKeys = $this->foreignKeys($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE));
-        Debugger::barDump($foreignKeys, 'foreignKeys');
-        Debugger::barDump(
-            $this->booleanLikeColumns($this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)),
-            'boolean like'
-        );
+        // Boolean like columns uses a checkbox in the admin.latte
+        $booleanLikeColumnNames = [];
+        foreach (
+            $this->booleanLikeColumns(
+                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+            ) as $columnName => $isBooleanLike
+        ) {
+            if ($isBooleanLike) {
+                $booleanLikeColumnNames[] = $columnName;
+            }
+        }
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 4) { // Dump when severity INFO
+            Debugger::barDump($cols, 'cols');
+            Debugger::barDump($columns, 'columns');
+            Debugger::barDump($foreignKeys, 'foreignKeys'); // dev
+            Debugger::barDump($booleanLikeColumnNames, 'booleanLike');
+        }
         // Get order and conditions from GET parameters
         $order = isset($this->superglobals->get['order']) ? $this->superglobals->get['order'] : '';
         $conditions = [];
@@ -267,8 +313,8 @@ WHERE
             . 'FROM `' . $this->configuration->dbmsTablePrefix()
             . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE) . '` '
             . $sql
-            // todo allow paging
-            . ' LIMIT 0,200'
+            // todo allow paging instead of hard limit
+            . ' LIMIT 0,250'
         );
         $data = [];
         // Fetch each row and add it to the $data array
@@ -283,6 +329,7 @@ WHERE
                 'columns' => $columns,
                 'editable' => $cols['edit'] ?? [],
                 'conditionDetails' => $conditionDetails,
+                'booleanLike' => $booleanLikeColumnNames,
                 // data
                 'table' => $data,
         ];

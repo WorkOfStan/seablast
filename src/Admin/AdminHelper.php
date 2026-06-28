@@ -79,7 +79,7 @@ class AdminHelper
                 $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
             }
         }
-        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Log as severity DEBUG
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Dump when severity DEBUG
             Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
         }
         return $tables;

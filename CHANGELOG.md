@@ -19,6 +19,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.17.5] - 2026-06-28
+
+feat: expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
+
+### Added
+
+- expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
+
+### Changed
+
+- Introduce AGENTS.md and CLAUDE.md DRY combination
+- TableViewModel.php: change limit from 200 to 250 records to be listed in admin view
+- bump: Seablast Logger to v2.0.6
+
+### Fixed
+
+- Fix PHPStan type inference for the bounded JSON API input read length.
+- Validate admin boolean-like columns against stored values before exposing boolean metadata.
+- Expose only true boolean-like admin column names to the table view model.
+
+### Security
+
+- Harden JSON API input handling with content-type and body-size checks before decoding, and hide Composer/root dot metadata through Apache rules.
+- Harden CDN script loading with SRI and document that hashes are tied to exact CDN response bytes.
+
 ## [0.2.17.4] - 2026-05-03
 
 feat: allow up to 200 records listed in admin view
@@ -520,7 +545,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.4...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.5...HEAD?w=1
+[0.2.17.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.4...v0.2.17.5?w=1
 [0.2.17.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...v0.2.17.4?w=1
 [0.2.17.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...v0.2.17.3?w=1
 [0.2.17.2]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.1...v0.2.17.2?w=1
