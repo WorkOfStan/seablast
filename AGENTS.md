@@ -189,6 +189,22 @@ The layout also:
 - loads `assets/scripts/seablast-bridge.js`
 - optionally includes Seablast I18n ULS assets when the i18n flag is active
 
+### Template CDN Security
+
+External scripts loaded from CDN must use Subresource Integrity (SRI) and
+`crossorigin="anonymous"`.
+
+SRI hashes are tied to the exact URL and response bytes that the browser loads,
+not only to the library name and version. For example, the official jQuery SRI
+snippet for `https://code.jquery.com/jquery-3.7.1.min.js` does not match the
+Google CDN URL currently used by `BlueprintWeb.latte`:
+
+- `https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js`
+
+If a CDN URL changes, recompute the SRI hash for the new URL from the raw
+downloaded bytes. Do not compute it from decoded text, because even subtle byte
+differences make the browser reject the script.
+
 ## Authentication and Authorization
 
 If `SeablastConstant::SB_IDENTITY_MANAGER` is configured, the controller instantiates the class with:

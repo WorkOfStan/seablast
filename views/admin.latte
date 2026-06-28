@@ -122,7 +122,7 @@
 <script type="module" src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/seablast-bridge.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script>
 {* scripts using seablast objects MUST use defer, so that the expected objects are already defined *}
 <script defer src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/mit.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* initEditable(); *}
-<script src="https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register"></script>
+<script src="https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register" integrity="sha384-VtSHOatDaywsjcaoV86liUBBl28v5GV/w+ee6ls5ZXHWpbjiI2QuMc/r+JEYDILa" crossorigin="anonymous"></script>
 <script> {* todo make this an external js *}
     $(document).ready(function () {
 
