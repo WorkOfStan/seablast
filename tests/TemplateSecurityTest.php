@@ -15,8 +15,10 @@ class TemplateSecurityTest extends TestCase
         $this->assertNotFalse($templateFiles, 'Should be able to list bundled Latte templates.');
 
         $expectedIntegrityByUrl = [
-            'https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js' => 'sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs',
-            'https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register' => 'sha384-VtSHOatDaywsjcaoV86liUBBl28v5GV/w+ee6ls5ZXHWpbjiI2QuMc/r+JEYDILa',
+            'https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js' => //
+            'sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs',
+            'https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register' => //
+            'sha384-VtSHOatDaywsjcaoV86liUBBl28v5GV/w+ee6ls5ZXHWpbjiI2QuMc/r+JEYDILa',
         ];
         $externalScriptTagCount = 0;
 
@@ -38,13 +40,19 @@ class TemplateSecurityTest extends TestCase
                 $this->assertStringContainsString(
                     'crossorigin="anonymous"',
                     $scriptTag,
-                    sprintf('External script tag in %s must use anonymous CORS: %s', basename($templateFile), $scriptTag)
+                    sprintf(
+                        'External script tag in %s must use anonymous CORS: %s', basename($templateFile), $scriptTag
+                    )
                 );
                 if (array_key_exists($scriptUrl, $expectedIntegrityByUrl)) {
                     $this->assertStringContainsString(
                         sprintf('integrity="%s"', $expectedIntegrityByUrl[$scriptUrl]),
                         $scriptTag,
-                        sprintf('External script tag in %s must use the expected SRI hash: %s', basename($templateFile), $scriptTag)
+                        sprintf(
+                            'External script tag in %s must use the expected SRI hash: %s', 
+                            basename($templateFile), 
+                            $scriptTag
+                        )
                     );
                 }
             }
