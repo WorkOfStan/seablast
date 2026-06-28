@@ -13,6 +13,7 @@ This minimalist MVC framework added by [composer](https://getcomposer.org/) help
 The framework takes care of logs, database, multiple languages, user friendly HTTP errors, friendly URL.
 
 - See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repository.
+- AI agents and application builders should start with [AGENT-STARTER-KIT.md](AGENT-STARTER-KIT.md), which describes the practical app structure, routing, models, templates, CSRF, uploads, downloads, and testing expectations.
 
 ## Configuration
 
@@ -33,7 +34,7 @@ SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
 The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
 
 - If model replies with `rest` property, API response is triggered instead of HTML UI. If the default HTTP code should be changed, set it up in the `httpCode` property.
-- If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302 or 303 by the `httpCode` property.
+- If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302, 303, 307, or 308 by the `httpCode` property.
 - If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
 
 ```php

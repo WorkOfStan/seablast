@@ -26,18 +26,23 @@ feat: expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
 ### Added
 
 - expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
+- Add `AGENT-STARTER-KIT.md` as an application-builder guide for AI agents using Seablast.
+- Add PHPUnit coverage for HTML error rendering without a JSON REST payload.
 
 ### Changed
 
 - Introduce AGENTS.md and CLAUDE.md DRY combination
 - TableViewModel.php: change limit from 200 to 250 records to be listed in admin view
 - bump: Seablast Logger to v2.0.6
+- Clarify the documentation split between maintainer guidance and app-builder guidance.
+- Clarify redirect documentation to include the supported 307 and 308 status codes.
 
 ### Fixed
 
 - Fix PHPStan type inference for the bounded JSON API input read length.
 - Validate admin boolean-like columns against stored values before exposing boolean metadata.
 - Expose only true boolean-like admin column names to the table view model.
+- Guard the HTTP error Tracy panel against missing REST payloads for HTML error responses.
 
 ### Security
 

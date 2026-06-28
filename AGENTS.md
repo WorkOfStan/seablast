@@ -1,12 +1,21 @@
 # AGENTS.md
 
 This file is the maintainer and integration guide for `seablast/seablast`.
-It is written for two audiences:
+It is written primarily for maintainers changing the framework itself and for framework integrators who need to preserve Seablast's real runtime contract.
 
-- maintainers changing the framework itself
-- applications that build on top of Seablast and need to understand its real runtime contract
+Agents building applications on top of Seablast should start with `AGENT-STARTER-KIT.md` and return here only when they need deeper framework behavior.
 
 This document describes the current behavior of the codebase, including important caveats that are not obvious from the marketing-level `README.md` alone.
+
+## Companion Documentation
+
+Use these documents for the intended audience:
+
+- `AGENTS.md`: framework maintenance, internal contracts, and integration caveats
+- `AGENT-STARTER-KIT.md`: AI agents building or migrating applications that use Seablast as a dependency
+- `README.md`: public human-facing overview and usage guidance
+
+When changing app-facing behavior, keep `AGENT-STARTER-KIT.md` aligned with `AGENTS.md` so downstream agents do not learn stale application patterns.
 
 ## What Seablast Is
 
@@ -368,6 +377,7 @@ Important test assumptions:
 If a change affects framework behavior that applications depend on, update all of these together:
 
 - `README.md` for public usage guidance
+- `AGENT-STARTER-KIT.md` for AI agents building or migrating apps
 - `CHANGELOG.md` for release notes
 - `AGENTS.md` for maintainer and integration detail
 - tests where the behavior is asserted
