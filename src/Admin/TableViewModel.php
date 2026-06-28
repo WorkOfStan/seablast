@@ -73,10 +73,6 @@ class TableViewModel implements SeablastModelInterface
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
-    /// compare to             $columnTypes = $this->adminHelper->columnTypes(
-    //                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
-    //          );
-
     /**
      * Get boolean-like columns of a table.
      *
@@ -97,6 +93,10 @@ class TableViewModel implements SeablastModelInterface
 
         return $result;
     }
+
+    /// TODO compare to $columnTypes = $this->adminHelper->columnTypes(
+    //                $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE)
+    //          ); ... isn't there an opportunity for a DRY refactor?
 
     /**
      * Get information about table columns including their SQL type.
@@ -182,7 +182,7 @@ class TableViewModel implements SeablastModelInterface
      */
     private function foreignKeys(string $tableName): array
     {
-        //Query to List Foreign Keys in a Specific Table
+        // Query to List Foreign Keys in a Specific Table
         $query = "SELECT 
     TABLE_NAME, 
     COLUMN_NAME, 
@@ -313,7 +313,7 @@ WHERE
             . 'FROM `' . $this->configuration->dbmsTablePrefix()
             . $this->configuration->getString(SeablastConstant::APP_SELECTED_TABLE) . '` '
             . $sql
-            // todo allow paging
+            // todo allow paging instead of hard limit
             . ' LIMIT 0,250'
         );
         $data = [];
