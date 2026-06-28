@@ -210,13 +210,10 @@ class SeablastView
             return;
         }
 
+        $rest = $this->params->rest ?? null;
         $httpBarPanel = new BarPanelTemplate(
             'HTTP: ' . $this->params->httpCode,
-            (
-                (($this->params->rest instanceof \stdClass) || is_object($this->params->rest))
-                && isset($this->params->rest->message)
-            )
-            ? ['message' => $this->params->rest->message] : []
+            (is_object($rest) && isset($rest->message)) ? ['message' => $rest->message] : []
         );
         $httpBarPanel->setError();
         Debugger::getBar()->addPanel($httpBarPanel);

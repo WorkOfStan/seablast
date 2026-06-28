@@ -89,6 +89,36 @@ class SeablastViewTest extends TestCase
         $this->assertStringStartsWith('<!doctype html>', $output);
     }
 
+    public function testHtmlErrorWithoutRestPayloadRendersErrorTemplate(): void
+    {
+        $this->configuration
+            ->setInt(SeablastConstant::ERROR_HTTP_CODE, 404)
+            ->setString(SeablastConstant::ERROR_MESSAGE, 'Not found')
+        ;
+        $this->controller->mapping = [
+            'template' => 'item',
+            'model' => '\Seablast\Seablast\Models\ErrorModel',
+        ];
+        $model = new SeablastModel($this->controller, new Superglobals());
+        $output = false;
+        $bufferLevel = ob_get_level();
+
+        ob_start();
+        try {
+            new SeablastView($model);
+            $output = ob_get_clean();
+        } finally {
+            while (ob_get_level() > $bufferLevel) {
+                ob_end_clean();
+            }
+            http_response_code(200);
+        }
+
+        $this->assertNotFalse($output, 'Should contain HTML error output.');
+        $this->assertStringStartsWith('<!doctype html>', $output);
+        $this->assertStringContainsString('Not found', $output);
+    }
+
     public function testGetTemplatePathThrowsMissingTemplateException(): void
     {
         $this->expectException(MissingTemplateException::class);

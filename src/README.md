@@ -1,5 +1,8 @@
 # Seablast Logic Overview
 
+This source-level overview describes the framework runtime flow.
+Agents building applications with Seablast should start with the root [AGENT-STARTER-KIT.md](../AGENT-STARTER-KIT.md).
+
 1. **SeablastSetup**: Combines various configuration files into a unified configuration.
 
 2. **SeablastController**: Applies the configuration and determines the appropriate mapping based on the URL and superglobals. The mapping is retrieved from `APP_MAPPING` and assigned to `string[] mapping`. If `mapping['roleIds']` is set, the IdentityManager comes into play here.
