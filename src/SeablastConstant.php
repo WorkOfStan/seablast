@@ -39,6 +39,12 @@ class SeablastConstant
      * @var string session_set_cookie_params(10800, '/');
      */
     public const SB_SESSION_SET_COOKIE_PARAMS_PATH = 'SB_SESSION_SET_COOKIE_PARAMS_PATH';
+    /** @var string Session SameSite policy: Lax (default), Strict, or None (HTTPS only). */
+    public const SB_SESSION_SET_COOKIE_PARAMS_SAMESITE = 'SB_SESSION_SET_COOKIE_PARAMS_SAMESITE';
+    /** @var string Explicit cookie domain; empty means host-only. */
+    public const SB_SESSION_SET_COOKIE_PARAMS_DOMAIN = 'SB_SESSION_SET_COOKIE_PARAMS_DOMAIN';
+    /** @var string Exact proxy IP allow-list for X-Forwarded-For and X-Forwarded-Proto. */
+    public const SB_TRUSTED_PROXIES = 'SB_TRUSTED_PROXIES';
     /**
      * @var string setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
      */

@@ -20,6 +20,8 @@ class SeablastController
 
     /** @var SeablastConfiguration */
     private $configuration;
+    /** @var SeablastRequestContext */
+    private $requestContext;
     /** @var IdentityManagerInterface|null */
     private $identity = null;
     /** @var Logger|null */
@@ -39,18 +41,29 @@ class SeablastController
      *
      * @param SeablastConfiguration $configuration
      * @param Superglobals $superglobals
+     * @param SeablastRequestContext|null $requestContext Shared bootstrap snapshot.
      */
-    public function __construct(SeablastConfiguration $configuration, Superglobals $superglobals)
-    {
+    public function __construct(
+        SeablastConfiguration $configuration,
+        Superglobals $superglobals,
+        ?SeablastRequestContext $requestContext = null
+    ) {
         // Wrapped _GET, _POST, _SERVER and _SESSION for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
+        $this->requestContext = $requestContext ?? new SeablastRequestContext($configuration, $superglobals->server);
+        $cookie = new SeablastSessionCookie(
+            $configuration,
+            $this->requestContext,
+            $this->getAppPath(),
+            $this->getAppHostWithoutPort()
+        );
         Debugger::barDump($this->configuration, 'Configuration at SeablastController start');
-        $this->pageUnderConstruction();
         $this->applyConfigurationRegardlessSession(); // before session, so that cookie path limited to app folder
         if (session_status() === PHP_SESSION_NONE) {
             // Controller can be fired up multiple times in PHPUnit, but this part may run only once
             $this->applyConfigurationBeforeSession();
+            $cookie->apply();
         } else {
             $serverPhpSelf = $_SERVER['PHP_SELF'];
             Assert::string($serverPhpSelf);
@@ -58,6 +71,10 @@ class SeablastController
                 'Session already started: not invoking applyConfigurationBeforeSession by ' . $serverPhpSelf,
                 ILogger::INFO
             );
+        }
+        $this->pageUnderConstruction();
+        if (session_status() === PHP_SESSION_NONE) {
+            $this->startSession();
         }
         $this->route();
     }
@@ -74,7 +91,7 @@ class SeablastController
         $configurationOrder = [
             SeablastConstant::SB_ERROR_REPORTING,
             SeablastConstant::SB_SESSION_SET_COOKIE_LIFETIME,
-            SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME,
+            // Cookie lifetime/path are now validated and applied by SeablastSessionCookie.
             //SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH, // required if _LIFETIME
             SeablastConstant::SB_SETLOCALE_CATEGORY,
             //SeablastConstant::SB_SETLOCALE_LOCALES, // required if _CATEGORY
@@ -96,39 +113,6 @@ class SeablastController
                         ini_set('session.gc_divisor', '100');
                         ini_set('session.gc_maxlifetime', strval(2 * $this->configuration->getInt($property)));
                         ini_set('session.cookie_lifetime', strval($this->configuration->getInt($property)));
-                        break;
-                    case SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME:
-                        if (
-                            !$this->configuration->exists(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) ||
-                            ($this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH) //
-                            === '')
-                        ) {
-                            $this->configuration->setString(
-                                SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
-                                // empty path defaults to the current directory, while the path to the app is required
-                                ($this->getAppPath() === '') ? '/' : $this->getAppPath()
-                            );
-                        }
-                        //  use '1' for true and '0' for false; alternatively 'On' as true, and 'Off' as false
-                        //ini_set('session.cookie_httponly', '1');
-                        session_set_cookie_params(
-                            $this->configuration->getInt($property), // int $lifetime_or_options,
-                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH), //
-                            // ?string $path = null,
-                            $this->getAppHostWithoutPort(), // ?string $domain = null,
-                            $this->isHttps($this->superglobals->server), // ?bool $secure = null,
-                            true // ?bool $httponly = null
-                        );
-                        // TODO session_set_cookie_params cookie debugging DRY
-                        Debugger::barDump(['lifetime' => $this->configuration->getInt($property),
-                            'path' =>
-                            $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH),
-                            'domain' => $this->getAppHostWithoutPort(),
-                            'secure' => isset($this->superglobals->server['REQUEST_SCHEME']) &&
-                            $this->superglobals->server['REQUEST_SCHEME'] === 'https',
-                            'httponly' => true,
-                            '_COOKIE' => $_COOKIE,
-                            ], 'session_set_cookie_params');
                         break;
                     case SeablastConstant::SB_SETLOCALE_CATEGORY:
                         if (!$this->configuration->exists(SeablastConstant::SB_SETLOCALE_LOCALES)) {
@@ -174,7 +158,6 @@ class SeablastController
                 }
             }
         }
-        $this->startSession();
     }
 
     /**
@@ -189,7 +172,7 @@ class SeablastController
         $this->configuration->setString(
             // Note: without trailing slash even for app root in domain root, i.e. https://www.service.com
             SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL,
-            'http' . ($this->isHttps($this->superglobals->server) ? 's' : '') . '://' .
+            'http' . ($this->requestContext->isHttps() ? 's' : '') . '://' .
             $this->getAppHost() .
             $this->getAppPath()
         );
@@ -274,46 +257,6 @@ class SeablastController
     }
 
     /**
-     * Checks whether the current request was made using HTTPS.
-     *
-     * This function supports detection of HTTPS in both Apache and Nginx environments,
-     * including setups behind reverse proxies or load balancers (e.g., Nginx, Cloudflare),
-     * by inspecting common server variables and headers.
-     *
-     * For maximum security when behind a proxy, you can pass a list of trusted proxy IPs
-     * to avoid spoofed headers like X-Forwarded-Proto.
-     *
-     * @param array<mixed> $server The $_SERVER array or a custom equivalent.
-     * @param array<string> $trustedProxies (optional) Array of trusted proxy IP addresses.
-     *                               When specified, proxy-related headers are trusted
-     *                               only if the request comes from one of these IPs.
-     *
-     * @return bool True if the request was made via HTTPS, false otherwise.
-     *
-     * @example
-     * isHttps($_SERVER); // Basic usage
-     * isHttps($_SERVER, ['192.168.1.1']); // Usage with trusted proxies
-     */
-    private function isHttps(array $server, array $trustedProxies = []): bool
-    {
-        $clientIp = $server['REMOTE_ADDR'] ?? '';
-
-        $proxyHeaders = (
-            (!empty($server['HTTP_X_FORWARDED_PROTO']) && is_string($server['HTTP_X_FORWARDED_PROTO'])
-              && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https') ||
-            (!empty($server['HTTP_X_FORWARDED_SSL']) && is_string($server['HTTP_X_FORWARDED_SSL'])
-              && strtolower($server['HTTP_X_FORWARDED_SSL']) === 'on')
-        );
-
-        return
-            (!empty($server['HTTPS']) && is_string($server['HTTPS']) && strtolower($server['HTTPS']) === 'on') ||
-            (!empty($server['REQUEST_SCHEME']) && is_string($server['REQUEST_SCHEME'])
-            && strtolower($server['REQUEST_SCHEME']) === 'https') ||
-            (!empty($server['SERVER_PORT']) && $server['SERVER_PORT'] == '443') ||
-            ($proxyHeaders && in_array($clientIp, $trustedProxies, true));
-    }
-
-    /**
      * Transform URL from friendly URL etc. to a parametric address that may be further interpreted.
      *
      * @param string $requestUri
@@ -390,16 +333,12 @@ class SeablastController
             return; // web is up
         }
         Debugger::barDump('UNDER_CONSTRUCTION!');
-        if (
-            in_array($this->superglobals->server['REMOTE_ADDR'], ['::1', '127.0.0.1']) ||
-            in_array(
-                $this->superglobals->server['REMOTE_ADDR'],
-                $this->configuration->getArrayString(SeablastConstant::DEBUG_IP_LIST)
-            )
-        ) {
+        if ($this->requestContext->isDebugAllowed()) {
             return; // admin can see the web even if it is down
         }
-        $this->startSession(); // because it couldn't be started sooner
+        if (session_status() === PHP_SESSION_NONE) {
+            $this->startSession(); // because it couldn't be started sooner
+        }
         //TODO TEST include from app, if it is present, otherwise use this default:
         include file_exists(APP_DIR . '/under-construction.html')
             ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';

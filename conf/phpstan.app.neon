@@ -3,6 +3,9 @@ parameters:
     excludePaths:
         analyseAndScan:
             - ../cache/*
+            # Runtime test fixtures and local tool artifacts are not application source.
+            - ../.tmp/*
+            - ../.composer-cache/*
         analyse:
           - ../vendor
     bootstrapFiles:

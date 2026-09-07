@@ -45,9 +45,9 @@ The runtime flow is:
 
 1. `defineAppDir.php` defines `APP_DIR`.
    If the library is executed from `vendor/seablast/seablast`, `APP_DIR` resolves to the application root.
-2. `index.php` loads `APP_DIR . '/vendor/autoload.php'`, enables Tracy, and creates `SeablastSetup`.
+2. `index.php` loads `APP_DIR . '/vendor/autoload.php'`, enables Tracy in production mode, and creates `SeablastSetup`.
 3. `SeablastSetup` builds a single `SeablastConfiguration` instance by loading configuration closures in precedence order.
-4. `SeablastController` applies environment configuration, derives runtime values, starts the session, resolves the route, and enforces authentication/authorization.
+4. Bootstrap resolves one `SeablastRequestContext` before selecting Tracy development mode and passes it to `SeablastController`. The controller validates cookie policy, applies environment configuration and cookie settings before session startup (including maintenance responses), derives runtime values, resolves the route, and enforces authentication/authorization.
 5. `SeablastModel` instantiates the mapped application model, calls `knowledge()`, and always injects a CSRF token into the returned parameters.
 6. `SeablastView` renders JSON, HTML, or redirect output and then exposes Tracy SQL and HTTP panels.
 
@@ -214,6 +214,67 @@ If a CDN URL changes, recompute the SRI hash for the new URL from the raw
 downloaded bytes. Do not compute it from decoded text, because even subtle byte
 differences make the browser reject the script.
 
+## Trusted Request Context and Session Policy
+
+`SeablastRequestContext` is immutable and accepts configuration plus a server-array
+snapshot. Its public accessors are `isHttps()`, `getClientIp(): ?string`, and
+`isDebugAllowed(): bool`. `SeablastController` accepts an optional third context
+argument; two-argument construction resolves the context internally. Custom
+bootstraps must share the same snapshot for their debug decision and controller.
+Catch `InvalidRequestContextException` as a generic HTTP 400 before output or
+session creation, as bundled `index.php` does. Invalid configuration raises
+`SeablastConfigurationException`; do not select development mode before the
+context is validated.
+
+Configure inside the application's configuration closure:
+
+```php
+$SBConfig
+    ->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['192.0.2.10'])
+    ->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7'])
+    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE, 'Lax')
+    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_DOMAIN, '');
+```
+
+Proxy trust defaults to an empty list. Proxy and debug lists require exact,
+normalized IPv4/IPv6 addresses; CIDRs, wildcards, and hostnames are errors.
+Keep `REMOTE_ADDR` as the transport peer, without web-server header rewriting.
+Untrusted peers cannot affect decisions through forwarding headers. Trusted peers
+must send one `X-Forwarded-Proto` value (`http` or `https`) and a nonempty
+`X-Forwarded-For` IP list. The external scheme overrides backend TLS indicators.
+The public edge must replace client-supplied metadata; subsequent trusted hops
+must preserve the verified external scheme and append actual upstream peers.
+Resolve clients right-to-left, stopping at the first untrusted address. An
+all-trusted chain resolves to null and grants no debug/maintenance access.
+Only the resolved client is compared with loopback and `DEBUG_IP_LIST`.
+
+Reject control characters, malformed IP entries, missing required proxy headers,
+scheme lists, schemes other than HTTP/HTTPS, proto values over 32 bytes, and
+client chains over 8192 bytes. Ignore `Forwarded`, `X-Forwarded-Host`,
+`X-Forwarded-Port`, and `X-Forwarded-Ssl`; do not auto-detect header families.
+SEC-003 remains open: URL authority still uses the current Host behavior.
+
+`SeablastSessionCookie` validates policy on construction, even for active sessions.
+Its `apply()` method must run before `session_start()`. Defaults are host-only
+(explicitly clearing inherited PHP Domain), HttpOnly, `SameSite=Lax`, and Secure
+on verified HTTPS. `Strict` and `None` are explicit choices; `None` requires HTTPS.
+Explicit domains must be valid DNS names matching the request hostname on a label
+boundary; a leading dot is normalized away. Paths reject controls and semicolons.
+The logical configured path never includes the legacy SameSite suffix.
+Applications starting sessions earlier must apply the policy themselves; core
+does not restart active sessions or retroactively change an issued cookie.
+Optional authentication-package cookies are outside this session-cookie policy.
+
+Review existing Domain cookies during upgrades: they may coexist with host-only
+cookies until expiry. Explicitly configure intentional subdomain sharing and
+arrange old-cookie expiry or session-name rotation when required.
+
+TODO PHP-7.2: When the minimum PHP version reaches 7.3, remove the legacy
+`session_set_cookie_params()` path-suffix branch in `SeablastSessionCookie::apply()`
+and its legacy-version coverage in `RequestContextHttpTest`; retain native cookie
+header, maintenance, and regeneration tests. The existing CI PHP matrix exercises
+the real bootstrap and cookie headers on PHP 7.2 and native-option versions.
+
 ## Authentication and Authorization
 
 If `SeablastConstant::SB_IDENTITY_MANAGER` is configured, the controller instantiates the class with:
@@ -317,7 +378,7 @@ These are part of the current reality and should be documented for app integrato
 
 If `FLAG_WEB_RUNNING` is not active, the controller serves `under-construction.html` and exits.
 
-Bypass rules:
+Bypass rules, evaluated against the verified request-context client IP:
 
 - localhost (`::1`, `127.0.0.1`)
 - IPs listed in `DEBUG_IP_LIST`
@@ -328,7 +389,7 @@ The application may override the static file by placing:
 
 ## Debugging and Logging
 
-Tracy is enabled in development mode for:
+Tracy is enabled in development mode for these verified request-context clients:
 
 - localhost
 - IPs listed in `DEBUG_IP_LIST`

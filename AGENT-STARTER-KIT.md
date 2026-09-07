@@ -184,6 +184,43 @@ Security defaults for app agents:
 - never stream a private file without a `realpath()` containment check
 - keep debug and Tracy development output limited to trusted environments
 
+### Trusted request context and cookies
+
+For direct deployments, keep `SB_TRUSTED_PROXIES` empty. For a proxy deployment,
+configure exact transport-peer IPs and the actual client addresses allowed to debug:
+
+```php
+$SBConfig
+    ->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['192.0.2.10'])
+    ->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7']);
+```
+
+Require the edge proxy to replace client-supplied forwarding values. Trusted
+proxies must provide a single external `X-Forwarded-Proto` (`http` or `https`)
+and a valid `X-Forwarded-For` IP list, appending verified upstream peers through
+multiple hops. Preserve `REMOTE_ADDR` as the transport peer. Missing or malformed
+trusted metadata returns HTTP 400 before sessions or application routing.
+Other forwarding headers are ignored; no CIDRs, wildcards, or automatic trust
+discovery are supported. The first untrusted IP found scanning from the right
+controls debug and maintenance access. Do not add the proxy to `DEBUG_IP_LIST`
+as a substitute for listing actual clients. An all-trusted chain grants no bypass.
+
+Default session cookies are host-only, HttpOnly, `SameSite=Lax`, and Secure on
+verified HTTPS. Use `SB_SESSION_SET_COOKIE_PARAMS_SAMESITE` for `Strict` or
+`None` (HTTPS required), and `SB_SESSION_SET_COOKIE_PARAMS_DOMAIN` only for
+intentional sharing across trusted subdomains. A configured domain must match
+the request hostname on a label boundary. Cookie paths reject control characters
+and semicolons. Maintenance responses use the same policy. Apps starting sessions
+early must apply it before `session_start()`; existing sessions are not restarted.
+
+During upgrades, review prior Domain cookies and subdomain sharing; old Domain
+and new host-only cookies can coexist until expiry. Plan explicit old-cookie
+expiry or a session-name rotation where needed. The optional auth package's
+cookies remain its responsibility. SEC-003 remains open: core still uses the
+incoming Host authority for URLs, so retain web-server host restrictions.
+PHP 7.2 support is retained; the `TODO PHP-7.2` note in `SeablastSessionCookie`
+and `AGENTS.md` marks the legacy SameSite path for later removal.
+
 ## Testing Checklist
 
 Useful app-level tests:
