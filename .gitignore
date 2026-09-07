@@ -6,6 +6,7 @@
 /.composer-cache
 /.*.cache
 /.sass-cache/
+/.tmp/
 
 #disable private local files
 *.local.*

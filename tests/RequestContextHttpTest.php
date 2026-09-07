@@ -58,9 +58,12 @@ class RequestContextHttpTest extends TestCase
         self::$process = $process;
         fclose($pipes[0]);
         for ($attempt = 0; $attempt < 100; $attempt++) {
-            $connection = @stream_socket_client('tcp://' . self::$address, $errno, $error, 0.1);
-            if (is_resource($connection)) {
-                fclose($connection);
+            $status = proc_get_status($process);
+            if (!$status['running']) {
+                throw new \RuntimeException('HTTP fixture server stopped during startup.');
+            }
+            $serverLog = file_get_contents(self::$app . '/server.log');
+            if (is_string($serverLog) && strpos($serverLog, 'Development Server') !== false) {
                 return;
             }
             usleep(50000);
@@ -72,6 +75,13 @@ class RequestContextHttpTest extends TestCase
     {
         if (is_resource(self::$process)) {
             proc_terminate(self::$process);
+            for ($attempt = 0; $attempt < 100; $attempt++) {
+                $status = proc_get_status(self::$process);
+                if (!$status['running']) {
+                    break;
+                }
+                usleep(50000);
+            }
             proc_close(self::$process);
         }
         // Clean only this fixture's known files; never traverse unrelated test directories.
@@ -89,13 +99,7 @@ class RequestContextHttpTest extends TestCase
         }
         $directories = ['/vendor/seablast/seablast', '/vendor/seablast', '/vendor', '/conf', '/log', '/sessions', ''];
         foreach ($directories as $dir) {
-            // Windows sync/indexing tools may briefly hold an already-empty directory open.
-            for ($attempt = 0; $attempt < 10; $attempt++) {
-                if (@rmdir(self::$app . $dir)) {
-                    break;
-                }
-                usleep(50000);
-            }
+            rmdir(self::$app . $dir);
         }
     }
 
