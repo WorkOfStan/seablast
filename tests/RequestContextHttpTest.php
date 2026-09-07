@@ -32,9 +32,14 @@ class RequestContextHttpTest extends TestCase
             . var_export($root . '/vendor/autoload.php', true) . '; require_once '
             . var_export(__DIR__ . '/RequestContextHttpModel.php', true) . ';');
         $socket = stream_socket_server('tcp://127.0.0.1:0');
-        self::assertIsResource($socket);
+        if (!is_resource($socket)) {
+            throw new \RuntimeException('Cannot reserve a port for the HTTP fixture server.');
+        }
         $address = stream_socket_get_name($socket, false);
-        self::assertIsString($address);
+        if (!is_string($address)) {
+            fclose($socket);
+            throw new \RuntimeException('Cannot determine the HTTP fixture server address.');
+        }
         self::$address = $address;
         fclose($socket);
         $command = escapeshellarg(PHP_BINARY)
@@ -47,7 +52,9 @@ class RequestContextHttpTest extends TestCase
             1 => ['file', self::$app . '/server.log', 'a'],
             2 => ['file', self::$app . '/server.log', 'a'],
         ], $pipes, $root, null, ['bypass_shell' => true]);
-        self::assertIsResource($process);
+        if (!is_resource($process)) {
+            throw new \RuntimeException('Cannot start the HTTP fixture server.');
+        }
         self::$process = $process;
         fclose($pipes[0]);
         for ($attempt = 0; $attempt < 100; $attempt++) {
@@ -58,7 +65,7 @@ class RequestContextHttpTest extends TestCase
             }
             usleep(50000);
         }
-        self::fail('HTTP fixture server did not start.');
+        throw new \RuntimeException('HTTP fixture server did not start.');
     }
 
     public static function tearDownAfterClass(): void
