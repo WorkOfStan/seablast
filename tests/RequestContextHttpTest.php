@@ -58,8 +58,7 @@ class RequestContextHttpTest extends TestCase
         self::$process = $process;
         fclose($pipes[0]);
         for ($attempt = 0; $attempt < 100; $attempt++) {
-            $status = proc_get_status($process);
-            if (!($status['running'] ?? false)) {
+            if (!self::isRunningStatus(proc_get_status($process))) {
                 throw new \RuntimeException('HTTP fixture server stopped during startup.');
             }
             // Older PHP versions buffer the startup banner when stdout is redirected to a file.
@@ -96,8 +95,7 @@ class RequestContextHttpTest extends TestCase
         if (is_resource(self::$process)) {
             proc_terminate(self::$process);
             for ($attempt = 0; $attempt < 100; $attempt++) {
-                $status = proc_get_status(self::$process);
-                if (!($status['running'] ?? false)) {
+                if (!self::isRunningStatus(proc_get_status(self::$process))) {
                     break;
                 }
                 usleep(50000);
@@ -121,6 +119,23 @@ class RequestContextHttpTest extends TestCase
         foreach ($directories as $dir) {
             rmdir(self::$app . $dir);
         }
+    }
+
+    /**
+     * Accept the combined process-status return types across supported PHP versions.
+     *
+     * @param array{running: bool}|false $status
+     */
+    private static function isRunningStatus($status): bool
+    {
+        return $status !== false && $status['running'];
+    }
+
+    public function testProcessStatusCompatibility(): void
+    {
+        $this->assertFalse(self::isRunningStatus(false));
+        $this->assertFalse(self::isRunningStatus(['running' => false]));
+        $this->assertTrue(self::isRunningStatus(['running' => true]));
     }
 
     public function testNormalAndMaintenanceCookieHeadersAndRegeneration(): void
