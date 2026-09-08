@@ -21,6 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.18] - 2026-09-DD
 
+feat: Unify trusted-proxy HTTPS and client-IP resolution
+
+#### Changed
+
+- ci(blast.sh): Run testing database migrations before development migrations so failures stop assembly before updating the development database.
+- Simplify curl detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
+
 ### Security
 
 - Unify trusted-proxy HTTPS and client-IP resolution for debug access, maintenance bypass, and secure host-only SameSite session cookies while preserving PHP 7.2 support.

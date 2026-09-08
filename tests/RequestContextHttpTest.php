@@ -59,10 +59,7 @@ class RequestContextHttpTest extends TestCase
         fclose($pipes[0]);
         for ($attempt = 0; $attempt < 100; $attempt++) {
             $status = proc_get_status($process);
-            // todo make sure that `!array_key_exists('running', $status) || ` does fix
-            // Cannot access offset 'running' on array{command: string, pid: int, running: bool, signaled: bool,
-            // stopped: bool, exitcode: int, termsig: int, stopsig: int}|false.
-            if (!array_key_exists('running', $status) || !$status['running']) {
+            if ($status === false || !$status['running']) {
                 throw new \RuntimeException('HTTP fixture server stopped during startup.');
             }
             $serverLog = file_get_contents(self::$app . '/server.log');
@@ -80,7 +77,7 @@ class RequestContextHttpTest extends TestCase
             proc_terminate(self::$process);
             for ($attempt = 0; $attempt < 100; $attempt++) {
                 $status = proc_get_status(self::$process);
-                if (!array_key_exists('running', $status) || !$status['running']) {
+                if ($status === false || !$status['running']) {
                     break;
                 }
                 usleep(50000);
