@@ -19,7 +19,7 @@ class RequestContextHttpTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $root = dirname(__DIR__);
-        self::$app = $root . '/.tmp/request-context-' . bin2hex(random_bytes(6));
+        self::$app = sys_get_temp_dir() . '/seablast-request-context-' . bin2hex(random_bytes(6));
         foreach (['/vendor/seablast/seablast', '/conf', '/log', '/sessions'] as $directory) {
             mkdir(self::$app . $directory, 0777, true);
         }
@@ -62,13 +62,30 @@ class RequestContextHttpTest extends TestCase
             if ($status === false || !$status['running']) {
                 throw new \RuntimeException('HTTP fixture server stopped during startup.');
             }
-            $serverLog = file_get_contents(self::$app . '/server.log');
-            if (is_string($serverLog) && strpos($serverLog, 'Development Server') !== false) {
+            // Older PHP versions buffer the startup banner when stdout is redirected to a file.
+            $connection = stream_socket_client(
+                'tcp://' . self::$address,
+                $errorCode,
+                $errorMessage,
+                0,
+                STREAM_CLIENT_CONNECT | STREAM_CLIENT_ASYNC_CONNECT
+            );
+            if (!is_resource($connection)) {
+                throw new \RuntimeException('Cannot create the HTTP fixture readiness connection.');
+            }
+            $read = [];
+            $write = [$connection];
+            $except = [$connection];
+            $selected = stream_select($read, $write, $except, 0, 50000);
+            $ready = $selected > 0 && $write !== [] && $except === []
+                && stream_socket_get_name($connection, true) !== false;
+            fclose($connection);
+            if ($ready) {
                 return;
             }
             usleep(50000);
         }
-        throw new \RuntimeException('HTTP fixture server did not start.');
+        throw new \RuntimeException('HTTP fixture server did not start. ' . file_get_contents(self::$app . '/server.log'));
     }
 
     public static function tearDownAfterClass(): void

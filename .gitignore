@@ -4,7 +4,7 @@
 /log/*
 !/log/.htaccess
 /.composer-cache
-/.*.cache
+.*.cache
 /.sass-cache/
 /.tmp/
 
