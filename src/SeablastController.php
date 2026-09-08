@@ -20,14 +20,14 @@ class SeablastController
 
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var SeablastRequestContext */
-    private $requestContext;
     /** @var IdentityManagerInterface|null */
     private $identity = null;
     /** @var Logger|null */
     private $logger = null;
     /** @var string[] mapping of URL to processing */
     public $mapping;
+    /** @var SeablastRequestContext */
+    private $requestContext;
     /** @var Superglobals */
     private $superglobals;
     /** @var ILogger|null */

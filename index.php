@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Seablast\Seablast\Exceptions\InvalidRequestContextException;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastController;
 use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\SeablastRequestContext;
-use Seablast\Seablast\Exceptions\InvalidRequestContextException;
 use Seablast\Seablast\SeablastSetup;
 use Seablast\Seablast\SeablastView;
 use Seablast\Seablast\Superglobals;
