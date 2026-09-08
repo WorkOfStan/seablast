@@ -59,7 +59,7 @@ class RequestContextHttpTest extends TestCase
         fclose($pipes[0]);
         for ($attempt = 0; $attempt < 100; $attempt++) {
             $status = proc_get_status($process);
-            if ($status === false || !$status['running']) {
+            if (!($status['running'] ?? false)) {
                 throw new \RuntimeException('HTTP fixture server stopped during startup.');
             }
             // Older PHP versions buffer the startup banner when stdout is redirected to a file.
@@ -77,6 +77,9 @@ class RequestContextHttpTest extends TestCase
             $write = [$connection];
             $except = [$connection];
             $selected = stream_select($read, $write, $except, 0, 50000);
+            // stream_select replaces these arrays with the streams that are ready.
+            /** @var resource[] $write */
+            /** @var resource[] $except */
             $ready = $selected > 0 && $write !== [] && $except === []
                 && stream_socket_get_name($connection, true) !== false;
             fclose($connection);
@@ -94,7 +97,7 @@ class RequestContextHttpTest extends TestCase
             proc_terminate(self::$process);
             for ($attempt = 0; $attempt < 100; $attempt++) {
                 $status = proc_get_status(self::$process);
-                if ($status === false || !$status['running']) {
+                if (!($status['running'] ?? false)) {
                     break;
                 }
                 usleep(50000);
