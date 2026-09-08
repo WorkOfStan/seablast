@@ -87,7 +87,9 @@ class RequestContextHttpTest extends TestCase
             }
             usleep(50000);
         }
-        throw new \RuntimeException('HTTP fixture server did not start. ' . file_get_contents(self::$app . '/server.log'));
+        throw new \RuntimeException(
+            'HTTP fixture server did not start. ' . file_get_contents(self::$app . '/server.log')
+        );
     }
 
     public static function tearDownAfterClass(): void
