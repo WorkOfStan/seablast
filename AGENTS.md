@@ -269,7 +269,7 @@ Review existing Domain cookies during upgrades: they may coexist with host-only
 cookies until expiry. Explicitly configure intentional subdomain sharing and
 arrange old-cookie expiry or session-name rotation when required.
 
-TODO PHP-7.2: When the minimum PHP version reaches 7.3, remove the legacy
+Todo PHP-7.2: When the minimum PHP version reaches 7.3, remove the legacy
 `session_set_cookie_params()` path-suffix branch in `SeablastSessionCookie::apply()`
 and its legacy-version coverage in `RequestContextHttpTest`; retain native cookie
 header, maintenance, and regeneration tests. The existing CI PHP matrix exercises

@@ -23,10 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 feat: Unify trusted-proxy HTTPS and client-IP resolution
 
-#### Changed
+### Changed
 
 - ci(blast.sh): Run testing database migrations before development migrations so failures stop assembly before updating the development database.
-- Simplify curl detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
+- Simplify cURL detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
 
 ### Security
 
