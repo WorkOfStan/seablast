@@ -249,6 +249,27 @@ Here, `env.csrfToken` and `env.API_BASE` represent the values supplied by your a
 `log(message, severity)` defaults to `'error'` and sends the message and severity
 to the application's `/api/error` endpoint using jQuery Ajax.
 
+Browser error ingestion stays enabled by default. It requires POST and a valid
+session-bound CSRF token, even for anonymous visitors. Pass a nonempty string
+message (up to 4,096 UTF-8 bytes); the page URL is limited to 2,048 bytes. Optional
+order is a positive 32-bit integer. The body limit is 16 KiB; escaping may increase
+the log record beyond its separate 8 KiB limit. Use the six documented severities;
+`EXCEPTION` and `CRITICAL` are capped at actual server severity `ERROR`.
+
+Disable ingestion with `FLAG_CLIENT_ERROR_LOGGING`. Positive integer settings
+`SB_CLIENT_ERROR_CLIENT_PER_MINUTE`, `SB_CLIENT_ERROR_APP_PER_MINUTE`, and
+`SB_CLIENT_ERROR_APP_PER_HOUR` default to 20, 100, and 1,000. These count invalid
+POSTs too. Verified client addresses, not sessions or untrusted forwarding headers,
+identify clients. Counters are shared locally, with independent limits per server.
+`SB_CLIENT_ERROR_RATE_LIMIT_FILE` optionally selects an absolute private local
+file in an existing writable directory; the default is an application-specific
+system temporary file. Never delete it as part of normal request handling.
+
+The browser logger honors `429`/`Retry-After` and stops that instance on disabled
+`403`, without banner loops or automatic retries. Storage failures return `503`
+and reject ingestion. Follow the [browser reporting contract](README.md#browser-error-reporting)
+for field limits, HTTP errors, storage permissions, and deployment requirements.
+
 ## Testing Checklist
 
 Useful app-level tests:

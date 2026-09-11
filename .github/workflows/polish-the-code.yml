@@ -22,6 +22,12 @@ permissions:
   contents: read
 
 jobs:
+  client-error-javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: node tests/error-logger.test.cjs
+
   commit-check:
     runs-on: ubuntu-latest
     # use permissions because pull-request comments are used

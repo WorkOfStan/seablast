@@ -35,6 +35,7 @@ feat: Unify trusted-proxy HTTPS and client-IP resolution
 ### Security
 
 - Unify trusted-proxy HTTPS and client-IP resolution for debug access, maintenance bypass, and secure host-only SameSite session cookies while preserving PHP 7.2 support.
+- Bound browser error reports with validated escaped fields, capped severity, configurable per-client and application rate limits, and browser cooldown handling while keeping reporting enabled by default.
 
 ## [0.2.17.5] - 2026-06-28
 

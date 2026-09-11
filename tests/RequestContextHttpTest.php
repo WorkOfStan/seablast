@@ -45,6 +45,8 @@ class RequestContextHttpTest extends TestCase
         $command = escapeshellarg(PHP_BINARY)
             . ' -d xdebug.mode=off -d session.cookie_domain=inherited.invalid'
             . ' -d session.save_path=' . escapeshellarg(self::$app . '/sessions')
+            . ' -d sys_temp_dir=' . escapeshellarg(self::$app . '/sessions')
+            . ' -d upload_tmp_dir=' . escapeshellarg(self::$app . '/sessions')
             . ' -S ' . self::$address . ' -t ' . escapeshellarg(self::$app)
             . ' ' . escapeshellarg(__DIR__ . '/Fixtures/request-context-router.php');
         $process = proc_open($command, [
@@ -257,17 +259,52 @@ class RequestContextHttpTest extends TestCase
         $this->assertCount(1, $this->sessionCookies($response['headers']));
     }
 
+    public function testClientErrorHttpResponsesAndSessionBoundToken(): void
+    {
+        $tokenResponse = $this->request(['errorToken' => '1']);
+        $tokenData = json_decode($tokenResponse['body'], true);
+        $this->assertIsArray($tokenData);
+        $this->assertIsString($tokenData['sessionId']);
+        $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8',
+            'Content-Type: application/json', 'Cookie: PHPSESSID=' . $tokenData['sessionId']];
+        $payload = json_encode(['csrfToken' => $tokenData['csrfToken'], 'message' => 'HTTP browser error']);
+        $this->assertIsString($payload);
+        $success = $this->request(['errorApi' => '1'], $headers, 'POST', $payload);
+        $this->assertSame(200, $success['status'], $success['body']);
+        $successData = json_decode($success['body'], true);
+        $this->assertIsArray($successData);
+        $this->assertSame('Error logged.', $successData['message']);
+        $this->assertContains('Content-Type: application/json; charset=utf-8', $success['headers']);
+        $limited = $this->request(['errorApi' => '1', 'errorLimited' => '1'], $headers, 'POST', $payload);
+        $this->assertSame(429, $limited['status']);
+        $this->assertSame(1, preg_match('/Retry-After: [1-9][0-9]*/', implode("\n", $limited['headers'])));
+        $disabled = $this->request(['errorApi' => '1', 'errorDisabled' => '1'], $headers, 'POST', '{');
+        $this->assertSame(403, $disabled['status']);
+        $wrongMethod = $this->request(['errorApi' => '1']);
+        $this->assertSame(405, $wrongMethod['status']);
+        $this->assertContains('Allow: POST', $wrongMethod['headers']);
+        $invalid = $this->request(['errorApi' => '1'], $headers, 'POST', '{"csrfToken":[]}');
+        $this->assertSame(401, $invalid['status']);
+        $oversize = $this->request(['errorApi' => '1'], $headers, 'POST', str_repeat(' ', 16385));
+        $this->assertSame(413, $oversize['status'], $oversize['body'] . implode("\n", $oversize['headers']));
+        $wrongType = $this->request(['errorApi' => '1'],
+            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8', 'Content-Type: text/plain'], 'POST', '{}');
+        $this->assertSame(415, $wrongType['status']);
+    }
+
     /**
      * @param string[] $query
      * @param string[]|null $headers
      * @return array{status: int, headers: string[], body: string}
      */
-    private function request(array $query, ?array $headers = null): array
+    private function request(array $query, ?array $headers = null, string $method = 'GET', string $body = ''): array
     {
         $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
         $headers[] = 'Host: app.example.com';
         $headers[] = 'Connection: close';
         $context = stream_context_create(['http' => [
+            'method' => $method,
+            'content' => $body,
             'ignore_errors' => true,
             'timeout' => 10,
             'header' => implode("\r\n", $headers),

@@ -413,6 +413,44 @@ Tracy is enabled in development mode for these verified request-context clients:
 
 SQL bar panels are rendered after output selection so that database diagnostics survive normal page, JSON, and redirect flows.
 
+### Client error ingestion invariants
+
+`ApiErrorModel` gates enablement, method, and rate limits through `beforeInput()`
+before the generic JSON parser reads a body or checks CSRF. Default configuration
+activates `FLAG_CLIENT_ERROR_LOGGING`. The subclass overrides the body cap to
+16 KiB and disables input diagnostics; rejected ingestion must not recursively
+create logs or Tracy dumps containing untrusted input. Other JSON endpoints retain
+their diagnostics. Nonscalar CSRF input returns a controlled `401`.
+
+Only validated message/page/order/severity fields enter a compact, escaped
+`client_error` record, at most 8 KiB including its prefix. Message and page limits
+are 4,096 and 2,048 UTF-8 bytes. Order, if present, is a positive 32-bit integer;
+unknown severities are rejected. `EXCEPTION` and `CRITICAL` map to `ILogger::ERROR`
+for every user. Log through `Debugger::log()` with explicit severity, independent
+of whether the installed logger also neutralizes control characters.
+
+`ClientErrorRateLimiter` hashes the verified request-context client address, using
+one shared unknown bucket when it is unavailable. It keeps per-client minute and
+application minute/hour counters in one file, bounded to 64 KiB. Limits default to
+20/100/1,000 and use the `SB_CLIENT_ERROR_*` settings documented in the public
+[reporting contract](README.md#browser-error-reporting). The default filename hashes
+the canonical application directory; an override must be an absolute local path.
+Workers must share that path and a filesystem with reliable nonblocking exclusive
+locks. POSIX files are private; Windows relies on protected inherited ACLs.
+
+Check/read/update/write happen under the same lock. Expired minute clients are
+pruned together; active clients are never evicted to admit others. Clock rollback
+must not reset allowances. Lock contention or exhausted limits/counter capacity
+returns `429`; corrupt or unavailable storage returns `503` without logging the
+submitted body. Never replace/unlink the locked file during normal operation.
+These are per-server ingestion limits, not protection against all request traffic
+or framework session allocation (SEC-015 remains separate).
+
+Regression checks include real HTTP headers, CSRF failures, escaped/expanded text,
+concurrent PHP processes, lock contention, corrupt/bounded state, and browser
+cooldown behavior (`node tests/error-logger.test.cjs`). Fixed windows permit boundary
+bursts and separate servers retain separate allowances.
+
 ## Current Realities and Non-Goals
 
 These points are worth keeping in mind when maintaining or integrating Seablast:

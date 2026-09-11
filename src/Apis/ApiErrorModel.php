@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Apis;
 
 use Seablast\Seablast\Apis\GenericRestApiJsonModel;
+use Seablast\Seablast\ClientErrorRateLimiter;
+use Seablast\Seablast\SeablastConstant;
+use Seablast\Seablast\SeablastRequestContext;
 use stdClass;
 use Tracy\Debugger;
 use Tracy\ILogger;
-use Webmozart\Assert\Assert;
 
 /**
  * Log errors reported by Ajax saved to the app error log with these information:
@@ -23,7 +25,7 @@ use Webmozart\Assert\Assert;
       SeablastConstant::APP_MAPPING,
       '/api/error',
       [
-          'model' => '\Seablast\Seablast\Api\ApiErrorModel',
+          'model' => '\Seablast\Seablast\Apis\ApiErrorModel',
       ]
   )
  *
@@ -31,12 +33,13 @@ use Webmozart\Assert\Assert;
     let errorCount = 0;
     function errorLog(message, severity = 'error') {
         const stringifiedData = JSON.stringify({
+            csrfToken: csrfToken,
             message: message,
             severity: severity,
             order: ++errorCount,
             page: window.location.href
         });
-        console.log(stringifiedData);
+        console.error(message);
         $.ajax({
             url: './api/error',
             type: 'POST',
@@ -58,6 +61,37 @@ class ApiErrorModel extends GenericRestApiJsonModel
 {
     use \Nette\SmartObject;
 
+    protected const JSON_INPUT_MAX_BYTES = 16384;
+
+    protected function beforeInput(): bool
+    {
+        if (!$this->configuration->flag->status(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING)) {
+            $this->rejectInput(403, 'Client error logging is disabled.');
+            return false;
+        }
+        if (($this->superglobals->server['REQUEST_METHOD'] ?? '') !== 'POST') {
+            header('Allow: POST');
+            $this->rejectInput(405, 'Method not allowed.');
+            return false;
+        }
+        $context = new SeablastRequestContext($this->configuration, $this->superglobals->server);
+        $limit = (new ClientErrorRateLimiter($this->configuration))->consume($context->getClientIp());
+        if ($limit['status'] !== 200) {
+            if ($limit['retryAfter'] > 0) {
+                header('Retry-After: ' . $limit['retryAfter']);
+            }
+            $this->rejectInput($limit['status'], $limit['status'] === 429
+                ? 'Too many client error reports.' : 'Client error logging is temporarily unavailable.');
+            return false;
+        }
+        return true;
+    }
+
+    protected function inputDiagnosticsEnabled(): bool
+    {
+        return false;
+    }
+
     /**
      * Return the knowledge calculated in this model.
      *
@@ -71,10 +105,7 @@ class ApiErrorModel extends GenericRestApiJsonModel
             return $result;
         }
         $this->executeBusinessLogic();
-        Assert::object($result->rest);
-        Assert::propertyExists($result->rest, 'message');
-        $result->rest->message = $this->message;
-        return $result;
+        return parent::knowledge();
     }
 
     /**
@@ -85,41 +116,56 @@ class ApiErrorModel extends GenericRestApiJsonModel
      */
     private function executeBusinessLogic(): void
     {
-        if ($this->superglobals->server['REQUEST_METHOD'] !== 'POST') {
-            throw new \Exception('Unexpected HTTP method');
-        }
-
         // Mapping of text severity -> Tracy\ILogger constant
         $severityMap = [
             'DEBUG' => ILogger::DEBUG,
             'INFO' => ILogger::INFO,
             'WARNING' => ILogger::WARNING,
             'ERROR' => ILogger::ERROR,
-            'EXCEPTION' => ILogger::EXCEPTION,
-            'CRITICAL' => ILogger::CRITICAL,
+            'EXCEPTION' => ILogger::ERROR,
+            'CRITICAL' => ILogger::ERROR,
         ];
 
-        $tempSeverity = $this->data->severity ?? 'ERROR';
-        Assert::string($tempSeverity);
-        $inputSeverity = strtoupper($tempSeverity);
-        $severity = $severityMap[$inputSeverity] ?? ILogger::ERROR;
-
-        $tempPage = $this->data->page ?? 'unknown-page';
-        Assert::scalar($tempPage);
-        $tempOrder = $this->data->order ?? '-';
-        Assert::scalar($tempOrder);
-        $tempMessage = $this->data->message ?? '(missing message)';
-        Assert::scalar($tempMessage);
-        $message = sprintf(
-            '%s %s %s %s',
-            $tempPage,
-            $tempOrder,
-            $inputSeverity,
-            $tempMessage
-        );
-
-        Debugger::log($message, $severity);
-
+        if (!isset($this->data->message) || !is_string($this->data->message) || $this->data->message === '') {
+            $this->rejectInput(400, 'A nonempty message string is required.');
+            return;
+        }
+        $page = property_exists($this->data, 'page') ? $this->data->page : 'unknown-page';
+        $severity = property_exists($this->data, 'severity') ? $this->data->severity : 'ERROR';
+        if (!is_string($page) || !is_string($severity)) {
+            $this->rejectInput(400, 'Page and severity must be strings.');
+            return;
+        }
+        if (strlen($this->data->message) > 4096 || strlen($page) > 2048) {
+            $this->rejectInput(413, 'Client error field exceeds the maximum allowed size.');
+            return;
+        }
+        $severity = strtoupper($severity);
+        if (!isset($severityMap[$severity])) {
+            $this->rejectInput(400, 'Unknown client error severity.');
+            return;
+        }
+        $record = ['page' => $page, 'severity' => $severity, 'message' => $this->data->message];
+        if (property_exists($this->data, 'order')) {
+            $order = $this->data->order;
+            if (!is_int($order) || $order < 1 || $order > 2147483647) {
+                $this->rejectInput(400, 'Order must be a positive 32-bit integer.');
+                return;
+            }
+            $record['order'] = $order;
+        }
+        // Default JSON escaping also neutralizes Unicode line separators, controls, and delimiter text.
+        $encoded = json_encode($record);
+        if (!is_string($encoded)) {
+            $this->rejectInput(400, 'Invalid client error text.');
+            return;
+        }
+        $message = 'client_error ' . $encoded;
+        if (strlen($message) > 8192) {
+            $this->rejectInput(413, 'Client error record exceeds the maximum allowed size.');
+            return;
+        }
+        Debugger::log($message, $severityMap[$severity]);
         $this->message = 'Error logged.';
     }
 }
