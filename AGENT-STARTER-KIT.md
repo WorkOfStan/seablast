@@ -242,7 +242,7 @@ an instance with the page's CSRF token and application base URL:
 
 ```js
 const errorLogger = new ErrorLogger(env.csrfToken, env.API_BASE);
-errorLogger.log('Unable to process the request.', 'error');
+errorLogger.log("Unable to process the request.", "error");
 ```
 
 Here, `env.csrfToken` and `env.API_BASE` represent the values supplied by your app.
