@@ -221,6 +221,34 @@ incoming Host authority for URLs, so retain web-server host restrictions.
 PHP 7.2 support is retained; the `TODO PHP-7.2` note in `SeablastSessionCookie`
 and `AGENTS.md` marks the legacy SameSite path for later removal.
 
+## Logging
+
+Where possible, use SeablastLogger (`seablast/logger`, class `Seablast\Logger\Logger`)
+instead of PHP's `error_log()`. The Seablast runtime connects it to Tracy through
+`PsrToTracyLoggerAdapter`, so application code should call `Tracy\Debugger::log()`
+with an explicit severity from `Tracy\ILogger`, for example:
+
+```php
+\Tracy\Debugger::log('Unable to process the request.', \Tracy\ILogger::ERROR);
+```
+
+Choose the appropriate severity, such as `DEBUG`, `INFO`, `WARNING`, or `ERROR`,
+so logging respects `SeablastConstant::SB_LOGGING_LEVEL`. Do not log passwords,
+authentication tokens, or other secrets.
+
+For frontend logging, use `ErrorLogger`, which is always available as an export
+from `assets/scripts/seablast.js`. Import it into your JavaScript module and create
+an instance with the page's CSRF token and application base URL:
+
+```js
+const errorLogger = new ErrorLogger(env.csrfToken, env.API_BASE);
+errorLogger.log('Unable to process the request.', 'error');
+```
+
+Here, `env.csrfToken` and `env.API_BASE` represent the values supplied by your app.
+`log(message, severity)` defaults to `'error'` and sends the message and severity
+to the application's `/api/error` endpoint using jQuery AJAX.
+
 ## Testing Checklist
 
 Useful app-level tests:

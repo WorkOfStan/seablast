@@ -389,6 +389,21 @@ The application may override the static file by placing:
 
 ## Debugging and Logging
 
+Where possible, use SeablastLogger (`seablast/logger`, class `Seablast\Logger\Logger`)
+instead of PHP's `error_log()`. The controller registers it as Tracy's logger through
+`PsrToTracyLoggerAdapter`; call `Tracy\Debugger::log($message, $severity)` with an
+explicit `Tracy\ILogger` severity such as `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
+For example: `\Tracy\Debugger::log('Unable to process the request.', \Tracy\ILogger::ERROR);`.
+This routes messages through the configured logger and `SeablastConstant::SB_LOGGING_LEVEL`.
+Do not log passwords, authentication tokens, or other secrets.
+
+For frontend logging, use `ErrorLogger`, which is always exported by
+`assets/scripts/seablast.js`. Import it into the consuming JavaScript module,
+instantiate it with `new ErrorLogger(csrfToken, apiBase)`, and call
+`errorLogger.log(message, severity)` with a severity string (default: `'error'`).
+It sends the message and severity to the application's `/api/error` endpoint
+using jQuery AJAX; supply the page's CSRF token and application base URL.
+
 Tracy is enabled in development mode for these verified request-context clients:
 
 - localhost

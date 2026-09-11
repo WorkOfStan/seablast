@@ -26,7 +26,11 @@ feat: Unify trusted-proxy HTTPS and client-IP resolution
 ### Changed
 
 - ci(blast.sh): Run testing database migrations before development migrations so failures stop assembly before updating the development database.
-- Simplify cURL detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
+- ci(blast.sh): Simplify cURL detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
+- docs: Align the source runtime overview and Mermaid diagram with request-context validation, session policy, maintenance, and response handling.
+- Recommend SeablastLogger through `Debugger::log()` with explicit severity instead of `error_log()` where possible in both agent guides.
+- Document frontend logging through `ErrorLogger` exported by `assets/scripts/seablast.js` in both agent guides.
+- Simplify the Seablast Logic Overview into an application-facing MVC guide while retaining current request and response behavior.
 
 ### Security
 
