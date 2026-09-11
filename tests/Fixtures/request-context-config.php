@@ -7,8 +7,10 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Tests\RequestContextHttpModel;
 
 return static function (SeablastConfiguration $configuration): void {
-    $configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE,
-        APP_DIR . '/log/client-error-state.json');
+    $configuration->setString(
+        SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE,
+        APP_DIR . '/log/client-error-state.json'
+    );
     if (isset($_GET['errorDisabled'])) {
         $configuration->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
     }

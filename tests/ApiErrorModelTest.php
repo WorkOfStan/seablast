@@ -86,12 +86,14 @@ class ApiErrorModelTest extends TestCase
 
     public function testInvalidFieldsNeverLog(): void
     {
-        foreach ([
+        foreach (
+            [
             [], ['message' => ''], ['message' => null], ['message' => []], ['message' => 1],
             ['page' => []], ['page' => null], ['severity' => []], ['severity' => null],
             ['severity' => 'fatal'], ['order' => 0], ['order' => -1], ['order' => '1'],
             ['order' => 1.5], ['order' => 2147483648], ['order' => null], ['order' => []],
-        ] as $fields) {
+            ] as $fields
+        ) {
             if ($fields !== [] && !array_key_exists('message', $fields)) {
                 $fields['message'] = 'Report';
             }
@@ -129,8 +131,10 @@ class ApiErrorModelTest extends TestCase
         $this->assertSame(200, $this->report(['message' => str_repeat('a', 4096),
             'page' => str_repeat('p', 2048), 'order' => 2147483647])->httpCode);
         $count = count($this->entries);
-        foreach ([['message' => str_repeat('a', 4097)],
-            ['message' => 'x', 'page' => str_repeat('p', 2049)]] as $fields) {
+        foreach (
+            [['message' => str_repeat('a', 4097)],
+            ['message' => 'x', 'page' => str_repeat('p', 2049)]] as $fields
+        ) {
             $this->assertSame(413, $this->report($fields)->httpCode);
         }
         $this->assertCount($count, $this->entries);
@@ -212,7 +216,10 @@ class ApiErrorModelTest extends TestCase
     private function raw(string $json, array $server = []): \stdClass
     {
         $this->configuration->setString(SeablastConstant::JSON_INPUT, $json);
-        return (new ApiErrorModel($this->configuration, new Superglobals([], [],
-            $server + ['REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8'])))->knowledge();
+        return (new ApiErrorModel($this->configuration, new Superglobals(
+            [],
+            [],
+            $server + ['REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8']
+        )))->knowledge();
     }
 }

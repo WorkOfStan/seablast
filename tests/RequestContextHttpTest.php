@@ -287,8 +287,12 @@ class RequestContextHttpTest extends TestCase
         $this->assertSame(401, $invalid['status']);
         $oversize = $this->request(['errorApi' => '1'], $headers, 'POST', str_repeat(' ', 16385));
         $this->assertSame(413, $oversize['status'], $oversize['body'] . implode("\n", $oversize['headers']));
-        $wrongType = $this->request(['errorApi' => '1'],
-            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8', 'Content-Type: text/plain'], 'POST', '{}');
+        $wrongType = $this->request(
+            ['errorApi' => '1'],
+            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8', 'Content-Type: text/plain'],
+            'POST',
+            '{}'
+        );
         $this->assertSame(415, $wrongType['status']);
     }
 

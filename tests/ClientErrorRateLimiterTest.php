@@ -66,8 +66,10 @@ class ClientErrorRateLimiterTest extends TestCase
     {
         $limiter = new ClientErrorRateLimiter($this->configuration);
         $this->assertSame(200, $limiter->consume(null, 3600)['status']);
-        foreach (['', '{', '{}', str_repeat(' ', 65537),
-            '{"minute":3600,"hour":3600,"minuteCount":0,"hourCount":0,"clients":{"fake":1}}'] as $state) {
+        foreach (
+            ['', '{', '{}', str_repeat(' ', 65537),
+            '{"minute":3600,"hour":3600,"minuteCount":0,"hourCount":0,"clients":{"fake":1}}'] as $state
+        ) {
             file_put_contents($this->path, $state);
             $this->assertSame(503, $limiter->consume(null, 3600)['status']);
             $this->assertSame($state, file_get_contents($this->path));
@@ -213,8 +215,14 @@ class ClientErrorRateLimiterTest extends TestCase
     {
         $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/Fixtures/client-error-worker.php')
             . ' ' . escapeshellarg($this->path);
-        $process = proc_open($command, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-            $pipes, dirname(__DIR__), null, ['bypass_shell' => true]);
+        $process = proc_open(
+            $command,
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes,
+            dirname(__DIR__),
+            null,
+            ['bypass_shell' => true]
+        );
         $this->assertIsResource($process);
         fclose($pipes[0]);
         return ['process' => $process, 'output' => $pipes[1], 'error' => $pipes[2]];
