@@ -24,6 +24,58 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
 
+### Reverse proxies and session cookies
+
+Direct HTTP/HTTPS deployments need no proxy configuration. Behind a reverse proxy,
+configure its exact IP addresses in the application configuration closure:
+
+```php
+$SBConfig
+    ->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['192.0.2.10', '2001:db8::10'])
+    ->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7'])
+    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE, 'Lax')
+    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_DOMAIN, '');
+```
+
+Trusted proxies must overwrite `X-Forwarded-Proto` with one `http` or `https`
+value describing the external connection and sanitize or correctly append
+`X-Forwarded-For`. At the public edge, discard any client-supplied forwarding
+values. For multiple proxies, preserve the verified external scheme and append
+the actual upstream peer to the client IP chain. Keep `REMOTE_ADDR` as the
+transport peer; do not independently rewrite it from headers in the web server.
+List every trusted hop using exact IPv4/IPv6 addresses, without CIDRs or wildcards.
+
+The shared request context ignores forwarding headers from untrusted peers.
+For a trusted peer, missing or malformed required metadata returns HTTP 400
+before creating a session. Client resolution walks the IP chain from right to
+left and stops at the first untrusted address. That verified client controls
+Tracy development mode and maintenance bypass (loopback or `DEBUG_IP_LIST`).
+An all-trusted chain grants neither, and a proxy address alone never grants access.
+Only `X-Forwarded-For` and `X-Forwarded-Proto` are supported; no forwarding-header
+family is automatically detected. Host-based URL authority remains unchanged;
+configure accepted hosts in your web server (SEC-003 remains open in core).
+
+Session cookies default to host-only, HttpOnly, `SameSite=Lax`, and Secure on
+verified HTTPS, including maintenance responses. Explicit `Strict` and `None`
+are supported; `None` on HTTP is a configuration error. For intentional sharing
+across trusted subdomains, configure a parent domain such as `example.com`;
+it must match the request hostname on a domain-label boundary. Existing cookie
+lifetime and logical path settings remain available. Paths containing control
+characters or semicolons are rejected.
+
+When upgrading, review applications that relied on the previous Domain cookie:
+host-only cookies no longer provide subdomain sharing. Existing Domain cookies
+may coexist with new host-only cookies until they expire; arrange an explicit
+old-cookie expiry or session-name rotation if needed by your deployment.
+Cookies created by optional authentication packages have their own policy.
+If your application starts sessions before Seablast, apply this policy before
+`session_start()` yourself; the controller validates configuration but cannot
+retroactively secure an already-issued cookie.
+
+PHP 7.2 remains supported through an isolated SameSite compatibility path.
+The `TODO PHP-7.2` removal note in `SeablastSessionCookie` and `AGENTS.md` identifies
+the code and legacy tests to simplify when PHP 7.2 support ends.
+
 ## Model
 
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.

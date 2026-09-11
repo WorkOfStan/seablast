@@ -19,6 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.18] - 2026-09-DD
+
+feat: Unify trusted-proxy HTTPS and client-IP resolution
+
+### Changed
+
+- ci(blast.sh): Run testing database migrations before development migrations so failures stop assembly before updating the development database.
+- ci(blast.sh): Simplify cURL detection, self-update checks, and command dispatch in `blast.sh` while preserving existing behavior.
+- docs: Align the source runtime overview and Mermaid diagram with request-context validation, session policy, maintenance, and response handling.
+- Recommend SeablastLogger through `Debugger::log()` with explicit severity instead of `error_log()` where possible in both agent guides.
+- Document frontend logging through `ErrorLogger` exported by `assets/scripts/seablast.js` in both agent guides.
+- Simplify the Seablast Logic Overview into an application-facing MVC guide while retaining current request and response behavior.
+
+### Security
+
+- Unify trusted-proxy HTTPS and client-IP resolution for debug access, maintenance bypass, and secure host-only SameSite session cookies while preserving PHP 7.2 support.
+
 ## [0.2.17.5] - 2026-06-28
 
 feat: expose string[] SeablastConstant::ADMIN_BOOLEAN_FIELDS
