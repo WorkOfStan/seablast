@@ -402,7 +402,7 @@ For frontend logging, use `ErrorLogger`, which is always exported by
 instantiate it with `new ErrorLogger(csrfToken, apiBase)`, and call
 `errorLogger.log(message, severity)` with a severity string (default: `'error'`).
 It sends the message and severity to the application's `/api/error` endpoint
-using jQuery AJAX; supply the page's CSRF token and application base URL.
+using jQuery Ajax; supply the page's CSRF token and application base URL.
 
 Tracy is enabled in development mode for these verified request-context clients:
 

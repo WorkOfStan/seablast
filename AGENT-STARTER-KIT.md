@@ -247,7 +247,7 @@ errorLogger.log("Unable to process the request.", "error");
 
 Here, `env.csrfToken` and `env.API_BASE` represent the values supplied by your app.
 `log(message, severity)` defaults to `'error'` and sends the message and severity
-to the application's `/api/error` endpoint using jQuery AJAX.
+to the application's `/api/error` endpoint using jQuery Ajax.
 
 ## Testing Checklist
 
