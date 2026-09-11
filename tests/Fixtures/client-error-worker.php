@@ -9,7 +9,7 @@ use Seablast\Seablast\SeablastConstant;
 if (PHP_SAPI !== 'cli' || !isset($argv[1])) {
     exit(1);
 }
-define('APP_DIR', dirname(__DIR__, 2));
+require dirname(__DIR__, 2) . '/defineAppDir.php';
 require APP_DIR . '/vendor/autoload.php';
 $configuration = new SeablastConfiguration();
 $configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, $argv[1]);
