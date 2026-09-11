@@ -9,31 +9,58 @@ let banners = 0;
 const context = vm.createContext({
   console: { error() {}, log() {} },
   window: { location: { href: "https://example.test/page" } },
-  Date: class extends Date { static now() { return now; } },
-  $: { ajax(request) { requests.push(request); } },
+  Date: class extends Date {
+    static now() {
+      return now;
+    }
+  },
+  $: {
+    ajax(request) {
+      requests.push(request);
+    },
+  },
 });
-const source = fs.readFileSync(path.join(__dirname, "../assets/scripts/seablast.js"), "utf8")
+const source = fs
+  .readFileSync(path.join(__dirname, "../assets/scripts/seablast.js"), "utf8")
   .replace(/^export\s*\{[^}]*\};?\s*$/gm, "");
-vm.runInContext(source + "\nglobalThis.ErrorLogger = ErrorLogger; globalThis.BannerManager = BannerManager;", context);
-context.BannerManager.prototype.addBanner = () => { banners++; };
+vm.runInContext(
+  source +
+    "\nglobalThis.ErrorLogger = ErrorLogger; globalThis.BannerManager = BannerManager;",
+  context,
+);
+context.BannerManager.prototype.addBanner = () => {
+  banners++;
+};
 const logger = new context.ErrorLogger("token", "/app");
 logger.log("normal");
 assert.equal(requests.length, 1);
 assert.equal(JSON.parse(requests[0].data).csrfToken, "token");
 assert.equal(requests[0].url, "/app/api/error");
-requests[0].error({ status: 429, getResponseHeader: () => "10" }, "error", "Too Many Requests");
+requests[0].error(
+  { status: 429, getResponseHeader: () => "10" },
+  "error",
+  "Too Many Requests",
+);
 logger.log("paused");
 assert.equal(requests.length, 1);
 now += 10000;
 logger.log("resumed");
 assert.equal(requests.length, 2);
-requests[1].error({ status: 429, getResponseHeader: () => new Date(now + 20000).toUTCString() }, "error", "429");
+requests[1].error(
+  { status: 429, getResponseHeader: () => new Date(now + 20000).toUTCString() },
+  "error",
+  "429",
+);
 logger.log("date paused");
 assert.equal(requests.length, 2);
 now += 20000;
 logger.log("date resumed");
 assert.equal(requests.length, 3);
-requests[2].error({ status: 429, getResponseHeader: () => null }, "error", "429");
+requests[2].error(
+  { status: 429, getResponseHeader: () => null },
+  "error",
+  "429",
+);
 now += 59999;
 logger.log("fallback paused");
 assert.equal(requests.length, 3);

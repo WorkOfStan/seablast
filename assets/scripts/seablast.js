@@ -63,7 +63,9 @@ class ErrorLogger {
             : Date.parse(value);
           this.retryAfter = Math.max(
             this.retryAfter,
-            Number.isFinite(deadline) && deadline > now ? deadline : now + 60000,
+            Number.isFinite(deadline) && deadline > now
+              ? deadline
+              : now + 60000,
           );
           return;
         }
