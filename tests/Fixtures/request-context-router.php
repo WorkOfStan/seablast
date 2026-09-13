@@ -12,6 +12,9 @@ if (PHP_SAPI !== 'cli-server') {
 $_SERVER['REMOTE_ADDR'] = isset($_GET['direct']) ? '198.51.100.8' : '127.0.0.1';
 $_SERVER['SCRIPT_NAME'] = '/app/vendor/seablast/seablast/index.php';
 $_SERVER['REQUEST_URI'] = '/app/probe';
+if (isset($_GET['errorApi'])) {
+    $_SERVER['REQUEST_URI'] = '/app/api/error';
+}
 $_SERVER['HTTPS'] = isset($_GET['tls']) ? 'on' : 'off';
 $_SERVER['REQUEST_SCHEME'] = isset($_GET['tls']) ? 'https' : 'http';
 $_SERVER['SERVER_PORT'] = isset($_GET['tls']) ? '443' : '80';

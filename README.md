@@ -76,6 +76,51 @@ PHP 7.2 remains supported through an isolated SameSite compatibility path.
 The `TODO PHP-7.2` removal note in `SeablastSessionCookie` and `AGENTS.md` identifies
 the code and legacy tests to simplify when PHP 7.2 support ends.
 
+### Browser error reporting
+
+`ErrorLogger.log(message, severity)` posts browser diagnostics to `/api/error`.
+Reporting remains enabled by default and accepts anonymous visitors with a valid
+session-bound CSRF token. To disable ingestion in your application configuration:
+
+```php
+$SBConfig->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
+```
+
+Messages must be nonempty strings up to 4,096 UTF-8 bytes; optional `page` strings
+are limited to 2,048 bytes. Optional `order` must be an integer from 1 to
+2,147,483,647. Severity is case-insensitive: `DEBUG`, `INFO`, `WARNING`, `ERROR`
+(default), `EXCEPTION`, or `CRITICAL`. Browser-supplied `EXCEPTION` and `CRITICAL`
+are recorded at their matching server severity. Reports are escaped single-line JSON
+records prefixed by `client_error`; do not include secrets in diagnostic messages.
+The request body is limited to 16 KiB and the escaped log record to 8 KiB.
+
+Default limits count POST attempts, including invalid input: 20 per client per
+minute, 100 per application per minute, and 1,000 per application per hour.
+Configure positive integer limits with `SB_CLIENT_ERROR_CLIENT_PER_MINUTE`,
+`SB_CLIENT_ERROR_APP_PER_MINUTE`, and `SB_CLIENT_ERROR_APP_PER_HOUR`. Client
+addresses use the framework's trusted request context; changing sessions does not
+reset allowances. Visitors sharing an address share its allowance.
+
+Counters are shared by PHP workers on one server. Fixed time windows can admit a
+burst at a window boundary; multiple servers have independent allowances. The
+bounded state file defaults to the system temporary directory, named using a hash
+of the canonical application directory. Set `SB_CLIENT_ERROR_RATE_LIMIT_FILE`
+to an absolute local file path to override it. Its parent directory must already
+exist, be writable by PHP, and be protected from other users. Keep it outside the
+public web tree; POSIX files must have private permissions, and Windows directories
+must have suitable ACLs. Use a local filesystem and PHP deployment with reliable
+file locking. Do not delete the state file during operation, as this resets limits.
+
+Responses use `200` for accepted reports, `400` for malformed data, `401` for
+invalid CSRF, `403` when disabled, `405` for non-POST methods, `413` for size limits,
+`415` for unsupported content types, `429` with `Retry-After` for rate limiting,
+and `503` when counter storage is unavailable or corrupt. Corrupt files require
+operator repair while ingestion is disabled; they are never silently reset.
+`ErrorLogger` pauses sending until `Retry-After` expires and stops sending from
+that instance after `403`, keeping console diagnostics without repeated banners.
+Reports during that pause are not queued or retried. Other failures retain their
+existing browser handling.
+
 ## Model
 
 SeablastModel uses model field in APP_MAPPING to invoke the model in the App.

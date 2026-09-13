@@ -20,6 +20,8 @@ class ErrorLogger {
     this.csrfToken = csrfToken;
     this.errorCount = 0;
     this.apiBase = apiBase;
+    this.disabled = false;
+    this.retryAfter = 0;
   }
 
   log(message, severity = "error") {
@@ -30,11 +32,14 @@ class ErrorLogger {
       order: ++this.errorCount,
       page: window.location.href,
     };
-    console.error(JSON.stringify(errorData)); // Consider removing for production
+    console.error(message, severity); // Consider removing for production
     this.sendErrorData(errorData);
   }
 
   sendErrorData(errorData) {
+    if (this.disabled || Date.now() < this.retryAfter) {
+      return;
+    }
     $.ajax({
       url: this.apiBase + "/api/error",
       type: "POST",
@@ -46,6 +51,24 @@ class ErrorLogger {
       },
       error: (xhr, status, error) => {
         console.error("Error sending data of error: " + this.errorCount, error); // debug
+        if (xhr.status === 403) {
+          this.disabled = true;
+          return;
+        }
+        if (xhr.status === 429) {
+          const value = xhr.getResponseHeader("Retry-After");
+          const now = Date.now();
+          const deadline = /^\d+$/.test(value || "")
+            ? now + Number(value) * 1000
+            : Date.parse(value);
+          this.retryAfter = Math.max(
+            this.retryAfter,
+            Number.isFinite(deadline) && deadline > now
+              ? deadline
+              : now + 60000,
+          );
+          return;
+        }
         const banners = new BannerManager();
         banners.addBanner("Error sending data " + error, "warning");
       },

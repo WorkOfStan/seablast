@@ -36,6 +36,10 @@ class RequestContextHttpModel
             'path' => $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH),
             'sessionId' => session_id(),
         ];
+        if (isset($this->superglobals->get['errorToken'])) {
+            $result->rest['csrfToken'] = (new \Symfony\Component\Security\Csrf\CsrfTokenManager())
+                ->getToken('sb_json')->getValue();
+        }
         return $result;
     }
 }

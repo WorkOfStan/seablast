@@ -49,13 +49,19 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         $this->configuration = $configuration;
         $this->configuration->flag->status(SeablastConstant::FLAG_WEB_RUNNING); // so that $configuration is read
         $this->superglobals = $superglobals;
+        if (!$this->beforeInput()) {
+            return;
+        }
         Assert::propertyExists($this->superglobals, 'server');
         Assert::keyExists(
             $this->superglobals->server,
             'REQUEST_METHOD',
             'API call to ' . get_called_class() . ' without REQUEST_METHOD will not work'
         );
-        Debugger::barDump($this->superglobals, 'Superglobals for API'); // TODO add such barDump somewhere before this
+        if ($this->inputDiagnosticsEnabled()) {
+            // TODO add such barDump somewhere before this
+            Debugger::barDump($this->superglobals, 'Superglobals for API');
+        }
         $this->processInput();
     }
 
@@ -107,8 +113,10 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             ? $this->configuration->getString(SeablastConstant::JSON_INPUT)
             : $this->readJsonInput();
         if (!is_string($jsonInput)) {
-            Debugger::barDump(["Either JSON_INPUT or php://input isn't string", $jsonInput], 'ERROR on input');
-            Debugger::log("Either JSON_INPUT or php://input isn't string", ILogger::ERROR);
+            if ($this->inputDiagnosticsEnabled()) {
+                Debugger::barDump(["Either JSON_INPUT or php://input isn't string", $jsonInput], 'ERROR on input');
+                Debugger::log("Either JSON_INPUT or php://input isn't string", ILogger::ERROR);
+            }
             $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid input';
             return;
@@ -118,7 +126,9 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             return;
         }
         $jsonDecoded = json_decode($jsonInput);
-        Debugger::barDump($jsonDecoded, 'data json_decoded from php://input');
+        if ($this->inputDiagnosticsEnabled()) {
+            Debugger::barDump($jsonDecoded, 'data json_decoded from php://input');
+        }
         // Validate JSON input
         if (json_last_error() !== JSON_ERROR_NONE) {
             // According to https://www.php.net/json_last_error
@@ -161,27 +171,36 @@ class GenericRestApiJsonModel implements SeablastModelInterface
             $this->message = $err;
             return;
         } elseif (!is_object($jsonDecoded)) { // maybe this is redundant vs json_last_error above
-            Debugger::barDump("Decoded JSON doesn't translate to an object", 'ERROR on input');
-            Debugger::log("Decoded JSON doesn't translate to an object", ILogger::ERROR);
+            if ($this->inputDiagnosticsEnabled()) {
+                Debugger::barDump("Decoded JSON doesn't translate to an object", 'ERROR on input');
+                Debugger::log("Decoded JSON doesn't translate to an object", ILogger::ERROR);
+            }
             $this->httpCode = 400; // Bad Request
             $this->message = 'Invalid JSON decoding';
             return;
         }
         $this->data = $jsonDecoded;
         if (!isset($this->data->csrfToken)) {
-            Debugger::barDump("CSRF token missing", 'ERROR on input');
-            Debugger::log("CSRF token missing", ILogger::ERROR);
+            if ($this->inputDiagnosticsEnabled()) {
+                Debugger::barDump("CSRF token missing", 'ERROR on input');
+                Debugger::log("CSRF token missing", ILogger::ERROR);
+            }
             $this->httpCode = 401; // Unauthorized
             $this->message = 'CSRF token missing';
             return;
         }
         // CSRF validation
-        Assert::scalar($this->data->csrfToken);
+        if (!is_scalar($this->data->csrfToken)) {
+            $this->rejectInput(401, 'Invalid CSRF token.');
+            return;
+        }
         $csrfToken = new CsrfToken('sb_json', (string) $this->data->csrfToken);
         $csrfTokenManager = new CsrfTokenManager();
         if (!$csrfTokenManager->isTokenValid($csrfToken)) {
-            Debugger::barDump("CSRF token mismatch", 'ERROR on input');
-            Debugger::log("CSRF token mismatch", ILogger::ERROR);
+            if ($this->inputDiagnosticsEnabled()) {
+                Debugger::barDump("CSRF token mismatch", 'ERROR on input');
+                Debugger::log("CSRF token mismatch", ILogger::ERROR);
+            }
             $this->httpCode = 401; // Unauthorized
             $this->message = 'CSRF token mismatch';
             return;
@@ -254,12 +273,30 @@ class GenericRestApiJsonModel implements SeablastModelInterface
      * @param string $message
      * @return void
      */
-    private function rejectInput(int $httpCode, string $message): void
+    protected function rejectInput(int $httpCode, string $message): void
     {
-        Debugger::barDump($message, 'ERROR on input');
-        Debugger::log($message, ILogger::ERROR);
+        if ($this->inputDiagnosticsEnabled()) {
+            Debugger::barDump($message, 'ERROR on input');
+            Debugger::log($message, ILogger::ERROR);
+        }
         $this->httpCode = $httpCode;
         $this->message = $message;
+    }
+
+    /**
+     * Allow specialized endpoints to reject requests before reading any input.
+     */
+    protected function beforeInput(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Specialized ingestion endpoints must not turn rejected input into more log entries.
+     */
+    protected function inputDiagnosticsEnabled(): bool
+    {
+        return true;
     }
 
     /**

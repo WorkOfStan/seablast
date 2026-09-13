@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.2.18] - 2026-09-DD
+## [0.2.18] - 2026-09-13
 
 feat: Unify trusted-proxy HTTPS and client-IP resolution
 
@@ -35,6 +35,7 @@ feat: Unify trusted-proxy HTTPS and client-IP resolution
 ### Security
 
 - Unify trusted-proxy HTTPS and client-IP resolution for debug access, maintenance bypass, and secure host-only SameSite session cookies while preserving PHP 7.2 support.
+- Bound browser error reports with validated escaped fields, capped severity, configurable per-client and application rate limits, and browser cooldown handling while keeping reporting enabled by default.
 
 ## [0.2.17.5] - 2026-06-28
 
@@ -567,7 +568,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.5...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.18...HEAD?w=1
+[0.2.18]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.5...v0.2.18?w=1
 [0.2.17.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.4...v0.2.17.5?w=1
 [0.2.17.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...v0.2.17.4?w=1
 [0.2.17.3]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.2...v0.2.17.3?w=1

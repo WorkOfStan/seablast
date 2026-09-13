@@ -7,6 +7,16 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Tests\RequestContextHttpModel;
 
 return static function (SeablastConfiguration $configuration): void {
+    $configuration->setString(
+        SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE,
+        APP_DIR . '/log/client-error-state.json'
+    );
+    if (isset($_GET['errorDisabled'])) {
+        $configuration->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
+    }
+    if (isset($_GET['errorLimited'])) {
+        $configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_MINUTE, 1);
+    }
     $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['127.0.0.1', '2001:db8::1']);
     if (isset($_GET['invalidProxy'])) {
         $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['*']);

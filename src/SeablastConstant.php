@@ -14,6 +14,16 @@ class SeablastConstant
      * @var string Running or under construction
      */
     public const FLAG_WEB_RUNNING = 'SB:web:running';
+    /** @var string Accept bounded browser error reports (enabled by default). */
+    public const FLAG_CLIENT_ERROR_LOGGING = 'SB:client_error:enabled';
+    /** @var string Positive per-client POST allowance per fixed minute. */
+    public const SB_CLIENT_ERROR_CLIENT_PER_MINUTE = 'SB:client_error:client_per_minute';
+    /** @var string Positive application-wide POST allowance per fixed minute. */
+    public const SB_CLIENT_ERROR_APP_PER_MINUTE = 'SB:client_error:app_per_minute';
+    /** @var string Positive application-wide POST allowance per fixed hour. */
+    public const SB_CLIENT_ERROR_APP_PER_HOUR = 'SB:client_error:app_per_hour';
+    /** @var string Optional absolute local state file; defaults to an app-specific system temp file. */
+    public const SB_CLIENT_ERROR_RATE_LIMIT_FILE = 'SB:client_error:rate_limit_file';
     /**
      * @var string Redirection database should be looked up (unused so far)
      */

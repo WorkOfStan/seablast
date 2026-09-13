@@ -13,6 +13,7 @@ use Seablast\Seablast\SeablastConstant;
 return static function (SeablastConfiguration $SBConfig): void {
     $SBConfig->flag
         ->activate(SeablastConstant::FLAG_WEB_RUNNING) // debug
+        ->activate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING)
         ->deactivate(SeablastConstant::ADMIN_MAIL_ENABLED) // default is not sending emails to admin
         ->deactivate(SeablastConstant::USER_MAIL_ENABLED) // default is not sending emails to users
         //->activate(SeablastConstant::FLAG_DEBUG_JSON) // JSON would be displayed directly with Tracy
@@ -35,6 +36,9 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setArrayString(SeablastConstant::DEBUG_IP_LIST, []) // default list with IPs to show Tracy
         ->setInt(SeablastConstant::SB_LOGGING_LEVEL, 3) // log warnings and more severe events
         ->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log') // change of the log location is possible
+        ->setInt(SeablastConstant::SB_CLIENT_ERROR_CLIENT_PER_MINUTE, 20)
+        ->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_MINUTE, 100)
+        ->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_HOUR, 1000)
         // Database
         // Does not have to be 'testing' expected by the automatic GitHub tests as environment is set in the unit tests
         // like this: `$setup->getConfiguration()->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');`
