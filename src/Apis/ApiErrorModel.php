@@ -122,8 +122,8 @@ class ApiErrorModel extends GenericRestApiJsonModel
             'INFO' => ILogger::INFO,
             'WARNING' => ILogger::WARNING,
             'ERROR' => ILogger::ERROR,
-            'EXCEPTION' => ILogger::ERROR,
-            'CRITICAL' => ILogger::ERROR,
+            'EXCEPTION' => ILogger::EXCEPTION,
+            'CRITICAL' => ILogger::CRITICAL,
         ];
 
         if (!isset($this->data->message) || !is_string($this->data->message) || $this->data->message === '') {

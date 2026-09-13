@@ -254,7 +254,7 @@ session-bound CSRF token, even for anonymous visitors. Pass a nonempty string
 message (up to 4,096 UTF-8 bytes); the page URL is limited to 2,048 bytes. Optional
 order is a positive 32-bit integer. The body limit is 16 KiB; escaping may increase
 the log record beyond its separate 8 KiB limit. Use the six documented severities;
-`EXCEPTION` and `CRITICAL` are capped at actual server severity `ERROR`.
+`EXCEPTION` and `CRITICAL` retain their matching server severity.
 
 Disable ingestion with `FLAG_CLIENT_ERROR_LOGGING`. Positive integer settings
 `SB_CLIENT_ERROR_CLIENT_PER_MINUTE`, `SB_CLIENT_ERROR_APP_PER_MINUTE`, and

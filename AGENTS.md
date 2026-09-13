@@ -425,7 +425,7 @@ their diagnostics. Nonscalar CSRF input returns a controlled `401`.
 Only validated message/page/order/severity fields enter a compact, escaped
 `client_error` record, at most 8 KiB including its prefix. Message and page limits
 are 4,096 and 2,048 UTF-8 bytes. Order, if present, is a positive 32-bit integer;
-unknown severities are rejected. `EXCEPTION` and `CRITICAL` map to `ILogger::ERROR`
+unknown severities are rejected. `EXCEPTION` and `CRITICAL` map to their matching `ILogger` constants
 for every user. Log through `Debugger::log()` with explicit severity, independent
 of whether the installed logger also neutralizes control characters.
 

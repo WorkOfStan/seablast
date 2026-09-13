@@ -90,7 +90,7 @@ Messages must be nonempty strings up to 4,096 UTF-8 bytes; optional `page` strin
 are limited to 2,048 bytes. Optional `order` must be an integer from 1 to
 2,147,483,647. Severity is case-insensitive: `DEBUG`, `INFO`, `WARNING`, `ERROR`
 (default), `EXCEPTION`, or `CRITICAL`. Browser-supplied `EXCEPTION` and `CRITICAL`
-are recorded at server severity `ERROR`. Reports are escaped single-line JSON
+are recorded at their matching server severity. Reports are escaped single-line JSON
 records prefixed by `client_error`; do not include secrets in diagnostic messages.
 The request body is limited to 16 KiB and the escaped log record to 8 KiB.
 

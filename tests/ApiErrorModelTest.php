@@ -70,8 +70,7 @@ class ApiErrorModelTest extends TestCase
             $this->assertSame('Error logged.', $result->rest->message);
             $entry = end($this->entries);
             $this->assertIsArray($entry);
-            $expected = in_array($severity, ['exception', 'critical'], true) ? ILogger::ERROR : $severity;
-            $this->assertSame($expected, $entry['severity']);
+            $this->assertSame($severity, $entry['severity']);
             $this->assertStringNotContainsString('SECRET', $entry['message']);
             $this->assertStringNotContainsString($this->token, $entry['message']);
             $record = json_decode(substr($entry['message'], strlen('client_error ')), true);
@@ -104,11 +103,11 @@ class ApiErrorModelTest extends TestCase
         $this->assertSame([], $this->entries);
     }
 
-    public function testAuthenticatedReportsStillCannotSelectCriticalSeverity(): void
+    public function testAuthenticatedReportsPreserveCriticalSeverity(): void
     {
         $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
         $this->assertSame(200, $this->report(['message' => 'Report', 'severity' => 'CRITICAL'])->httpCode);
-        $this->assertSame(ILogger::ERROR, $this->entries[0]['severity']);
+        $this->assertSame(ILogger::CRITICAL, $this->entries[0]['severity']);
     }
 
     public function testUnavailableStorageRejectsWithoutParsingOrLogging(): void
