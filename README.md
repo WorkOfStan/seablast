@@ -340,6 +340,12 @@ The `INSERT_ROW` permission only makes sense when the user also has the `EDIT` p
 
 This design guarantees predictable behavior, secure access control, and a clean admin UI.
 
+#### Automatically detected boolean fields
+
+`SeablastConstant::ADMIN_BOOLEAN_FIELDS` exposes a `string[]` of automatically detected boolean-like column names for the selected admin table. Detection checks the SQL column types and verifies that stored values are limited to `0`, `1`, or `NULL`.
+
+This is runtime metadata for application code and custom templates. Do not configure it manually: `AdminModel` overwrites it with the detection result when a table is selected. The bundled admin template currently does not consume this metadata or automatically render checkboxes.
+
 #### Color editor for selected fields
 
 Fields that use the color editor (instead of a textarea) also display the selected color as the background.

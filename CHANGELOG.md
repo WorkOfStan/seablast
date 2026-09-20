@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.19] - 2026-09-DD
+
+docs: Clarify what `ADMIN_BOOLEAN_FIELDS` exposes
+
+### Changed
+
+- Clarify that `ADMIN_BOOLEAN_FIELDS` exposes automatically detected runtime metadata rather than a manual configuration option.
+
 ## [0.2.18] - 2026-09-13
 
 feat: Unify trusted-proxy HTTPS and client-IP resolution
