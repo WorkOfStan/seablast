@@ -34,6 +34,23 @@ class SeablastConfigurationTest extends TestCase
         $this->configuration->setString(SeablastConstant::SB_PHINX_ENVIRONMENT, 'testing');
     }
 
+    public function testAddArrayArrayStringInitializesAndAddsValues(): void
+    {
+        $config = new SeablastConfiguration();
+
+        $config->setArrayArrayString('test_property', 'test_key', ['first']);
+        $config->addArrayArrayString('test_property', 'test_key', ['second', 'third']);
+        $config->addArrayArrayString('test_property', 'new_key', ['only']);
+
+        $this->assertSame(
+            [
+                'test_key' => ['first', 'second', 'third'],
+                'new_key' => ['only'],
+            ],
+            $config->getArrayArrayString('test_property')
+        );
+    }
+
     public function testDbmsReturnsSeablastMysqliInstance(): void
     {
         $this->assertInstanceOf(SeablastMysqli::class, $this->configuration->mysqli());
