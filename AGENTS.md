@@ -72,6 +72,9 @@ This means application config can override:
 - i18n defaults
 - environment-local overrides
 
+`setArrayArrayString()` replaces one property/key entry. `addArrayArrayString()`
+merges additional strings into that entry and initializes it when it is absent.
+
 If you change this order, you are changing a public integration contract.
 
 ## Runtime Values Added by Core

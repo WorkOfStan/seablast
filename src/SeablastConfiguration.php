@@ -43,6 +43,21 @@ class SeablastConfiguration
     }
 
     /**
+     * @param string $property
+     * @param string $key
+     * @param string[] $value
+     * @return $this
+     */
+    public function addArrayArrayString(string $property, string $key, array $value): self
+    {
+        /** @phpstan-ignore staticMethod.alreadyNarrowedType */
+        Assert::allString ($value);
+        $existingValue = $this->optionsArrayArrayString[$property][$key] ?? [];
+        $this->optionsArrayArrayString[$property][$key] =  array_merge($existingValue, $value);
+        return $this;
+    }
+
+    /**
      * Access to database using MySQLi adapter with lazy initialization.
      *
      * @deprecated 0.2.8 Use {@see mysqli()} instead.

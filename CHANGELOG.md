@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 docs: Clarify what `ADMIN_BOOLEAN_FIELDS` exposes
 
+### Added
+
+- Add `SeablastConfiguration::addArrayArrayString()` to merge strings into an existing property/key entry.
+
 ### Changed
 
 - Clarify that `ADMIN_BOOLEAN_FIELDS` exposes automatically detected runtime metadata rather than a manual configuration option.

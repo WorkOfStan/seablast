@@ -39,6 +39,8 @@ The app-level configuration files are:
 - `conf/phinx.local.php` for Seablast's built-in MySQL adapters
 
 Each Seablast config file returns a callable that receives `SeablastConfiguration`.
+Use `addArrayArrayString()` when a later configuration layer should merge strings
+into an existing property/key entry instead of replacing the entry with `setArrayArrayString()`.
 
 ## Routing
 
