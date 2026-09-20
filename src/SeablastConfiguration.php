@@ -51,7 +51,7 @@ class SeablastConfiguration
     public function addArrayArrayString(string $property, string $key, array $value): self
     {
         /** @phpstan-ignore staticMethod.alreadyNarrowedType */
-        Assert::allString ($value);
+        Assert::allString($value);
         $existingValue = $this->optionsArrayArrayString[$property][$key] ?? [];
         $this->optionsArrayArrayString[$property][$key] =  array_merge($existingValue, $value);
         return $this;
