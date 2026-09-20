@@ -96,7 +96,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Invoke the PHPCS check and PHPCBF fix
-        uses: WorkOfStan/phpcs-fix@v1
+        uses: WorkOfStan/phpcs-fix@feature/bump-checkout-6
         with:
           commit-changes: ${{ github.event_name != 'schedule' }}
           php-version: "8.2"
