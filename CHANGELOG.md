@@ -29,7 +29,7 @@ docs: Clarify what `ADMIN_BOOLEAN_FIELDS` exposes
 
 ### Changed
 
-- Clarify that `ADMIN_BOOLEAN_FIELDS` exposes automatically detected runtime metadata rather than a manual configuration option.
+- docs: Clarify that `ADMIN_BOOLEAN_FIELDS` exposes automatically detected runtime metadata rather than a manual configuration option.
 
 ## [0.2.18] - 2026-09-13
 
