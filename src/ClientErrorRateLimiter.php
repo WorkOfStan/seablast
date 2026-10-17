@@ -127,10 +127,8 @@ final class ClientErrorRateLimiter
             }
             $file->rewind();
             $written = $file->fwrite($encoded);
-            if (
-                $written === false || $written !== strlen($encoded)
-                || !$file->ftruncate($written) || !$file->fflush()
-            ) {
+            $size = strlen($encoded);
+            if ($written !== $size || !$file->ftruncate($size) || !$file->fflush()) {
                 return ['status' => 503, 'retryAfter' => 0];
             }
             return ['status' => 200, 'retryAfter' => 0];
