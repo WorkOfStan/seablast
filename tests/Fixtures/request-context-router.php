@@ -10,6 +10,9 @@ if (PHP_SAPI !== 'cli-server') {
 
 // Simulate the origin's server metadata; forwarding headers still arrive over real HTTP.
 $_SERVER['REMOTE_ADDR'] = isset($_GET['direct']) ? '198.51.100.8' : '127.0.0.1';
+if (isset($_GET['loopback'])) {
+    $_SERVER['REMOTE_ADDR'] = $_GET['loopback'] === 'ipv6' ? '::1' : '127.0.0.1';
+}
 $_SERVER['SCRIPT_NAME'] = '/app/vendor/seablast/seablast/index.php';
 $_SERVER['REQUEST_URI'] = '/app/probe';
 if (isset($_GET['errorApi'])) {

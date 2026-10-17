@@ -205,8 +205,21 @@ multiple hops. Preserve `REMOTE_ADDR` as the transport peer. Missing or malforme
 trusted metadata returns HTTP 400 before sessions or application routing.
 Other forwarding headers are ignored; no CIDRs, wildcards, or automatic trust
 discovery are supported. The first untrusted IP found scanning from the right
-controls debug and maintenance access. Do not add the proxy to `DEBUG_IP_LIST`
-as a substitute for listing actual clients. An all-trusted chain grants no bypass.
+controls debug and maintenance access only when it matches `DEBUG_IP_LIST`.
+The default empty list denies both, including localhost; unknown clients and
+all-trusted chains also grant no bypass.
+
+For direct local development, explicitly opt in through the local configuration
+closure, including when localhost must bypass maintenance mode:
+
+```php
+$SBConfig->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1']);
+```
+
+This replaces automatic localhost access during upgrades. Behind proxies, list
+actual proxy addresses in `SB_TRUSTED_PROXIES` and actual developer clients in
+`DEBUG_IP_LIST`. Allowing an unconfigured shared proxy address, including localhost,
+can expose diagnostics and bypass maintenance for every client using that proxy.
 
 Default session cookies are host-only, HttpOnly, `SameSite=Lax`, and Secure on
 verified HTTPS. Use `SB_SESSION_SET_COOKIE_PARAMS_SAMESITE` for `Strict` or

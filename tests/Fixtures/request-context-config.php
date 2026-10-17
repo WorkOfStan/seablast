@@ -18,11 +18,16 @@ return static function (SeablastConfiguration $configuration): void {
         $configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_MINUTE, 1);
     }
     $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['127.0.0.1', '2001:db8::1']);
+    if (isset($_GET['unconfiguredProxy'])) {
+        $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, []);
+    }
     if (isset($_GET['invalidProxy'])) {
         $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['*']);
     }
     // Including the proxy itself must not grant every external client debug or maintenance access.
-    $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '198.51.100.7']);
+    if (isset($_GET['allowDebug'])) {
+        $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1', '198.51.100.7']);
+    }
     $configuration->setArrayArrayString(SeablastConstant::APP_MAPPING, '/probe', [
         'model' => RequestContextHttpModel::class,
     ]);

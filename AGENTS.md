@@ -249,7 +249,15 @@ The public edge must replace client-supplied metadata; subsequent trusted hops
 must preserve the verified external scheme and append actual upstream peers.
 Resolve clients right-to-left, stopping at the first untrusted address. An
 all-trusted chain resolves to null and grants no debug/maintenance access.
-Only the resolved client is compared with loopback and `DEBUG_IP_LIST`.
+Only the resolved client is compared with `DEBUG_IP_LIST`. The default empty list
+denies Tracy development mode and maintenance bypass, including for localhost.
+For direct local development, explicitly configure
+`setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1'])` inside the
+local configuration closure. This is an intentional security-related change
+from automatic localhost access. Behind a proxy, configure the actual proxy in
+`SB_TRUSTED_PROXIES` and actual developer clients in `DEBUG_IP_LIST`; explicitly
+allowing an unconfigured shared proxy address, including localhost, recreates
+diagnostic exposure and maintenance bypass for all clients using that proxy.
 
 Reject control characters, malformed IP entries, missing required proxy headers,
 scheme lists, schemes other than HTTP/HTTPS, proto values over 32 bytes, and
@@ -384,8 +392,10 @@ If `FLAG_WEB_RUNNING` is not active, the controller serves `under-construction.h
 
 Bypass rules, evaluated against the verified request-context client IP:
 
-- localhost (`::1`, `127.0.0.1`)
-- IPs listed in `DEBUG_IP_LIST`
+- Only IPs explicitly listed in `DEBUG_IP_LIST`, including any intended localhost access
+
+An empty list grants no bypass. Direct localhost requests require explicit
+`127.0.0.1` and/or `::1` entries, just like Tracy development mode.
 
 The application may override the static file by placing:
 
@@ -414,8 +424,9 @@ using jQuery Ajax; supply the page's CSRF token and application base URL.
 
 Tracy is enabled in development mode for these verified request-context clients:
 
-- localhost
-- IPs listed in `DEBUG_IP_LIST`
+- IPs explicitly listed in `DEBUG_IP_LIST`
+
+Localhost is opt-in; an empty list keeps Tracy in production mode for every client.
 
 `FLAG_DEBUG_JSON` intentionally suppresses the JSON `Content-Type` header so Tracy can render debug output more comfortably. This is a local debugging aid and should not be enabled in normal production traffic.
 

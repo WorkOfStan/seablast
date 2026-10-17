@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.19] - 2026-10-17
 
-fix: Restrict debug logging and preserve independent PDO errors
+fix!: Restrict debug logging and preserve independent PDO errors
 
 ### Added
 
@@ -50,6 +50,7 @@ fix: Restrict debug logging and preserve independent PDO errors
 - Prevent model data from being copied into debug logs with different access and retention rules.
 - Record disabled model and view parameter logging as a partial SEC-004 mitigation; keep SQL logging and remaining sensitive debug dumps open.
 - Disable complete view parameter logging, including the injected CSRF token, and gate model and parameter Tracy dumps on `SB_LOGGING_LEVEL >= 5`.
+- fix!: Require an explicit `DEBUG_IP_LIST` match for Tracy development mode and maintenance bypass, **including localhost (i.e. `127.0.0.1` or `::1`)**.
 
 ## [0.2.18] - 2026-09-13
 
