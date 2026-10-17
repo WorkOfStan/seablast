@@ -105,6 +105,8 @@ jobs:
   super-linter:
     needs: phpcs-phpcbf
     uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@feature/super-linter-900
+    permissions:
+      statuses: write
     with:
       # exclude third-party code
       filter-regex-exclude: ".*/assets/uls/.*"
