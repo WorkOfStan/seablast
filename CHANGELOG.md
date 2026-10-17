@@ -19,9 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.2.19] - 2026-09-DD
+## [0.2.19] - 2026-10-17
 
-docs: Clarify what `ADMIN_BOOLEAN_FIELDS` exposes
+fix: Restrict debug logging and preserve independent PDO errors
 
 ### Added
 
@@ -30,6 +30,25 @@ docs: Clarify what `ADMIN_BOOLEAN_FIELDS` exposes
 ### Changed
 
 - docs: Clarify that `ADMIN_BOOLEAN_FIELDS` exposes automatically detected runtime metadata rather than a manual configuration option.
+- docs: Clarify that application agents should reuse existing configuration constants for the same settings.
+- ci(blast.sh): Run PHPUnit after testing migrations and before development migrations so test failures stop development migrations.
+- ci: bump Seablast Actions to v0.2.12, hence bump super-linter to v9.0.0
+
+### Fixed
+
+- Preserve independent PDO exceptions without initializing Seablast's lazy PDO adapter while rendering diagnostics.
+- Read the view debug-dump logging level through the model configuration accessor.
+- Read the controller debug-dump logging level through the initialized model configuration accessor.
+- fix(ClientErrorRateLimiter): Use the expected byte count when truncating client error counter files for PHPStan 1.12 and 2.3 compatibility.
+
+### Security
+
+- Temporarily allow `GHSA-vjqc-q4mp-2rvf` / `CVE-2026-79752` for `cakephp/database` to retain PHP 7.3 compatibility.
+  - The vulnerability affects several `FunctionsBuilder` methods when user-controlled values are passed to SQL function parameters.
+  - This exception should be removed once CakePHP provides a patched release compatible with PHP 7.3, or when PHP is upgraded to a version supported by the currently patched CakePHP releases.
+- Prevent model data from being copied into debug logs with different access and retention rules.
+- Record disabled model and view parameter logging as a partial SEC-004 mitigation; keep SQL logging and remaining sensitive debug dumps open.
+- Disable complete view parameter logging, including the injected CSRF token, and gate model and parameter Tracy dumps on `SB_LOGGING_LEVEL >= 5`.
 
 ## [0.2.18] - 2026-09-13
 
@@ -580,7 +599,8 @@ SeablastMysqli error logging improved, HTTPS identified
 - **model returns knowledge()**
 - a nice Under construction page
 
-[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.18...HEAD?w=1
+[Unreleased]: https://github.com/WorkOfStan/seablast/compare/v0.2.19...HEAD?w=1
+[0.2.19]: https://github.com/WorkOfStan/seablast/compare/v0.2.18...v0.2.19?w=1
 [0.2.18]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.5...v0.2.18?w=1
 [0.2.17.5]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.4...v0.2.17.5?w=1
 [0.2.17.4]: https://github.com/WorkOfStan/seablast/compare/v0.2.17.3...v0.2.17.4?w=1

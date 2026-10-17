@@ -28,13 +28,17 @@ class SeablastView
     public function __construct(SeablastModel $model)
     {
         $this->model = $model;
-        Debugger::barDump($this->model, 'Model passed to SeablastView'); // debug
         $this->params = $this->model->getParameters();
-        Debugger::barDump($this->params, 'Params for SeablastView'); // debug
-        Debugger::log('Params for SeablastView: ' . print_r($this->params, true), ILogger::DEBUG);
+        // Do not log view data: application access rules may be stricter than log access and retention rules.
+        // Debugger::log('Params for SeablastView: ' . print_r($this->params, true), ILogger::DEBUG);
         $this->params->configuration = $this->model->getConfiguration();
-        if (isset($this->params->redirection)) { // TODO remove this condition in higher version than 0.2
-            throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated
+        // Dump when severity DEBUG
+        if ($this->params->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) {
+            Debugger::barDump($this->model, 'Model passed to SeablastView');
+            Debugger::barDump($this->params, 'Params for SeablastView');
+        }
+        if (isset($this->params->redirection)) {
+            throw new \Exception('not redirection but use redirectionUrl'); // debug deprecated remove >0.2.x
         }
         if (isset($this->params->rest)) {
             Assert::true(
@@ -95,7 +99,7 @@ class SeablastView
             return $templatePath;
         }
         throw new MissingTemplateException($this->model->mapping['template'] . ' template is neither in app '
-            . $templatePath . ' nor in library'); // TODO improve the error message
+            . $templatePath . ' nor in library');
     }
 
     private function httpResponseCode(): void

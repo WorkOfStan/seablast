@@ -1,6 +1,6 @@
 #!/bin/bash
 # blast.sh - Management script for deployment and development of a Seablast application
-# Seablast:v0.2.18
+# Seablast:v0.2.19
 # Fail fast on real script errors:
 # -e: stop on unexpected non-zero exit codes
 # -u: treat unset variables as errors, which makes argument handling stricter
@@ -97,17 +97,19 @@ assemble() {
 	display_header "-- Updating Composer dependencies --"
 	composer update -a --prefer-dist --no-progress
 
-	display_header "-- Running database TESTING migrations --"
+	display_header "-- Running database migrations: testing --"
 	# In order to properly unit test all features, set-up a test database, put its
 	# credentials to the testing section of the phinx configuration file and run
 	# phinx migrate -e testing before phpunit.
 	# Drop tables in the testing database if changes were made to migrations.
 	vendor/bin/phinx migrate -e testing --configuration ./conf/phinx.local.php
 
-	display_header "-- Running database migrations --"
-	vendor/bin/phinx migrate -e development --configuration ./conf/phinx.local.php
-
+	# Tests must explicitly use the separate testing database; Phinx's -e does not configure PHPUnit.
+	# With set -e, a PHPUnit failure stops development migrations. Missing phpunit.xml still skips tests.
 	run_phpunit
+
+	display_header "-- Running database migrations: development --"
+	vendor/bin/phinx migrate -e development --configuration ./conf/phinx.local.php
 }
 
 # Previews and removes temporary files created during development

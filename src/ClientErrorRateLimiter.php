@@ -127,7 +127,8 @@ final class ClientErrorRateLimiter
             }
             $file->rewind();
             $written = $file->fwrite($encoded);
-            if ($written !== strlen($encoded) || !$file->ftruncate($written) || !$file->fflush()) {
+            $size = strlen($encoded);
+            if ($written !== $size || !$file->ftruncate($size) || !$file->fflush()) {
                 return ['status' => 503, 'retryAfter' => 0];
             }
             return ['status' => 200, 'retryAfter' => 0];
@@ -136,18 +137,6 @@ final class ClientErrorRateLimiter
         } finally {
             $file->flock(LOCK_UN);
         }
-    }
-
-    /** @return RateState */
-    private function emptyState(int $now): array
-    {
-        return [
-            'minute' => intdiv($now, 60) * 60,
-            'hour' => intdiv($now, 3600) * 3600,
-            'minuteCount' => 0,
-            'hourCount' => 0,
-            'clients' => [],
-        ];
     }
 
     /** @return RateState|null */
@@ -186,6 +175,18 @@ final class ClientErrorRateLimiter
             'minuteCount' => $state['minuteCount'],
             'hourCount' => $state['hourCount'],
             'clients' => $clients,
+        ];
+    }
+
+    /** @return RateState */
+    private function emptyState(int $now): array
+    {
+        return [
+            'minute' => intdiv($now, 60) * 60,
+            'hour' => intdiv($now, 3600) * 3600,
+            'minuteCount' => 0,
+            'hourCount' => 0,
+            'clients' => [],
         ];
     }
 

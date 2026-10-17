@@ -26,6 +26,11 @@ class RequestContextHttpModel
 
     public function knowledge(): stdClass
     {
+        if (isset($this->superglobals->get['independentPdoFailure'])) {
+            $independentPdo = new \PDO('sqlite::memory:');
+            $independentPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $independentPdo->query('SELECT * FROM independent_pdo_failure');
+        }
         if (isset($this->superglobals->get['regenerate'])) {
             session_regenerate_id(true);
         }

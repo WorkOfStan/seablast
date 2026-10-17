@@ -296,6 +296,24 @@ class RequestContextHttpTest extends TestCase
         $this->assertSame(415, $wrongType['status']);
     }
 
+    public function testIndependentPdoExceptionPreservesOriginalFailure(): void
+    {
+        if (!in_array('sqlite', \PDO::getAvailableDrivers(), true)) {
+            $this->markTestSkipped('pdo_sqlite is required for the independent PDO regression test.');
+        }
+        $response = $this->request(
+            ['independentPdoFailure' => '1'],
+            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7']
+        );
+
+        $this->assertSame(500, $response['status']);
+        $this->assertStringContainsString('no such table: independent_pdo_failure', $response['body']);
+        $this->assertStringNotContainsString(
+            'Provide credentials in conf/phinx.local.php to use database.',
+            $response['body']
+        );
+    }
+
     /**
      * @param string[] $query
      * @param string[]|null $headers

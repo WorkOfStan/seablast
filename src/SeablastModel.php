@@ -30,7 +30,10 @@ class SeablastModel
     public function __construct(SeablastController $controller, Superglobals $superglobals)
     {
         $this->controller = $controller;
-        Debugger::barDump($this->controller, 'Controller in SeablastModel'); // debug
+        // Dump when severity DEBUG
+        if ($this->getConfiguration()->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) {
+            Debugger::barDump($this->controller, 'Controller in SeablastModel');
+        }
         $this->mapping = $this->controller->mapping;
         if (isset($this->mapping['model'])) {
             $className = $this->mapping['model'];
@@ -42,7 +45,11 @@ class SeablastModel
             $knowledge = $model->knowledge();
             Assert::isInstanceOf($knowledge, \stdClass::class);
             $this->viewParameters = $knowledge;
-            Debugger::log('knowledge of ' . $className . ': ' . print_r($this->viewParameters, true), ILogger::DEBUG);
+            // Do not log model data: application access rules may be stricter than log access and retention rules.
+            // Debugger::log(
+            //     'knowledge of ' . $className . ': ' . print_r($this->viewParameters, true),
+            //     ILogger::DEBUG
+            // );
             Assert::isAOf($this->viewParameters, 'stdClass', "The knowledge of {$className} MUST be of stdClass type.");
         } else {
             Debugger::log('No model, no knowledge.', ILogger::DEBUG);
@@ -52,7 +59,7 @@ class SeablastModel
         // CSRF token to be used by view
         $csrfTokenManager = new CsrfTokenManager();
         $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json')->getValue();
-        // todo kdy invalidovat? určitě při logout
+        // todo when invalidate. Certainly during logout!
     }
 
     /**
