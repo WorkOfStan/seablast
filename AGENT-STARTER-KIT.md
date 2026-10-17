@@ -39,8 +39,8 @@ The app-level configuration files are:
 - `conf/phinx.local.php` for Seablast's built-in MySQL adapters
 
 Each Seablast config file returns a callable that receives `SeablastConfiguration`.
-Use `addArrayArrayString()` when a later configuration layer should merge strings
-into an existing property/key entry instead of replacing the entry with `setArrayArrayString()`.
+Use `addArrayArrayString()` when a later configuration layer should merge strings into an existing property/key entry instead of replacing the entry with `setArrayArrayString()`.
+Reuse existing configuration constants from `SeablastConstant` (or `AuthConstant` or `I18nConstant`, where applicable) instead of defining new constants for the same settings.
 
 ## Routing
 
@@ -165,6 +165,7 @@ They expose lazy `mysqli()` and `pdo()` adapters through `SeablastConfiguration`
 
 An app may keep a custom database layer instead, especially during migration.
 If it does, document that choice in the app and keep Seablast route/model/view behavior separate from the custom persistence layer.
+PDO exceptions from custom persistence are rethrown unchanged; Seablast annotates its PDO debug panel only when its own lazy adapter already exists.
 
 Do not track `composer.lock` in applications so the Seablast runtime can run in multiple environments.
 
@@ -237,6 +238,10 @@ with an explicit severity from `Tracy\ILogger`, for example:
 Choose the appropriate severity, such as `DEBUG`, `INFO`, `WARNING`, or `ERROR`,
 so logging respects `SeablastConstant::SB_LOGGING_LEVEL`. Do not log passwords,
 authentication tokens, or other secrets.
+
+Complete model results and view parameters are not logged. View model and parameter
+Tracy dumps require `SB_LOGGING_LEVEL >= 5` and can still expose secrets; SQL logging
+and other diagnostics remain subject to access and retention controls.
 
 For frontend logging, use `ErrorLogger`, which is always available as an export
 from `assets/scripts/seablast.js`. Import it into your JavaScript module and create

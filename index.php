@@ -45,8 +45,10 @@ $superglobals->setSession($_SESSION); // as only now the session started
 try {
     new SeablastView(new SeablastModel($controller, $superglobals));
 } catch (\PDOException $e) {
-    // make sure that the database Tracy BarPanel with error is displayed when PDOException is thrown
-    $setup->getConfiguration()->pdo()->indicateDatabaseError();
+    // Mark an existing PDO Tracy BarPanel without initializing an unrelated framework connection.
+    if ($setup->getConfiguration()->pdoStatus()) {
+        $setup->getConfiguration()->pdo()->indicateDatabaseError();
+    }
     $setup->getConfiguration()->showSqlBarPanel();
     throw $e;
 } catch (\Throwable $e) {

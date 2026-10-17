@@ -320,6 +320,7 @@ Useful behavior to preserve:
 - both adapters collect statements for Tracy bar panels
 - `setUser()` propagates the current user to both adapters
 - `dbmsTablePrefix()` lazily initializes a preferred connection when needed
+- bootstrap PDO exception handling annotates the framework PDO panel only when that lazy adapter is already initialized, preserving failures from independent application connections
 
 Deprecated compatibility methods still present:
 
@@ -399,6 +400,10 @@ explicit `Tracy\ILogger` severity such as `DEBUG`, `INFO`, `WARNING`, or `ERROR`
 For example: `\Tracy\Debugger::log('Unable to process the request.', \Tracy\ILogger::ERROR);`.
 This routes messages through the configured logger and `SeablastConstant::SB_LOGGING_LEVEL`.
 Do not log passwords, authentication tokens, or other secrets.
+
+Complete model results and view parameters are not logged. View model and parameter
+Tracy dumps require `SB_LOGGING_LEVEL >= 5` and can still expose secrets; SQL logging
+and other diagnostics remain subject to access and retention controls.
 
 For frontend logging, use `ErrorLogger`, which is always exported by
 `assets/scripts/seablast.js`. Import it into the consuming JavaScript module,

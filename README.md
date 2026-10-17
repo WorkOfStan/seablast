@@ -23,7 +23,10 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 - everything can be overridden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
 - use `addArrayArrayString()` to merge more strings into an existing property/key entry without replacing its current values; a missing entry is initialized automatically
 - set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
+- applications may use an independent persistence layer; its PDO exceptions do not initialize Seablast's lazy PDO adapter while diagnostics are rendered
 - the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
+
+Complete model results and view parameters are not written to debug logs. The view adds model and parameter dumps to Tracy only when `SB_LOGGING_LEVEL >= 5`; these dumps can include CSRF tokens and other sensitive data. SQL query logging and other diagnostics still require appropriate access and retention controls.
 
 ### Reverse proxies and session cookies
 
