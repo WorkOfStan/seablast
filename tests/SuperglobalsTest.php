@@ -9,6 +9,16 @@ use Seablast\Seablast\Superglobals;
 
 class SuperglobalsTest extends TestCase
 {
+    public function testConstructorInitializesEmptyArrays(): void
+    {
+        $superglobals = new Superglobals();
+
+        $this->assertEmpty($superglobals->get);
+        $this->assertEmpty($superglobals->post);
+        $this->assertEmpty($superglobals->server);
+        $this->assertEmpty($superglobals->session);
+    }
+
     public function testConstructorInitializesSuperglobals(): void
     {
         $get = ['key1' => 'value1'];
@@ -22,16 +32,6 @@ class SuperglobalsTest extends TestCase
         $this->assertSame($post, $superglobals->post);
         $this->assertSame($server, $superglobals->server);
         $this->assertSame($session, $superglobals->session);
-    }
-
-    public function testConstructorInitializesEmptyArrays(): void
-    {
-        $superglobals = new Superglobals();
-
-        $this->assertEmpty($superglobals->get);
-        $this->assertEmpty($superglobals->post);
-        $this->assertEmpty($superglobals->server);
-        $this->assertEmpty($superglobals->session);
     }
 
     public function testSetSessionUpdatesSession(): void

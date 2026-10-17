@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Seablast\Seablast\Exceptions\DbmsException;
 use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastMysqli;
-use Seablast\Seablast\Exceptions\DbmsException;
 use Tracy\Debugger;
 
 /**
@@ -48,40 +48,6 @@ class SeablastMysqliTest extends TestCase
         $this->assertInstanceOf(SeablastMysqli::class, $this->mysqli);
     }
 
-    public function testQueryLogging(): void
-    {
-        $query1 = 'CREATE TABLE IF NOT EXISTS testTable (id INT AUTO_INCREMENT PRIMARY KEY, '
-                . 'name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);';
-        $result1 = $this->mysqli->query($query1);
-        $this->assertTrue($result1);
-
-        $query2 = "UPDATE testTable SET name = 'value'";
-        $result2 = $this->mysqli->query($query2);
-        $this->assertTrue($result2);
-    }
-
-    public function testQueryFailureLogsError(): void
-    {
-        $query = "UPDATE table SET column = 'value'";
-        try {
-            $result = $this->mysqli->query($query);
-            $this->assertFalse($result);
-        } catch (DbmsException $e) {
-            // that's how it should be
-        } catch (\Exception $e) {
-            // Handle any other exceptions (fallback)
-            $this->fail('Failure was caught but as a generic exception, not DbmsException: ' . $e->getMessage());
-        }
-        // Check if the query was logged with the error
-    }
-
-    public function testQueryStrictThrowsExceptionOnFailure(): void
-    {
-        $this->expectException(DbmsException::class);
-        $query = "UPDATE table SET column = 'value'";
-        $this->mysqli->queryStrict($query);
-    }
-
     public function testIsReadDataTypeQuery(): void
     {
         $reflection = new \ReflectionClass($this->mysqli);
@@ -102,5 +68,39 @@ class SeablastMysqliTest extends TestCase
         $query = "UPDATE table SET column = 'value'";
         $method->invoke($this->mysqli, $query);
         // Check if the log file was created and contains the query
+    }
+
+    public function testQueryFailureLogsError(): void
+    {
+        $query = "UPDATE table SET column = 'value'";
+        try {
+            $result = $this->mysqli->query($query);
+            $this->assertFalse($result);
+        } catch (DbmsException $e) {
+            // that's how it should be
+        } catch (\Exception $e) {
+            // Handle any other exceptions (fallback)
+            $this->fail('Failure was caught but as a generic exception, not DbmsException: ' . $e->getMessage());
+        }
+        // Check if the query was logged with the error
+    }
+
+    public function testQueryLogging(): void
+    {
+        $query1 = 'CREATE TABLE IF NOT EXISTS testTable (id INT AUTO_INCREMENT PRIMARY KEY, '
+                . 'name VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);';
+        $result1 = $this->mysqli->query($query1);
+        $this->assertTrue($result1);
+
+        $query2 = "UPDATE testTable SET name = 'value'";
+        $result2 = $this->mysqli->query($query2);
+        $this->assertTrue($result2);
+    }
+
+    public function testQueryStrictThrowsExceptionOnFailure(): void
+    {
+        $this->expectException(DbmsException::class);
+        $query = "UPDATE table SET column = 'value'";
+        $this->mysqli->queryStrict($query);
     }
 }

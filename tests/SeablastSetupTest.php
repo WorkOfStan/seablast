@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastSetup;
-use Seablast\Seablast\SeablastConfiguration;
 use Tracy\Debugger;
 
 class SeablastSetupTest extends TestCase
@@ -24,13 +24,6 @@ class SeablastSetupTest extends TestCase
     protected function tearDown(): void
     {
         parent::tearDown();
-    }
-
-    public function testConfigurationIsInitialized(): void
-    {
-        $setup = new SeablastSetup();
-
-        $this->assertInstanceOf(SeablastConfiguration::class, $setup->getConfiguration());
     }
 
     public function testConfigurationFilesAreProcessed(): void
@@ -57,6 +50,13 @@ class SeablastSetupTest extends TestCase
         //unlink($defaultConfig); // this one actually exists!
         unlink($appConfig);
         unlink($localConfig);
+    }
+
+    public function testConfigurationIsInitialized(): void
+    {
+        $setup = new SeablastSetup();
+
+        $this->assertInstanceOf(SeablastConfiguration::class, $setup->getConfiguration());
     }
 
     public function testMissingConfigurationFilesAreHandledGracefully(): void

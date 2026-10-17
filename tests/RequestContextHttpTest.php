@@ -9,12 +9,68 @@ use PHPUnit\Framework\TestCase;
 /** Real bootstrap and response-header tests, run on each supported PHP version in CI. */
 class RequestContextHttpTest extends TestCase
 {
-    /** @var resource|null */
-    private static $process;
-    /** @var string */
-    private static $app;
     /** @var string */
     private static $address;
+    /** @var string */
+    private static $app;
+    /** @var resource|null */
+    private static $process;
+
+    /**
+     * Accept the combined process-status return types across supported PHP versions.
+     *
+     * @param array{running: bool}|false $status
+     */
+    private static function isRunningStatus($status): bool
+    {
+        return $status !== false && $status['running'];
+    }
+
+    /**
+     * @param string[] $query
+     * @param string[]|null $headers
+     * @return array{status: int, headers: string[], body: string}
+     */
+    private function request(array $query, ?array $headers = null, string $method = 'GET', string $body = ''): array
+    {
+        $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
+        $headers[] = 'Host: app.example.com';
+        $headers[] = 'Connection: close';
+        $context = stream_context_create(['http' => [
+            'method' => $method,
+            'content' => $body,
+            'ignore_errors' => true,
+            'timeout' => 10,
+            'header' => implode("\r\n", $headers),
+        ]]);
+        $stream = fopen('http://' . self::$address . '/?' . http_build_query($query), 'r', false, $context);
+        $this->assertIsResource($stream);
+        $metadata = stream_get_meta_data($stream);
+        $body = stream_get_contents($stream);
+        fclose($stream);
+        $this->assertIsString($body);
+        $responseHeaders = $metadata['wrapper_data'];
+        $this->assertIsArray($responseHeaders);
+        $this->assertNotEmpty($responseHeaders);
+        $headers = [];
+        foreach ($responseHeaders as $header) {
+            $this->assertIsString($header);
+            $headers[] = $header;
+        }
+        $parts = explode(' ', $headers[0]);
+        return ['status' => (int) $parts[1], 'headers' => $headers, 'body' => $body];
+    }
+
+    /**
+     * @param string[] $headers
+     * @return string[]
+     */
+    private function sessionCookies(array $headers): array
+    {
+        return array_values(array_filter(array_map('strtolower', $headers), static function (string $header): bool {
+            return strpos($header, 'set-cookie: phpsessid=') === 0;
+        }));
+    }
 
     public static function setUpBeforeClass(): void
     {
@@ -125,129 +181,6 @@ class RequestContextHttpTest extends TestCase
         }
     }
 
-    /**
-     * Accept the combined process-status return types across supported PHP versions.
-     *
-     * @param array{running: bool}|false $status
-     */
-    private static function isRunningStatus($status): bool
-    {
-        return $status !== false && $status['running'];
-    }
-
-    public function testProcessStatusCompatibility(): void
-    {
-        $this->assertFalse(self::isRunningStatus(false));
-        $this->assertFalse(self::isRunningStatus(['running' => false]));
-        $this->assertTrue(self::isRunningStatus(['running' => true]));
-    }
-
-    public function testNormalAndMaintenanceCookieHeadersAndRegeneration(): void
-    {
-        $cases = [
-            ['direct' => '1'],
-            ['direct' => '1', 'tls' => '1'],
-            [],
-            ['maintenance' => '1'],
-            ['regenerate' => '1'],
-            ['sameSite' => 'Strict'],
-            ['sameSite' => 'None'],
-            ['domain' => '.example.com'],
-        ];
-        foreach ($cases as $query) {
-            $response = $this->request($query);
-            $this->assertSame(200, $response['status'], $response['body']);
-            $cookies = $this->sessionCookies($response['headers']);
-            $this->assertNotEmpty($cookies);
-            foreach ($cookies as $cookie) {
-                $this->assertStringContainsString('httponly', $cookie);
-                $this->assertStringContainsString('samesite=' . strtolower($query['sameSite'] ?? 'Lax'), $cookie);
-                $this->assertStringContainsString('path=/app', $cookie);
-                $this->assertSame(
-                    !isset($query['direct']) || isset($query['tls']),
-                    strpos($cookie, '; secure') !== false
-                );
-                if (isset($query['domain'])) {
-                    $this->assertStringContainsString('domain=example.com', $cookie);
-                } else {
-                    $this->assertStringNotContainsString('domain=', $cookie);
-                }
-            }
-            if (isset($query['maintenance'])) {
-                $this->assertSame('maintenance fixture', $response['body']);
-            } else {
-                $body = json_decode($response['body'], true);
-                $this->assertIsArray($body);
-                $scheme = isset($query['direct']) && !isset($query['tls']) ? 'http' : 'https';
-                $this->assertSame($scheme . '://app.example.com/app', $body['root']);
-                $this->assertSame('/app', $body['path'], 'Legacy SameSite suffix must not leak into logical paths.');
-                $this->assertFalse($body['debug']);
-            }
-        }
-    }
-
-    public function testInvalidForwardingFailsBeforeSessionOrMaintenance(): void
-    {
-        $cases = [
-            [],
-            ['X-Forwarded-Proto: https'],
-            ['X-Forwarded-Proto: https,http', 'X-Forwarded-For: 198.51.100.8'],
-            ['X-Forwarded-Proto: https', 'X-Forwarded-For: unknown'],
-            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8,'],
-        ];
-        foreach ($cases as $headers) {
-            $response = $this->request(['maintenance' => '1'], $headers);
-            $this->assertSame(400, $response['status']);
-            $this->assertSame('Bad Request', $response['body']);
-            $this->assertSame([], $this->sessionCookies($response['headers']));
-        }
-    }
-
-    public function testTracyAndMaintenanceShareVerifiedClientDecision(): void
-    {
-        $cases = [
-            ['198.51.100.7', true],
-            ['127.0.0.1, 198.51.100.8', false],
-            ['198.51.100.8, 2001:db8::1', false],
-            ['127.0.0.1, 2001:db8::1', false],
-        ];
-        foreach ($cases as $case) {
-            $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: ' . $case[0]];
-            $normal = $this->request([], $headers);
-            $this->assertSame(200, $normal['status'], $normal['body']);
-            $body = json_decode($normal['body'], true);
-            $this->assertIsArray($body);
-            $this->assertSame($case[1], $body['debug']);
-            $maintenance = $this->request(['maintenance' => '1'], $headers);
-            $this->assertSame(200, $maintenance['status'], $maintenance['body']);
-            $this->assertSame(!$case[1], $maintenance['body'] === 'maintenance fixture');
-        }
-    }
-
-    public function testInvalidCookieConfigurationIncludingAlreadyActiveSession(): void
-    {
-        $cases = [
-            ['sameSite' => 'invalid'],
-            ['sameSite' => 'None', 'direct' => '1'],
-            ['domain' => 'unrelated.example'],
-            ['domain' => 'ample.com'],
-            ['domain' => 'example.com:443'],
-            ['domain' => 'example.com; Secure'],
-            ['path' => '/; injected=value'],
-            ['path' => "/app\r\n"],
-            ['active' => '1', 'sameSite' => 'invalid'],
-            ['invalidProxy' => '1'],
-        ];
-        foreach ($cases as $query) {
-            $response = $this->request($query);
-            $this->assertSame(500, $response['status']);
-            $this->assertStringNotContainsString('SeablastConfigurationException', $response['body']);
-            if (!isset($query['active'])) {
-                $this->assertSame([], $this->sessionCookies($response['headers']));
-            }
-        }
-    }
-
     public function testAlreadyActiveSessionIsNotRestarted(): void
     {
         $response = $this->request(['active' => '1']);
@@ -314,49 +247,116 @@ class RequestContextHttpTest extends TestCase
         );
     }
 
-    /**
-     * @param string[] $query
-     * @param string[]|null $headers
-     * @return array{status: int, headers: string[], body: string}
-     */
-    private function request(array $query, ?array $headers = null, string $method = 'GET', string $body = ''): array
+    public function testInvalidCookieConfigurationIncludingAlreadyActiveSession(): void
     {
-        $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
-        $headers[] = 'Host: app.example.com';
-        $headers[] = 'Connection: close';
-        $context = stream_context_create(['http' => [
-            'method' => $method,
-            'content' => $body,
-            'ignore_errors' => true,
-            'timeout' => 10,
-            'header' => implode("\r\n", $headers),
-        ]]);
-        $stream = fopen('http://' . self::$address . '/?' . http_build_query($query), 'r', false, $context);
-        $this->assertIsResource($stream);
-        $metadata = stream_get_meta_data($stream);
-        $body = stream_get_contents($stream);
-        fclose($stream);
-        $this->assertIsString($body);
-        $responseHeaders = $metadata['wrapper_data'];
-        $this->assertIsArray($responseHeaders);
-        $this->assertNotEmpty($responseHeaders);
-        $headers = [];
-        foreach ($responseHeaders as $header) {
-            $this->assertIsString($header);
-            $headers[] = $header;
+        $cases = [
+            ['sameSite' => 'invalid'],
+            ['sameSite' => 'None', 'direct' => '1'],
+            ['domain' => 'unrelated.example'],
+            ['domain' => 'ample.com'],
+            ['domain' => 'example.com:443'],
+            ['domain' => 'example.com; Secure'],
+            ['path' => '/; injected=value'],
+            ['path' => "/app\r\n"],
+            ['active' => '1', 'sameSite' => 'invalid'],
+            ['invalidProxy' => '1'],
+        ];
+        foreach ($cases as $query) {
+            $response = $this->request($query);
+            $this->assertSame(500, $response['status']);
+            $this->assertStringNotContainsString('SeablastConfigurationException', $response['body']);
+            if (!isset($query['active'])) {
+                $this->assertSame([], $this->sessionCookies($response['headers']));
+            }
         }
-        $parts = explode(' ', $headers[0]);
-        return ['status' => (int) $parts[1], 'headers' => $headers, 'body' => $body];
     }
 
-    /**
-     * @param string[] $headers
-     * @return string[]
-     */
-    private function sessionCookies(array $headers): array
+    public function testInvalidForwardingFailsBeforeSessionOrMaintenance(): void
     {
-        return array_values(array_filter(array_map('strtolower', $headers), static function (string $header): bool {
-            return strpos($header, 'set-cookie: phpsessid=') === 0;
-        }));
+        $cases = [
+            [],
+            ['X-Forwarded-Proto: https'],
+            ['X-Forwarded-Proto: https,http', 'X-Forwarded-For: 198.51.100.8'],
+            ['X-Forwarded-Proto: https', 'X-Forwarded-For: unknown'],
+            ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8,'],
+        ];
+        foreach ($cases as $headers) {
+            $response = $this->request(['maintenance' => '1'], $headers);
+            $this->assertSame(400, $response['status']);
+            $this->assertSame('Bad Request', $response['body']);
+            $this->assertSame([], $this->sessionCookies($response['headers']));
+        }
+    }
+
+    public function testNormalAndMaintenanceCookieHeadersAndRegeneration(): void
+    {
+        $cases = [
+            ['direct' => '1'],
+            ['direct' => '1', 'tls' => '1'],
+            [],
+            ['maintenance' => '1'],
+            ['regenerate' => '1'],
+            ['sameSite' => 'Strict'],
+            ['sameSite' => 'None'],
+            ['domain' => '.example.com'],
+        ];
+        foreach ($cases as $query) {
+            $response = $this->request($query);
+            $this->assertSame(200, $response['status'], $response['body']);
+            $cookies = $this->sessionCookies($response['headers']);
+            $this->assertNotEmpty($cookies);
+            foreach ($cookies as $cookie) {
+                $this->assertStringContainsString('httponly', $cookie);
+                $this->assertStringContainsString('samesite=' . strtolower($query['sameSite'] ?? 'Lax'), $cookie);
+                $this->assertStringContainsString('path=/app', $cookie);
+                $this->assertSame(
+                    !isset($query['direct']) || isset($query['tls']),
+                    strpos($cookie, '; secure') !== false
+                );
+                if (isset($query['domain'])) {
+                    $this->assertStringContainsString('domain=example.com', $cookie);
+                } else {
+                    $this->assertStringNotContainsString('domain=', $cookie);
+                }
+            }
+            if (isset($query['maintenance'])) {
+                $this->assertSame('maintenance fixture', $response['body']);
+            } else {
+                $body = json_decode($response['body'], true);
+                $this->assertIsArray($body);
+                $scheme = isset($query['direct']) && !isset($query['tls']) ? 'http' : 'https';
+                $this->assertSame($scheme . '://app.example.com/app', $body['root']);
+                $this->assertSame('/app', $body['path'], 'Legacy SameSite suffix must not leak into logical paths.');
+                $this->assertFalse($body['debug']);
+            }
+        }
+    }
+
+    public function testProcessStatusCompatibility(): void
+    {
+        $this->assertFalse(self::isRunningStatus(false));
+        $this->assertFalse(self::isRunningStatus(['running' => false]));
+        $this->assertTrue(self::isRunningStatus(['running' => true]));
+    }
+
+    public function testTracyAndMaintenanceShareVerifiedClientDecision(): void
+    {
+        $cases = [
+            ['198.51.100.7', true],
+            ['127.0.0.1, 198.51.100.8', false],
+            ['198.51.100.8, 2001:db8::1', false],
+            ['127.0.0.1, 2001:db8::1', false],
+        ];
+        foreach ($cases as $case) {
+            $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: ' . $case[0]];
+            $normal = $this->request([], $headers);
+            $this->assertSame(200, $normal['status'], $normal['body']);
+            $body = json_decode($normal['body'], true);
+            $this->assertIsArray($body);
+            $this->assertSame($case[1], $body['debug']);
+            $maintenance = $this->request(['maintenance' => '1'], $headers);
+            $this->assertSame(200, $maintenance['status'], $maintenance['body']);
+            $this->assertSame(!$case[1], $maintenance['body'] === 'maintenance fixture');
+        }
     }
 }

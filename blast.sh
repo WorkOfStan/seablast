@@ -183,7 +183,7 @@ self_update() {
 		display_warning "Self-update: Update file not found at $update_file"
 	elif [ "$update_file" -nt "$0" ]; then
 		cp "$update_file" "$0"
-		display_header "Self-update successful: Updated to the newer version from $update_file"
+		display_header "Self-update successful: Updated to the newer version from $update_file - check changes before commit"
 	else
 		display_warning "Self-update: Update file found, but it is not newer than the current version."
 	fi

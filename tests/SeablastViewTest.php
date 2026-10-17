@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Seablast\Seablast\SeablastConstant;
-use Seablast\Seablast\SeablastController;
-use Seablast\Seablast\SeablastView;
-use Seablast\Seablast\SeablastModel;
-use Seablast\Seablast\SeablastConfiguration;
-use Seablast\Seablast\SeablastFlag;
-use Seablast\Seablast\Superglobals;
 use Seablast\Seablast\Exceptions\MissingTemplateException;
 use Seablast\Seablast\Exceptions\UnknownHttpCodeException;
+use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
+use Seablast\Seablast\SeablastController;
+use Seablast\Seablast\SeablastFlag;
+use Seablast\Seablast\SeablastModel;
+use Seablast\Seablast\SeablastView;
+use Seablast\Seablast\Superglobals;
 use Tracy\Debugger;
 
 class SeablastViewTest extends TestCase
@@ -89,6 +89,14 @@ class SeablastViewTest extends TestCase
         $this->assertStringStartsWith('<!doctype html>', $output);
     }
 
+    public function testGetTemplatePathThrowsMissingTemplateException(): void
+    {
+        $this->expectException(MissingTemplateException::class);
+        $this->controller->mapping = ['template' => 'nonExistentTemplate'];
+        $model = new SeablastModel($this->controller, new Superglobals());
+        new SeablastView($model);
+    }
+
     public function testHtmlErrorWithoutRestPayloadRendersErrorTemplate(): void
     {
         $this->configuration
@@ -117,14 +125,6 @@ class SeablastViewTest extends TestCase
         $this->assertNotFalse($output, 'Should contain HTML error output.');
         $this->assertStringStartsWith('<!doctype html>', $output);
         $this->assertStringContainsString('Not found', $output);
-    }
-
-    public function testGetTemplatePathThrowsMissingTemplateException(): void
-    {
-        $this->expectException(MissingTemplateException::class);
-        $this->controller->mapping = ['template' => 'nonExistentTemplate'];
-        $model = new SeablastModel($this->controller, new Superglobals());
-        new SeablastView($model);
     }
 
     public function testRenderJsonOutputsJson(): void

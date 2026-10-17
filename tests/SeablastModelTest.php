@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Seablast\Seablast\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Seablast\Seablast\SeablastModel;
+use Seablast\Seablast\SeablastConfiguration;
 use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\SeablastController;
+use Seablast\Seablast\SeablastModel;
 use Seablast\Seablast\Superglobals;
-use Seablast\Seablast\SeablastConfiguration;
-use Symfony\Component\Security\Csrf\CsrfTokenManager;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use stdClass;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Tracy\Debugger;
 
 class SeablastModelTest extends TestCase
@@ -83,12 +83,6 @@ class SeablastModelTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $params);
     }
 
-    public function testGetConfiguration(): void
-    {
-        $model = new SeablastModel($this->controller, new Superglobals());
-        $this->assertSame($this->configuration, $model->getConfiguration());
-    }
-
     public function testCsrfTokenIsSet(): void
     {
         $controllerMock = $this->createMock(SeablastController::class);
@@ -112,5 +106,11 @@ class SeablastModelTest extends TestCase
             strlen($params->csrfToken) > 60,
             'CSRF token is expected to be longer than 60 characters, it has only ' . strlen($params->csrfToken) . '.'
         );
+    }
+
+    public function testGetConfiguration(): void
+    {
+        $model = new SeablastModel($this->controller, new Superglobals());
+        $this->assertSame($this->configuration, $model->getConfiguration());
     }
 }

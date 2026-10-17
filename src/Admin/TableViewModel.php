@@ -52,28 +52,6 @@ class TableViewModel implements SeablastModelInterface
     }
 
     /**
-     * If there's a pipe, split the string by it.
-     *
-     * @param string $string
-     * @return ?array<string>
-     */
-    private function splitStringByFirstPipe($string): ?array
-    {
-        $position = strpos($string, '|');
-        if ($position === false) {
-            return null;
-            // If no pipe character is found, return the original string and an empty string
-            // return array($string, "");
-        }
-        return array(substr($string, 0, $position), substr($string, $position + 1));
-    }
-
-    private function escapeIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
-    }
-
-    /**
      * Get boolean-like columns of a table.
      *
      * @param string $tableName
@@ -172,6 +150,11 @@ class TableViewModel implements SeablastModelInterface
         }
 
         return $columnTypes;
+    }
+
+    private function escapeIdentifier(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
     /**
@@ -333,5 +316,22 @@ WHERE
                 // data
                 'table' => $data,
         ];
+    }
+
+    /**
+     * If there's a pipe, split the string by it.
+     *
+     * @param string $string
+     * @return ?array<string>
+     */
+    private function splitStringByFirstPipe($string): ?array
+    {
+        $position = strpos($string, '|');
+        if ($position === false) {
+            return null;
+            // If no pipe character is found, return the original string and an empty string
+            // return array($string, "");
+        }
+        return array(substr($string, 0, $position), substr($string, $position + 1));
     }
 }

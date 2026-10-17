@@ -112,24 +112,6 @@ class SeablastConfiguration
     }
 
     /**
-     * Return the table prefix from phinx config.
-     *
-     * @return string
-     */
-    public function dbmsTablePrefix(): string
-    {
-        if (is_null($this->connectionTablePrefix)) {
-            //throw new DbmsException('Initiate db first.');
-            // Let's create a preferred database connection.
-            $this->pdoCreate();
-            if (is_null($this->connectionTablePrefix)) {
-                throw new DbmsException('Could not properly initiate a PDO database interface.');
-            }
-        }
-        return $this->connectionTablePrefix;
-    }
-
-    /**
      * Read the database connection parameters from an external phinx configuration.
      *
      * @return array<mixed>
@@ -163,6 +145,24 @@ class SeablastConfiguration
         Debugger::barDump('Deprecated dbmsStatus(). Use mysqliStatus() instead.');
         Debugger::log('Deprecated dbmsStatus(). Use mysqliStatus() instead.', \Tracy\ILogger::INFO);
         return $this->mysqli instanceof \mysqli;
+    }
+
+    /**
+     * Return the table prefix from phinx config.
+     *
+     * @return string
+     */
+    public function dbmsTablePrefix(): string
+    {
+        if (is_null($this->connectionTablePrefix)) {
+            //throw new DbmsException('Initiate db first.');
+            // Let's create a preferred database connection.
+            $this->pdoCreate();
+            if (is_null($this->connectionTablePrefix)) {
+                throw new DbmsException('Could not properly initiate a PDO database interface.');
+            }
+        }
+        return $this->connectionTablePrefix;
     }
 
     /**

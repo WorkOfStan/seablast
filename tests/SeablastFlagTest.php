@@ -9,12 +9,28 @@ use Seablast\Seablast\SeablastFlag;
 
 class SeablastFlagTest extends TestCase
 {
+    public function testActivateReturnsSelf(): void
+    {
+        $flag = new SeablastFlag();
+        $result = $flag->activate('testFlag');
+
+        $this->assertSame($flag, $result);
+    }
+
     public function testActivateSetsFlag(): void
     {
         $flag = new SeablastFlag();
         $flag->activate('testFlag');
 
         $this->assertTrue($flag->status('testFlag'));
+    }
+
+    public function testDeactivateReturnsSelf(): void
+    {
+        $flag = new SeablastFlag();
+        $result = $flag->deactivate('testFlag');
+
+        $this->assertSame($flag, $result);
     }
 
     public function testDeactivateUnsetsFlag(): void
@@ -32,21 +48,5 @@ class SeablastFlagTest extends TestCase
         $flag = new SeablastFlag();
 
         $this->assertFalse($flag->status('nonExistentFlag'));
-    }
-
-    public function testActivateReturnsSelf(): void
-    {
-        $flag = new SeablastFlag();
-        $result = $flag->activate('testFlag');
-
-        $this->assertSame($flag, $result);
-    }
-
-    public function testDeactivateReturnsSelf(): void
-    {
-        $flag = new SeablastFlag();
-        $result = $flag->deactivate('testFlag');
-
-        $this->assertSame($flag, $result);
     }
 }

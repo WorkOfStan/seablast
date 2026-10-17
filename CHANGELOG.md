@@ -33,6 +33,7 @@ fix: Restrict debug logging and preserve independent PDO errors
 - docs: Clarify that application agents should reuse existing configuration constants for the same settings.
 - ci(blast.sh): Run PHPUnit after testing migrations and before development migrations so test failures stop development migrations.
 - ci: bump Seablast Actions to v0.2.12, hence bump super-linter to v9.0.0
+- Sort PHP imports, class constants, properties, and methods alphabetically, ignoring case and keeping constructors first.
 
 ### Fixed
 
