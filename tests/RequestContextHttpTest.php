@@ -235,7 +235,7 @@ class RequestContextHttpTest extends TestCase
             $this->markTestSkipped('pdo_sqlite is required for the independent PDO regression test.');
         }
         $response = $this->request(
-            ['independentPdoFailure' => '1'],
+            ['independentPdoFailure' => '1', 'allowDebug' => '1'],
             ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7']
         );
 
@@ -286,6 +286,43 @@ class RequestContextHttpTest extends TestCase
             $this->assertSame('Bad Request', $response['body']);
             $this->assertSame([], $this->sessionCookies($response['headers']));
         }
+    }
+
+    public function testLocalhostAndUnconfiguredProxyRequireExplicitDebugPermission(): void
+    {
+        foreach (['ipv4', 'ipv6'] as $loopback) {
+            foreach ([false, true] as $allowDebug) {
+                $query = ['loopback' => $loopback, 'unconfiguredProxy' => '1'];
+                if ($allowDebug) {
+                    $query['allowDebug'] = '1';
+                }
+                foreach ([[], ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7']] as $headers) {
+                    $normal = $this->request($query, $headers);
+                    $this->assertSame(200, $normal['status'], $normal['body']);
+                    $body = json_decode($normal['body'], true);
+                    $this->assertIsArray($body);
+                    $this->assertSame($allowDebug, $body['debug']);
+                    $maintenance = $this->request($query + ['maintenance' => '1'], $headers);
+                    $this->assertSame(200, $maintenance['status'], $maintenance['body']);
+                    if ($allowDebug) {
+                        $body = json_decode($maintenance['body'], true);
+                        $this->assertIsArray($body);
+                        $this->assertTrue($body['debug']);
+                    } else {
+                        $this->assertSame('maintenance fixture', $maintenance['body']);
+                    }
+                }
+            }
+        }
+        $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7'];
+        $normal = $this->request([], $headers);
+        $this->assertSame(200, $normal['status'], $normal['body']);
+        $body = json_decode($normal['body'], true);
+        $this->assertIsArray($body);
+        $this->assertFalse($body['debug'], 'Trusted proxy resolution alone must not enable development mode.');
+        $maintenance = $this->request(['maintenance' => '1'], $headers);
+        $this->assertSame(200, $maintenance['status'], $maintenance['body']);
+        $this->assertSame('maintenance fixture', $maintenance['body']);
     }
 
     public function testNormalAndMaintenanceCookieHeadersAndRegeneration(): void
@@ -349,12 +386,12 @@ class RequestContextHttpTest extends TestCase
         ];
         foreach ($cases as $case) {
             $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: ' . $case[0]];
-            $normal = $this->request([], $headers);
+            $normal = $this->request(['allowDebug' => '1'], $headers);
             $this->assertSame(200, $normal['status'], $normal['body']);
             $body = json_decode($normal['body'], true);
             $this->assertIsArray($body);
             $this->assertSame($case[1], $body['debug']);
-            $maintenance = $this->request(['maintenance' => '1'], $headers);
+            $maintenance = $this->request(['maintenance' => '1', 'allowDebug' => '1'], $headers);
             $this->assertSame(200, $maintenance['status'], $maintenance['body']);
             $this->assertSame(!$case[1], $maintenance['body'] === 'maintenance fixture');
         }

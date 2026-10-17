@@ -53,11 +53,25 @@ The shared request context ignores forwarding headers from untrusted peers.
 For a trusted peer, missing or malformed required metadata returns HTTP 400
 before creating a session. Client resolution walks the IP chain from right to
 left and stops at the first untrusted address. That verified client controls
-Tracy development mode and maintenance bypass (loopback or `DEBUG_IP_LIST`).
-An all-trusted chain grants neither, and a proxy address alone never grants access.
+Tracy development mode and maintenance bypass only through an exact match in
+`DEBUG_IP_LIST`. The default empty list denies both, including for localhost.
+An unknown client or an all-trusted chain grants neither.
 Only `X-Forwarded-For` and `X-Forwarded-Proto` are supported; no forwarding-header
 family is automatically detected. Host-based URL authority remains unchanged;
 configure accepted hosts in your web server (SEC-003 remains open in core).
+
+When upgrading, direct local development and localhost maintenance bypass now
+require explicit opt-in in the application's local configuration closure:
+
+```php
+$SBConfig->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1']);
+```
+
+Use these entries only for direct local requests. Behind a proxy, configure the
+actual proxy addresses in `SB_TRUSTED_PROXIES` and the actual developer client
+addresses in `DEBUG_IP_LIST`. Explicitly allowing an unconfigured shared proxy
+address (including localhost) exposes diagnostics and maintenance access to all
+clients using that proxy.
 
 Session cookies default to host-only, HttpOnly, `SameSite=Lax`, and Secure on
 verified HTTPS, including maintenance responses. Explicit `Strict` and `None`

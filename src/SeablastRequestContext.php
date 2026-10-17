@@ -73,7 +73,7 @@ final class SeablastRequestContext
         }
         $this->debugAllowed = $this->clientIp !== null && in_array(
             $this->clientIp,
-            array_merge(['127.0.0.1', '::1'], $debugIps),
+            $debugIps,
             true
         );
     }
