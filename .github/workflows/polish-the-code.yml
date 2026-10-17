@@ -106,6 +106,7 @@ jobs:
     needs: phpcs-phpcbf
     uses: WorkOfStan/seablast-actions/.github/workflows/linter.yml@feature/super-linter-900
     permissions:
+      contents: read
       statuses: write
     with:
       # exclude third-party code
