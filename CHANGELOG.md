@@ -38,6 +38,7 @@ fix: Restrict debug logging and preserve independent PDO errors
 - Preserve independent PDO exceptions without initializing Seablast's lazy PDO adapter while rendering diagnostics.
 - Read the view debug-dump logging level through the model configuration accessor.
 - Read the controller debug-dump logging level through the initialized model configuration accessor.
+- fix(ClientErrorRateLimiter): Handle failed client error counter writes explicitly before truncating the state file to satisfy PHPStan 2.3.1.
 
 ### Security
 
