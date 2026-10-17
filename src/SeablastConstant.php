@@ -75,7 +75,7 @@ class SeablastConstant
      */
     public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
     /**
-     * @var string Accept bounded browser error reports (enabled by default). 
+     * @var string Accept bounded browser error reports (enabled by default).
      */
     public const FLAG_CLIENT_ERROR_LOGGING = 'SB:client_error:enabled';
     /**
@@ -116,7 +116,7 @@ class SeablastConstant
      */
     public const SB_CHARSET_DATABASE = 'SB_CHARSET_DATABASE';
     /**
-     * @var string Positive application-wide POST allowance per fixed hour. 
+     * @var string Positive application-wide POST allowance per fixed hour.
      */
     public const SB_CLIENT_ERROR_APP_PER_HOUR = 'SB:client_error:app_per_hour';
     /**
@@ -160,7 +160,7 @@ class SeablastConstant
      * @var string ini_set('session.use_strict_mode', '1');
      */
     public const SB_INI_SET_SESSION_USE_STRICT_MODE = 'SB_INI_SET_SESSION_USE_STRICT_MODE';
-    // SB:LANGUAGE is reserved for Seablast\i18n    
+    // SB:LANGUAGE is reserved for Seablast\i18n
     /**
      * @var string log location
      */
