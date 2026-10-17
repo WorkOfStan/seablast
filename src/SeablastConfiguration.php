@@ -43,6 +43,8 @@ class SeablastConfiguration
     }
 
     /**
+     * Append strings to the property/key entry, preserving existing values or initializing a missing entry.
+     *
      * @param string $property
      * @param string $key
      * @param string[] $value
@@ -54,6 +56,21 @@ class SeablastConfiguration
         Assert::allString($value);
         $existingValue = $this->optionsArrayArrayString[$property][$key] ?? [];
         $this->optionsArrayArrayString[$property][$key] = array_merge($existingValue, $value);
+        return $this;
+    }
+
+    /**
+     * Append strings to the property, preserving existing values or initializing a missing property.
+     *
+     * @param string $property
+     * @param string[] $value
+     * @return $this
+     */
+    public function addArrayString(string $property, array $value): self
+    {
+        Assert::allString($value);
+        $existingValue = $this->optionsArrayString[$property] ?? [];
+        $this->optionsArrayString[$property] = array_merge($existingValue, $value);
         return $this;
     }
 
@@ -371,6 +388,8 @@ class SeablastConfiguration
     }
 
     /**
+     * Set the property/key entry, overriding any previously configured value.
+     *
      * @param string $property
      * @param string $key
      * @param string[] $value
@@ -385,6 +404,8 @@ class SeablastConfiguration
     }
 
     /**
+     * Set the property, overriding any previously configured value.
+     *
      * @param string $property
      * @param int[] $value
      * @return $this
@@ -396,8 +417,9 @@ class SeablastConfiguration
         $this->optionsArrayInt[$property] = $value;
         return $this;
     }
-
     /**
+     * Set the property, overriding any previously configured value.
+     *
      * @param string $property
      * @param string[] $value
      * @return $this
@@ -411,6 +433,8 @@ class SeablastConfiguration
     }
 
     /**
+     * Set the property, overriding any previously configured value.
+     *
      * @param string $property
      * @param int $value
      * @return $this
@@ -422,6 +446,8 @@ class SeablastConfiguration
     }
 
     /**
+     * Set the property, overriding any previously configured value.
+     *
      * @param string $property
      * @param string $value
      * @return $this
@@ -434,6 +460,8 @@ class SeablastConfiguration
 
     /**
      * DI setter for databases.
+     *
+     * Override any previously configured user for database logging.
      *
      * @param int|string $user
      *

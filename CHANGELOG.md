@@ -26,6 +26,7 @@ fix!: Restrict debug logging and preserve independent PDO errors
 ### Added
 
 - Add `SeablastConfiguration::addArrayArrayString()` to merge strings into an existing property/key entry.
+- Add `SeablastConfiguration::addArrayString()` to append strings or initialize a missing property, and document replacement versus additive configuration methods.
 
 ### Changed
 
