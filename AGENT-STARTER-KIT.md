@@ -39,6 +39,7 @@ The app-level configuration files are:
 - `conf/phinx.local.php` for Seablast's built-in MySQL adapters
 
 Each Seablast config file returns a callable that receives `SeablastConfiguration`.
+`set*()` methods replace previously configured values. Use `addArrayString()` to append strings to an existing array or initialize a missing property.
 Use `addArrayArrayString()` when a later configuration layer should merge strings into an existing property/key entry instead of replacing the entry with `setArrayArrayString()`.
 Reuse existing configuration constants from `SeablastConstant` (or `AuthConstant` or `I18nConstant`, where applicable) instead of defining new constants for the same settings.
 

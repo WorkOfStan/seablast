@@ -72,6 +72,9 @@ This means application config can override:
 - i18n defaults
 - environment-local overrides
 
+`set*()` methods replace previously configured values. `addArrayString()` appends
+strings to an existing array and initializes a missing property.
+
 `setArrayArrayString()` replaces one property/key entry. `addArrayArrayString()`
 merges additional strings into that entry and initializes it when it is absent.
 
