@@ -87,27 +87,6 @@ class ApiErrorModel extends GenericRestApiJsonModel
         return true;
     }
 
-    protected function inputDiagnosticsEnabled(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Return the knowledge calculated in this model.
-     *
-     * @return stdClass
-     */
-    public function knowledge(): stdClass
-    {
-        $result = parent::knowledge();
-        if ($result->httpCode >= 400) {
-            // Error state means that further processing is not desired
-            return $result;
-        }
-        $this->executeBusinessLogic();
-        return parent::knowledge();
-    }
-
     /**
      * Log the input.
      *
@@ -167,5 +146,26 @@ class ApiErrorModel extends GenericRestApiJsonModel
         }
         Debugger::log($message, $severityMap[$severity]);
         $this->message = 'Error logged.';
+    }
+
+    protected function inputDiagnosticsEnabled(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Return the knowledge calculated in this model.
+     *
+     * @return stdClass
+     */
+    public function knowledge(): stdClass
+    {
+        $result = parent::knowledge();
+        if ($result->httpCode >= 400) {
+            // Error state means that further processing is not desired
+            return $result;
+        }
+        $this->executeBusinessLogic();
+        return parent::knowledge();
     }
 }

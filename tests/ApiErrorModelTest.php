@@ -17,14 +17,33 @@ class ApiErrorModelTest extends TestCase
 {
     /** @var SeablastConfiguration */
     private $configuration;
-    /** @var string */
-    private $path;
-    /** @var string */
-    private $token;
-    /** @var ILogger */
-    private $previousLogger;
     /** @var array<int, array{message: string, severity: string}> */
     private $entries = [];
+    /** @var string */
+    private $path;
+    /** @var ILogger */
+    private $previousLogger;
+    /** @var string */
+    private $token;
+
+    /** @param array<string, string> $server */
+    private function raw(string $json, array $server = []): \stdClass
+    {
+        $this->configuration->setString(SeablastConstant::JSON_INPUT, $json);
+        return (new ApiErrorModel($this->configuration, new Superglobals(
+            [],
+            [],
+            $server + ['REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8']
+        )))->knowledge();
+    }
+
+    /** @param array<string, mixed> $fields */
+    private function report(array $fields): \stdClass
+    {
+        $json = json_encode(['csrfToken' => $this->token] + $fields);
+        $this->assertIsString($json);
+        return $this->raw($json);
+    }
 
     protected function setUp(): void
     {
@@ -60,49 +79,6 @@ class ApiErrorModelTest extends TestCase
         }
     }
 
-    public function testNormalReportsAndEverySeverity(): void
-    {
-        foreach (['debug', 'info', 'warning', 'error', 'exception', 'critical'] as $severity) {
-            $result = $this->report(['message' => 'Browser failed', 'page' => '/home', 'order' => 1,
-                'severity' => $severity, 'ignored' => 'SECRET']);
-            $this->assertSame(200, $result->httpCode);
-            $this->assertInstanceOf(\stdClass::class, $result->rest);
-            $this->assertSame('Error logged.', $result->rest->message);
-            $entry = end($this->entries);
-            $this->assertIsArray($entry);
-            $this->assertSame($severity, $entry['severity']);
-            $this->assertStringNotContainsString('SECRET', $entry['message']);
-            $this->assertStringNotContainsString($this->token, $entry['message']);
-            $record = json_decode(substr($entry['message'], strlen('client_error ')), true);
-            $this->assertIsArray($record);
-            $this->assertSame(strtoupper($severity), $record['severity']);
-            $this->assertSame(1, $record['order']);
-        }
-        $this->report(['message' => 'Defaults']);
-        $record = json_decode(substr($this->entries[6]['message'], strlen('client_error ')), true);
-        $this->assertSame(['page' => 'unknown-page', 'severity' => 'ERROR', 'message' => 'Defaults'], $record);
-    }
-
-    public function testInvalidFieldsNeverLog(): void
-    {
-        foreach (
-            [
-            [], ['message' => ''], ['message' => null], ['message' => []], ['message' => 1],
-            ['page' => []], ['page' => null], ['severity' => []], ['severity' => null],
-            ['severity' => 'fatal'], ['order' => 0], ['order' => -1], ['order' => '1'],
-            ['order' => 1.5], ['order' => 2147483648], ['order' => null], ['order' => []],
-            ] as $fields
-        ) {
-            if ($fields !== [] && !array_key_exists('message', $fields)) {
-                $fields['message'] = 'Report';
-            }
-            $label = json_encode($fields);
-            $this->assertIsString($label);
-            $this->assertSame(400, $this->report($fields)->httpCode, $label);
-        }
-        $this->assertSame([], $this->entries);
-    }
-
     public function testAuthenticatedReportsPreserveCriticalSeverity(): void
     {
         $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
@@ -110,10 +86,30 @@ class ApiErrorModelTest extends TestCase
         $this->assertSame(ILogger::CRITICAL, $this->entries[0]['severity']);
     }
 
-    public function testUnavailableStorageRejectsWithoutParsingOrLogging(): void
+    public function testBodyLimitsAndInvalidAuthenticationAreQuiet(): void
     {
-        $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, $this->path . '/missing');
-        $this->assertSame(503, $this->raw('{')->httpCode);
+        $json = json_encode(['csrfToken' => $this->token, 'message' => 'ok']);
+        $this->assertIsString($json);
+        $this->assertSame(200, $this->raw($json . str_repeat(' ', 16384 - strlen($json)))->httpCode);
+        $this->entries = [];
+        $this->assertSame(413, $this->raw(str_repeat(' ', 16385))->httpCode);
+        foreach (['{', '[]', 'null', "{\"message\":\"\xFF\"}"] as $input) {
+            $this->assertSame(400, $this->raw($input)->httpCode);
+        }
+        foreach (['{}', '{"csrfToken":[]}', '{"csrfToken":{}}', '{"csrfToken":"bad"}'] as $input) {
+            $this->assertSame(401, $this->raw($input)->httpCode);
+        }
+        $this->assertSame([], $this->entries);
+    }
+
+    public function testEarlyRejectionsDoNotReadOrCreateState(): void
+    {
+        foreach (['GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] as $method) {
+            $this->assertSame(405, $this->raw('{', ['REQUEST_METHOD' => $method])->httpCode);
+        }
+        $this->configuration->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
+        $this->assertSame(403, $this->raw('{')->httpCode);
+        $this->assertFalse(file_exists($this->path));
         $this->assertSame([], $this->entries);
     }
 
@@ -152,30 +148,23 @@ class ApiErrorModelTest extends TestCase
         $this->assertCount(1, $this->entries);
     }
 
-    public function testBodyLimitsAndInvalidAuthenticationAreQuiet(): void
+    public function testInvalidFieldsNeverLog(): void
     {
-        $json = json_encode(['csrfToken' => $this->token, 'message' => 'ok']);
-        $this->assertIsString($json);
-        $this->assertSame(200, $this->raw($json . str_repeat(' ', 16384 - strlen($json)))->httpCode);
-        $this->entries = [];
-        $this->assertSame(413, $this->raw(str_repeat(' ', 16385))->httpCode);
-        foreach (['{', '[]', 'null', "{\"message\":\"\xFF\"}"] as $input) {
-            $this->assertSame(400, $this->raw($input)->httpCode);
+        foreach (
+            [
+            [], ['message' => ''], ['message' => null], ['message' => []], ['message' => 1],
+            ['page' => []], ['page' => null], ['severity' => []], ['severity' => null],
+            ['severity' => 'fatal'], ['order' => 0], ['order' => -1], ['order' => '1'],
+            ['order' => 1.5], ['order' => 2147483648], ['order' => null], ['order' => []],
+            ] as $fields
+        ) {
+            if ($fields !== [] && !array_key_exists('message', $fields)) {
+                $fields['message'] = 'Report';
+            }
+            $label = json_encode($fields);
+            $this->assertIsString($label);
+            $this->assertSame(400, $this->report($fields)->httpCode, $label);
         }
-        foreach (['{}', '{"csrfToken":[]}', '{"csrfToken":{}}', '{"csrfToken":"bad"}'] as $input) {
-            $this->assertSame(401, $this->raw($input)->httpCode);
-        }
-        $this->assertSame([], $this->entries);
-    }
-
-    public function testEarlyRejectionsDoNotReadOrCreateState(): void
-    {
-        foreach (['GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] as $method) {
-            $this->assertSame(405, $this->raw('{', ['REQUEST_METHOD' => $method])->httpCode);
-        }
-        $this->configuration->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
-        $this->assertSame(403, $this->raw('{')->httpCode);
-        $this->assertFalse(file_exists($this->path));
         $this->assertSame([], $this->entries);
     }
 
@@ -190,6 +179,36 @@ class ApiErrorModelTest extends TestCase
         $this->assertSame([], $this->entries);
     }
 
+    public function testNormalReportsAndEverySeverity(): void
+    {
+        foreach (['debug', 'info', 'warning', 'error', 'exception', 'critical'] as $severity) {
+            $result = $this->report(['message' => 'Browser failed', 'page' => '/home', 'order' => 1,
+                'severity' => $severity, 'ignored' => 'SECRET']);
+            $this->assertSame(200, $result->httpCode);
+            $this->assertInstanceOf(\stdClass::class, $result->rest);
+            $this->assertSame('Error logged.', $result->rest->message);
+            $entry = end($this->entries);
+            $this->assertIsArray($entry);
+            $this->assertSame($severity, $entry['severity']);
+            $this->assertStringNotContainsString('SECRET', $entry['message']);
+            $this->assertStringNotContainsString($this->token, $entry['message']);
+            $record = json_decode(substr($entry['message'], strlen('client_error ')), true);
+            $this->assertIsArray($record);
+            $this->assertSame(strtoupper($severity), $record['severity']);
+            $this->assertSame(1, $record['order']);
+        }
+        $this->report(['message' => 'Defaults']);
+        $record = json_decode(substr($this->entries[6]['message'], strlen('client_error ')), true);
+        $this->assertSame(['page' => 'unknown-page', 'severity' => 'ERROR', 'message' => 'Defaults'], $record);
+    }
+
+    public function testUnavailableStorageRejectsWithoutParsingOrLogging(): void
+    {
+        $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, $this->path . '/missing');
+        $this->assertSame(503, $this->raw('{')->httpCode);
+        $this->assertSame([], $this->entries);
+    }
+
     public function testVerifiedProxyClientsAndSpoofedHeaders(): void
     {
         $this->configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_CLIENT_PER_MINUTE, 1);
@@ -201,24 +220,5 @@ class ApiErrorModelTest extends TestCase
         $this->assertSame(400, $this->raw('{', $proxy + ['HTTP_X_FORWARDED_FOR' => '198.51.100.2'])->httpCode);
         $this->assertSame(429, $this->raw('{', $proxy + ['HTTP_X_FORWARDED_FOR' => '198.51.100.1'])->httpCode);
         $this->assertSame([], $this->entries);
-    }
-
-    /** @param array<string, mixed> $fields */
-    private function report(array $fields): \stdClass
-    {
-        $json = json_encode(['csrfToken' => $this->token] + $fields);
-        $this->assertIsString($json);
-        return $this->raw($json);
-    }
-
-    /** @param array<string, string> $server */
-    private function raw(string $json, array $server = []): \stdClass
-    {
-        $this->configuration->setString(SeablastConstant::JSON_INPUT, $json);
-        return (new ApiErrorModel($this->configuration, new Superglobals(
-            [],
-            [],
-            $server + ['REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8']
-        )))->knowledge();
     }
 }

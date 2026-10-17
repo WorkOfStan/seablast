@@ -11,190 +11,6 @@ namespace Seablast\Seablast;
 class SeablastConstant
 {
     /**
-     * @var string Running or under construction
-     */
-    public const FLAG_WEB_RUNNING = 'SB:web:running';
-    /** @var string Accept bounded browser error reports (enabled by default). */
-    public const FLAG_CLIENT_ERROR_LOGGING = 'SB:client_error:enabled';
-    /** @var string Positive per-client POST allowance per fixed minute. */
-    public const SB_CLIENT_ERROR_CLIENT_PER_MINUTE = 'SB:client_error:client_per_minute';
-    /** @var string Positive application-wide POST allowance per fixed minute. */
-    public const SB_CLIENT_ERROR_APP_PER_MINUTE = 'SB:client_error:app_per_minute';
-    /** @var string Positive application-wide POST allowance per fixed hour. */
-    public const SB_CLIENT_ERROR_APP_PER_HOUR = 'SB:client_error:app_per_hour';
-    /** @var string Optional absolute local state file; defaults to an app-specific system temp file. */
-    public const SB_CLIENT_ERROR_RATE_LIMIT_FILE = 'SB:client_error:rate_limit_file';
-    /**
-     * @var string Redirection database should be looked up (unused so far)
-     */
-    public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
-    /**
-     * @var string So that Tracy is displayed 1) Output JSON as HTML instead of application/json;
-     * 2) turns off refresh after inserting new row in admin.latte.
-     */
-    public const FLAG_DEBUG_JSON = 'SB:debug:json';
-    /**
-     * @var string Level of PHP built-in error_reporting
-     */
-    public const SB_ERROR_REPORTING = 'SB:error_reporting';
-    /**
-     * @var string ini_set('session.cokie_lifetime', '2000000');
-     */
-    public const SB_SESSION_SET_COOKIE_LIFETIME = 'SB_INI_SET_SESSION_COOKIE_LIFETIME';
-    /**
-     * @var string session_set_cookie_params(10800, '/');
-     */
-    public const SB_SESSION_SET_COOKIE_PARAMS_LIFETIME = 'SB_SESSION_SET_COOKIE_PARAMS_LIFETIME';
-    /**
-     * @var string session_set_cookie_params(10800, '/');
-     */
-    public const SB_SESSION_SET_COOKIE_PARAMS_PATH = 'SB_SESSION_SET_COOKIE_PARAMS_PATH';
-    /** @var string Session SameSite policy: Lax (default), Strict, or None (HTTPS only). */
-    public const SB_SESSION_SET_COOKIE_PARAMS_SAMESITE = 'SB_SESSION_SET_COOKIE_PARAMS_SAMESITE';
-    /** @var string Explicit cookie domain; empty means host-only. */
-    public const SB_SESSION_SET_COOKIE_PARAMS_DOMAIN = 'SB_SESSION_SET_COOKIE_PARAMS_DOMAIN';
-    /** @var string Exact proxy IP allow-list for X-Forwarded-For and X-Forwarded-Proto. */
-    public const SB_TRUSTED_PROXIES = 'SB_TRUSTED_PROXIES';
-    /**
-     * @var string setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
-     */
-    public const SB_SETLOCALE_CATEGORY = 'SB_SETLOCALE_CATEGORY';
-    /**
-     * @var string setlocale(LC_CTYPE, 'cs_CZ.UTF-8');
-     */
-    public const SB_SETLOCALE_LOCALES = 'SB_SETLOCALE_LOCALES';
-    /**
-     * @var string mb_internal_encoding('UTF-8'); mb_http_output('UTF-8');
-     */
-    public const SB_ENCODING = 'SB_ENCODING';
-    /**
-     * @var string mysqli::set_charset('utf8');
-     */
-    public const SB_CHARSET_DATABASE = 'SB_CHARSET_DATABASE';
-    /**
-     * @var string ini_set('session.use_strict_mode', '1');
-     */
-    public const SB_INI_SET_SESSION_USE_STRICT_MODE = 'SB_INI_SET_SESSION_USE_STRICT_MODE';
-    /**
-     * @var string ini_set('display_errors', '0'); // errors only in the log
-     * override it in your config.local.php if you need to
-     */
-    public const SB_INI_SET_DISPLAY_ERRORS = 'SB_INI_SET_DISPLAY_ERRORS';
-    /**
-     * @ var string phinxEnvironment for database connection to override $phinx['environments']['default_environment']
-     */
-    public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
-    // SB:LANGUAGE is reserved for Seablast\i18n
-    /**
-     * @var string trigger and verbosity control for seablast/logger
-     */
-    public const SB_LOGGING_LEVEL = 'SB:SB_LOGGING_LEVEL';
-    /**
-     * @var string log location
-     */
-    public const SB_LOG_DIRECTORY = 'SB_LOG_DIRECTORY';
-    /**
-     * @var string flag whether to send emails to admin
-     */
-    public const ADMIN_MAIL_ENABLED = 'SB:ADMIN_MAIL:ENABLED';
-    /**
-     * @var string string admin's email address
-     */
-    public const ADMIN_MAIL_ADDRESS = 'SB:ADMIN_MAIL:ADDRESS';
-    /**
-     * @var string flag whether to send emails to users
-     */
-    public const USER_MAIL_ENABLED = 'SB:USER_MAIL:ENABLED';
-    /**
-     * @var string string email address from which emails are sent
-     */
-    public const FROM_MAIL_ADDRESS = 'SB:FROM_MAIL:ADDRESS';
-    /**
-     * @var string string[] IP addresses where to show Tracy
-     */
-    public const DEBUG_IP_LIST = 'SB:DEBUG_IP_LIST';
-    /**
-     * @var string string[] mapping slugs to templates and tables
-     */
-    public const APP_MAPPING = 'SB:APP_MAPPING';
-    /**
-     * @var string string mapping to use in case of authentication required
-     */
-    public const APP_MAPPING_401 = 'SB:APP_MAPPING_401';
-    /**
-     * @var string string with path to directory with Latte templates
-     */
-    public const LATTE_TEMPLATE = 'SB:LATTE_TEMPLATE';
-    /**
-     * @var string string with path to directory with cache for Latte
-     */
-    public const LATTE_CACHE = 'SB:LATTE_CACHE';
-    /**
-     * @var string string Name of an expected and accepted numeric GET argument
-     */
-    public const SB_GET_ARGUMENT_ID = 'SB_GET_ARGUMENT_ID';
-    /**
-     * @var string stringName of an expected and accepted string GET argument
-     */
-    public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
-    /**
-     * @var string int to forced update of external CSS and JavaScript files. The literal is expected in Latte.
-     * TODO use this in seablast-dist
-     */
-    public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';
-    /**
-     * @var string string The absolute URL of the root of the application. The literal is expected in Latte.
-     */
-    public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
-    /**
-     * @var string string SMTP host to be used by an email plugin
-     */
-    public const SB_SMTP_HOST = 'SB_SMTP_HOST';
-    /**
-     * @var string int SMTP port to be used by an email plugin
-     */
-    public const SB_SMTP_PORT = 'SB_SMTP_PORT';
-    /**
-     * @var string string SMTP username to be used by an email plugin
-     */
-    public const SB_SMTP_USERNAME = 'SB_SMTP_USERNAME';
-    /**
-     * @var string string SMTP password to be used by an email plugin
-     */
-    public const SB_SMTP_PASSWORD = 'SB_SMTP_PASSWORD';
-    /**
-     * @var string class taking care of Authentication (TODO: experiment)
-     */
-    public const SB_IDENTITY_MANAGER = 'SB_IDENTITY_MANAGER';
-    /**
-     * @var string bool is user authenticated
-     */
-    public const FLAG_USER_IS_AUTHENTICATED = 'SB:USER_IS_AUTHENTICATED';
-    /**
-     * @var string int roleId
-     */
-    public const USER_ID = 'SB:USER_ID';
-    /**
-     * @var string int roleId
-     */
-    public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
-    /**
-     * @var string int roleId according to Seablast/Auth
-     */
-    public const USER_ROLE_ADMIN = 'SB:USER_ROLE_ADMIN';
-    /**
-     * @var string int roleId according to Seablast/Auth
-     */
-    public const USER_ROLE_EDITOR = 'SB:USER_ROLE_EDITOR';
-    /**
-     * @var string int roleId according to Seablast/Auth
-     */
-    public const USER_ROLE_USER = 'SB:USER_ROLE_USER';
-    /**
-     * @var string int[] groupId
-     */
-    public const USER_GROUPS = 'SB:USER_GROUPS';
-    /**
      * @var string string[] list of fields that are boolean, hence should be represented by a checkbox
      */
     public const ADMIN_BOOLEAN_FIELDS = 'SB:ADMIN_BOOLEAN_FIELDS';
@@ -206,6 +22,14 @@ class SeablastConstant
      * @var string string[] list of fields that might contain mp3 to upload
      */
     public const ADMIN_DROP_AUDIO_FIELDS = 'SB:ADMIN_DROP_AUDIO_FIELDS';
+    /**
+     * @var string string admin's email address
+     */
+    public const ADMIN_MAIL_ADDRESS = 'SB:ADMIN_MAIL:ADDRESS';
+    /**
+     * @var string flag whether to send emails to admin
+     */
+    public const ADMIN_MAIL_ENABLED = 'SB:ADMIN_MAIL:ENABLED';
     /**
      * @var string string prefix for tables with DELETE row allowed for edit for roleId
      */
@@ -223,9 +47,21 @@ class SeablastConstant
      */
     public const ADMIN_TABLE_VIEW = 'SB:ADMIN_TABLE_VIEW';
     /**
+     * @var string string[] mapping slugs to templates and tables
+     */
+    public const APP_MAPPING = 'SB:APP_MAPPING';
+    /**
+     * @var string string mapping to use in case of authentication required
+     */
+    public const APP_MAPPING_401 = 'SB:APP_MAPPING_401';
+    /**
      * @var string string table name selected for admin edit. The literal is expected in Latte.
      */
     public const APP_SELECTED_TABLE = 'SB:APP_SELECTED_TABLE';
+    /**
+     * @var string string[] IP addresses where to show Tracy
+     */
+    public const DEBUG_IP_LIST = 'SB:DEBUG_IP_LIST';
     /**
      * @var string int error HTTP code
      */
@@ -235,11 +71,190 @@ class SeablastConstant
      */
     public const ERROR_MESSAGE = 'SB:ERROR_MESSAGE';
     /**
+     * @var string Redirection database should be looked up (unused so far)
+     */
+    public const FLAG_CHECK_REDIRECTOR = 'SB:redirector:running';
+    /**
+     * @var string Accept bounded browser error reports (enabled by default).
+     */
+    public const FLAG_CLIENT_ERROR_LOGGING = 'SB:client_error:enabled';
+    /**
+     * @var string So that Tracy is displayed 1) Output JSON as HTML instead of application/json;
+     * 2) turns off refresh after inserting new row in admin.latte.
+     */
+    public const FLAG_DEBUG_JSON = 'SB:debug:json';
+    /**
+     * @var string bool is user authenticated
+     */
+    public const FLAG_USER_IS_AUTHENTICATED = 'SB:USER_IS_AUTHENTICATED';
+    /**
+     * @var string Running or under construction
+     */
+    public const FLAG_WEB_RUNNING = 'SB:web:running';
+    /**
+     * @var string string email address from which emails are sent
+     */
+    public const FROM_MAIL_ADDRESS = 'SB:FROM_MAIL:ADDRESS';
+    /**
      * @var string string JSON handed over directly (for PHPUnit tests) instead of php://input
      */
     public const JSON_INPUT = 'SB:JSON_INPUT';
     /**
+     * @var string string with path to directory with cache for Latte
+     */
+    public const LATTE_CACHE = 'SB:LATTE_CACHE';
+    /**
+     * @var string string with path to directory with Latte templates
+     */
+    public const LATTE_TEMPLATE = 'SB:LATTE_TEMPLATE';
+    /**
+     * @var string string The absolute URL of the root of the application. The literal is expected in Latte.
+     */
+    public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
+    /**
+     * @var string mysqli::set_charset('utf8');
+     */
+    public const SB_CHARSET_DATABASE = 'SB_CHARSET_DATABASE';
+    /**
+     * @var string Positive application-wide POST allowance per fixed hour.
+     */
+    public const SB_CLIENT_ERROR_APP_PER_HOUR = 'SB:client_error:app_per_hour';
+    /**
+     * @var string Positive application-wide POST allowance per fixed minute.
+     */
+    public const SB_CLIENT_ERROR_APP_PER_MINUTE = 'SB:client_error:app_per_minute';
+    /**
+     * @var string Positive per-client POST allowance per fixed minute.
+     */
+    public const SB_CLIENT_ERROR_CLIENT_PER_MINUTE = 'SB:client_error:client_per_minute';
+    /**
+     * @var string Optional absolute local state file; defaults to an app-specific system temp file.
+     */
+    public const SB_CLIENT_ERROR_RATE_LIMIT_FILE = 'SB:client_error:rate_limit_file';
+    /**
+     * @var string mb_internal_encoding('UTF-8'); mb_http_output('UTF-8');
+     */
+    public const SB_ENCODING = 'SB_ENCODING';
+    /**
+     * @var string Level of PHP built-in error_reporting
+     */
+    public const SB_ERROR_REPORTING = 'SB:error_reporting';
+    /**
+     * @var string stringName of an expected and accepted string GET argument
+     */
+    public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
+    /**
+     * @var string string Name of an expected and accepted numeric GET argument
+     */
+    public const SB_GET_ARGUMENT_ID = 'SB_GET_ARGUMENT_ID';
+    /**
+     * @var string class taking care of Authentication (TODO: experiment)
+     */
+    public const SB_IDENTITY_MANAGER = 'SB_IDENTITY_MANAGER';
+    /**
+     * @var string ini_set('display_errors', '0'); // errors only in the log
+     * override it in your config.local.php if you need to
+     */
+    public const SB_INI_SET_DISPLAY_ERRORS = 'SB_INI_SET_DISPLAY_ERRORS';
+    /**
+     * @var string ini_set('session.use_strict_mode', '1');
+     */
+    public const SB_INI_SET_SESSION_USE_STRICT_MODE = 'SB_INI_SET_SESSION_USE_STRICT_MODE';
+    // SB:LANGUAGE is reserved for Seablast\i18n
+    /**
+     * @var string log location
+     */
+    public const SB_LOG_DIRECTORY = 'SB_LOG_DIRECTORY';
+    /**
+     * @var string trigger and verbosity control for seablast/logger
+     */
+    public const SB_LOGGING_LEVEL = 'SB:SB_LOGGING_LEVEL';
+    /**
+     * @ var string phinxEnvironment for database connection to override $phinx['environments']['default_environment']
+     */
+    public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
+    /**
+     * @var string ini_set('session.cokie_lifetime', '2000000');
+     */
+    public const SB_SESSION_SET_COOKIE_LIFETIME = 'SB_INI_SET_SESSION_COOKIE_LIFETIME';
+    /**
+     * @var string Explicit cookie domain; empty means host-only.
+     */
+    public const SB_SESSION_SET_COOKIE_PARAMS_DOMAIN = 'SB_SESSION_SET_COOKIE_PARAMS_DOMAIN';
+    /**
+     * @var string session_set_cookie_params(10800, '/');
+     */
+    public const SB_SESSION_SET_COOKIE_PARAMS_LIFETIME = 'SB_SESSION_SET_COOKIE_PARAMS_LIFETIME';
+    /**
+     * @var string session_set_cookie_params(10800, '/');
+     */
+    public const SB_SESSION_SET_COOKIE_PARAMS_PATH = 'SB_SESSION_SET_COOKIE_PARAMS_PATH';
+    /**
+     * @var string Session SameSite policy: Lax (default), Strict, or None (HTTPS only).
+     */
+    public const SB_SESSION_SET_COOKIE_PARAMS_SAMESITE = 'SB_SESSION_SET_COOKIE_PARAMS_SAMESITE';
+    /**
+     * @var string setlocale(LC_CTYPE, 'cs_CZ.UTF-8'); // e.g. LC_CTYPE
+     */
+    public const SB_SETLOCALE_CATEGORY = 'SB_SETLOCALE_CATEGORY';
+    /**
+     * @var string setlocale(LC_CTYPE, 'cs_CZ.UTF-8'); // e.g. 'cs_CZ.UTF-8'
+     */
+    public const SB_SETLOCALE_LOCALES = 'SB_SETLOCALE_LOCALES';
+    /**
+     * @var string string SMTP host to be used by an email plugin
+     */
+    public const SB_SMTP_HOST = 'SB_SMTP_HOST';
+    /**
+     * @var string string SMTP password to be used by an email plugin
+     */
+    public const SB_SMTP_PASSWORD = 'SB_SMTP_PASSWORD';
+    /**
+     * @var string int SMTP port to be used by an email plugin
+     */
+    public const SB_SMTP_PORT = 'SB_SMTP_PORT';
+    /**
+     * @var string string SMTP username to be used by an email plugin
+     */
+    public const SB_SMTP_USERNAME = 'SB_SMTP_USERNAME';
+    /**
+     * @var string Exact proxy IP allow-list for X-Forwarded-For and X-Forwarded-Proto.
+     */
+    public const SB_TRUSTED_PROXIES = 'SB_TRUSTED_PROXIES';
+    /**
+     * @var string int to force update of external CSS and JavaScript files. The literal is expected in Latte.
+     */
+    public const SB_WEB_FORCE_ASSET_VERSION = 'SB_WEB_FORCE_ASSET_VERSION';
+    /**
      * @var string class taking care of translations
      */
     public const TRANSLATE_CLASS = 'SB:I18N:TranslateClass';
+    /**
+     * @var string int[] groupId
+     */
+    public const USER_GROUPS = 'SB:USER_GROUPS';
+    /**
+     * @var string int roleId
+     */
+    public const USER_ID = 'SB:USER_ID';
+    /**
+     * @var string flag whether to send emails to users
+     */
+    public const USER_MAIL_ENABLED = 'SB:USER_MAIL:ENABLED';
+    /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_ADMIN = 'SB:USER_ROLE_ADMIN';
+    /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_EDITOR = 'SB:USER_ROLE_EDITOR';
+    /**
+     * @var string int roleId
+     */
+    public const USER_ROLE_ID = 'SB:USER_ROLE_ID';
+    /**
+     * @var string int roleId according to Seablast/Auth
+     */
+    public const USER_ROLE_USER = 'SB:USER_ROLE_USER';
 }

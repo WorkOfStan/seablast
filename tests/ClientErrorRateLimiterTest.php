@@ -13,10 +13,22 @@ use Tracy\Debugger;
 
 class ClientErrorRateLimiterTest extends TestCase
 {
-    /** @var string */
-    private $path;
     /** @var SeablastConfiguration */
     private $configuration;
+    /** @var string */
+    private $path;
+
+    /** @param array{process: resource, output: resource, error: resource} $worker */
+    private function finishWorker(array $worker): int
+    {
+        $output = stream_get_contents($worker['output']);
+        $error = stream_get_contents($worker['error']);
+        fclose($worker['output']);
+        fclose($worker['error']);
+        $this->assertSame(0, proc_close($worker['process']), (string) $error);
+        $this->assertSame('', $error);
+        return (int) $output;
+    }
 
     protected function setUp(): void
     {
@@ -55,11 +67,28 @@ class ClientErrorRateLimiterTest extends TestCase
         $this->assertStringNotContainsString('198.51.100', $state);
     }
 
-    public function testUnknownClientsShareOneBucketAndInstancesShareState(): void
+    public function testConcurrentFirstRequestsNeverResetAnotherWorkersCounters(): void
     {
-        $this->configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_CLIENT_PER_MINUTE, 1);
-        $this->assertSame(200, (new ClientErrorRateLimiter($this->configuration))->consume(null, 3600)['status']);
-        $this->assertSame(429, (new ClientErrorRateLimiter($this->configuration))->consume(null, 3601)['status']);
+        $workers = [];
+        for ($i = 0; $i < 8; $i++) {
+            $workers[] = $this->worker();
+        }
+        $accepted = 0;
+        foreach ($workers as $worker) {
+            $status = $this->finishWorker($worker);
+            $this->assertContains($status, [200, 429, 503]);
+            if ($status === 200) {
+                $accepted++;
+            }
+        }
+        $this->assertGreaterThanOrEqual(1, $accepted);
+        $this->assertLessThanOrEqual(2, $accepted);
+        $json = file_get_contents($this->path);
+        $this->assertIsString($json);
+        $state = json_decode($json, true);
+        $this->assertIsArray($state);
+        $this->assertSame($accepted, $state['minuteCount']);
+        $this->assertSame($accepted, $state['hourCount']);
     }
 
     public function testCorruptEmptyAndOversizedStateFailClosed(): void
@@ -73,14 +102,6 @@ class ClientErrorRateLimiterTest extends TestCase
             file_put_contents($this->path, $state);
             $this->assertSame(503, $limiter->consume(null, 3600)['status']);
             $this->assertSame($state, file_get_contents($this->path));
-        }
-    }
-
-    public function testMissingParentAndDirectoryPathsFailClosed(): void
-    {
-        foreach ([$this->path . '/missing.json', sys_get_temp_dir()] as $path) {
-            $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, $path);
-            $this->assertSame(503, (new ClientErrorRateLimiter($this->configuration))->consume(null)['status']);
         }
     }
 
@@ -109,6 +130,21 @@ class ClientErrorRateLimiterTest extends TestCase
         $this->assertSame(200, $limiter->consume('another-client', 3660)['status']);
     }
 
+    public function testInvalidConfiguration(): void
+    {
+        $this->configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_MINUTE, 0);
+        $this->expectException(SeablastConfigurationException::class);
+        new ClientErrorRateLimiter($this->configuration);
+    }
+
+    public function testMissingParentAndDirectoryPathsFailClosed(): void
+    {
+        foreach ([$this->path . '/missing.json', sys_get_temp_dir()] as $path) {
+            $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, $path);
+            $this->assertSame(503, (new ClientErrorRateLimiter($this->configuration))->consume(null)['status']);
+        }
+    }
+
     public function testReadOnlyStateFailsClosed(): void
     {
         $limiter = new ClientErrorRateLimiter($this->configuration);
@@ -123,6 +159,13 @@ class ClientErrorRateLimiterTest extends TestCase
         } finally {
             chmod($this->path, 0600);
         }
+    }
+
+    public function testRelativeStatePathIsRejected(): void
+    {
+        $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, 'relative.json');
+        $this->expectException(SeablastConfigurationException::class);
+        new ClientErrorRateLimiter($this->configuration);
     }
 
     public function testSeparateApplicationStateDoesNotShareAllowances(): void
@@ -142,18 +185,11 @@ class ClientErrorRateLimiterTest extends TestCase
         }
     }
 
-    public function testInvalidConfiguration(): void
+    public function testUnknownClientsShareOneBucketAndInstancesShareState(): void
     {
-        $this->configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_APP_PER_MINUTE, 0);
-        $this->expectException(SeablastConfigurationException::class);
-        new ClientErrorRateLimiter($this->configuration);
-    }
-
-    public function testRelativeStatePathIsRejected(): void
-    {
-        $this->configuration->setString(SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE, 'relative.json');
-        $this->expectException(SeablastConfigurationException::class);
-        new ClientErrorRateLimiter($this->configuration);
+        $this->configuration->setInt(SeablastConstant::SB_CLIENT_ERROR_CLIENT_PER_MINUTE, 1);
+        $this->assertSame(200, (new ClientErrorRateLimiter($this->configuration))->consume(null, 3600)['status']);
+        $this->assertSame(429, (new ClientErrorRateLimiter($this->configuration))->consume(null, 3601)['status']);
     }
 
     public function testWorkersRespectLocksAndAtomicAllowances(): void
@@ -186,30 +222,6 @@ class ClientErrorRateLimiterTest extends TestCase
         })));
     }
 
-    public function testConcurrentFirstRequestsNeverResetAnotherWorkersCounters(): void
-    {
-        $workers = [];
-        for ($i = 0; $i < 8; $i++) {
-            $workers[] = $this->worker();
-        }
-        $accepted = 0;
-        foreach ($workers as $worker) {
-            $status = $this->finishWorker($worker);
-            $this->assertContains($status, [200, 429, 503]);
-            if ($status === 200) {
-                $accepted++;
-            }
-        }
-        $this->assertGreaterThanOrEqual(1, $accepted);
-        $this->assertLessThanOrEqual(2, $accepted);
-        $json = file_get_contents($this->path);
-        $this->assertIsString($json);
-        $state = json_decode($json, true);
-        $this->assertIsArray($state);
-        $this->assertSame($accepted, $state['minuteCount']);
-        $this->assertSame($accepted, $state['hourCount']);
-    }
-
     /** @return array{process: resource, output: resource, error: resource} */
     private function worker(): array
     {
@@ -226,17 +238,5 @@ class ClientErrorRateLimiterTest extends TestCase
         $this->assertIsResource($process);
         fclose($pipes[0]);
         return ['process' => $process, 'output' => $pipes[1], 'error' => $pipes[2]];
-    }
-
-    /** @param array{process: resource, output: resource, error: resource} $worker */
-    private function finishWorker(array $worker): int
-    {
-        $output = stream_get_contents($worker['output']);
-        $error = stream_get_contents($worker['error']);
-        fclose($worker['output']);
-        fclose($worker['error']);
-        $this->assertSame(0, proc_close($worker['process']), (string) $error);
-        $this->assertSame('', $error);
-        return (int) $output;
     }
 }

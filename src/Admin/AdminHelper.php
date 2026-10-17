@@ -36,56 +36,6 @@ class AdminHelper
     }
 
     /**
-     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table.
-     *
-     * @return void
-     */
-    public function populateSelectedTable(): void
-    {
-        // Admin sees both Admin and Content tables; Content admin sees just the Content
-        $this->allowedTables = $this->getAllowedTables(SeablastConstant::ADMIN_TABLE_VIEW);
-        $selectedTable = $this->superglobals->get['t'] ?? null;
-
-        // if there's a requested table and the user has access to it,
-        // populate string SeablastConstant::APP_SELECTED_TABLE
-        if (is_string($selectedTable) && in_array($selectedTable, $this->allowedTables, true)) {
-            $this->configuration->setString(SeablastConstant::APP_SELECTED_TABLE, $selectedTable);
-        }
-    }
-
-    /**
-     * Returns a list of tables that the current user can view, edit, or otherwise has permissions for.
-     *
-     * @param string $permission E.g. SeablastConstant::ADMIN_TABLE_VIEW, SeablastConstant::ADMIN_TABLE_DELETE_ROW
-     * @return array<string>
-     */
-    public function getAllowedTables(string $permission): array
-    {
-        // suffixes that are allowed for that USER_ROLE_ID
-        $roleSuffixes = [
-            1 => [
-                SeablastConstant::USER_ROLE_EDITOR,
-                SeablastConstant::USER_ROLE_ADMIN,
-            ],
-            2 => [
-                SeablastConstant::USER_ROLE_EDITOR,
-            ],
-        ];
-
-        $tables = [];
-
-        foreach ($roleSuffixes[$this->configuration->getInt(SeablastConstant::USER_ROLE_ID)] as $suffix) {
-            if ($this->configuration->exists($permission . $suffix)) {
-                $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
-            }
-        }
-        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Dump when severity DEBUG
-            Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
-        }
-        return $tables;
-    }
-
-    /**
      * Returns array of pairs 'COLUMN_NAME' => 'DATA_TYPE'.
      *
      * @param string $tableName
@@ -169,5 +119,55 @@ class AdminHelper
             }
         }
         return $cols;
+    }
+
+    /**
+     * Returns a list of tables that the current user can view, edit, or otherwise has permissions for.
+     *
+     * @param string $permission E.g. SeablastConstant::ADMIN_TABLE_VIEW, SeablastConstant::ADMIN_TABLE_DELETE_ROW
+     * @return array<string>
+     */
+    public function getAllowedTables(string $permission): array
+    {
+        // suffixes that are allowed for that USER_ROLE_ID
+        $roleSuffixes = [
+            1 => [
+                SeablastConstant::USER_ROLE_EDITOR,
+                SeablastConstant::USER_ROLE_ADMIN,
+            ],
+            2 => [
+                SeablastConstant::USER_ROLE_EDITOR,
+            ],
+        ];
+
+        $tables = [];
+
+        foreach ($roleSuffixes[$this->configuration->getInt(SeablastConstant::USER_ROLE_ID)] as $suffix) {
+            if ($this->configuration->exists($permission . $suffix)) {
+                $tables = array_merge($tables, $this->configuration->getArrayString($permission . $suffix));
+            }
+        }
+        if ($this->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) { // Dump when severity DEBUG
+            Debugger::barDump($tables, 'List of tables with permission: ' . $permission);
+        }
+        return $tables;
+    }
+
+    /**
+     * Populates SeablastConstant::APP_SELECTED_TABLE by the allowed selected table.
+     *
+     * @return void
+     */
+    public function populateSelectedTable(): void
+    {
+        // Admin sees both Admin and Content tables; Content admin sees just the Content
+        $this->allowedTables = $this->getAllowedTables(SeablastConstant::ADMIN_TABLE_VIEW);
+        $selectedTable = $this->superglobals->get['t'] ?? null;
+
+        // if there's a requested table and the user has access to it,
+        // populate string SeablastConstant::APP_SELECTED_TABLE
+        if (is_string($selectedTable) && in_array($selectedTable, $this->allowedTables, true)) {
+            $this->configuration->setString(SeablastConstant::APP_SELECTED_TABLE, $selectedTable);
+        }
     }
 }

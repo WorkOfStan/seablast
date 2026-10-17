@@ -31,21 +31,6 @@ class BarPanelTemplate implements IBarPanel
     }
 
     /**
-     * Renders HTML code for custom tab.
-     *
-     * @return string
-     */
-    public function getTab(): string
-    {
-        $style = $this->errorPanel ?
-            'display: block;background: #D51616;color: white;font-weight: bold;margin: -1px -.4em;padding: 1px .4em;' :
-            '';
-        $icon = ''; // Placeholder for icon implementation<img src="data:image/png;base64,<zakodovany obrazek>" />
-        $label = '<span class="tracy-label" style="' . $style . '">' . $this->tabTitle . '</span>';
-        return $icon . $label;
-    }
-
-    /**
      * Renders HTML code for custom panel.
      *
      * @return string
@@ -78,6 +63,21 @@ class BarPanelTemplate implements IBarPanel
             . '<div class="tracy-inner tracy-InfoPanel"><table><tbody>'
             . $cntTable
             . '</tbody></table>* Hover over field to see its full content.</div>';
+    }
+
+    /**
+     * Renders HTML code for custom tab.
+     *
+     * @return string
+     */
+    public function getTab(): string
+    {
+        $style = $this->errorPanel ?
+            'display: block;background: #D51616;color: white;font-weight: bold;margin: -1px -.4em;padding: 1px .4em;' :
+            '';
+        $icon = ''; // Placeholder for icon implementation<img src="data:image/png;base64,<zakodovany obrazek>" />
+        $label = '<span class="tracy-label" style="' . $style . '">' . $this->tabTitle . '</span>';
+        return $icon . $label;
     }
 
     /**

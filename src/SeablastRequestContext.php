@@ -10,12 +10,12 @@ use Seablast\Seablast\Exceptions\SeablastConfigurationException;
 /** Immutable security decisions from one request snapshot; Host is deliberately not trusted here. */
 final class SeablastRequestContext
 {
-    /** @var bool */
-    private $https;
     /** @var string|null */
     private $clientIp;
     /** @var bool */
     private $debugAllowed;
+    /** @var bool */
+    private $https;
 
     /**
      * Supports Apache and Nginx HTTPS detection, including TLS-terminating reverse proxies.
@@ -78,6 +78,30 @@ final class SeablastRequestContext
         );
     }
 
+    /** @return string[] */
+    private static function configuredIps(SeablastConfiguration $configuration, string $key): array
+    {
+        $result = [];
+        foreach ($configuration->exists($key) ? $configuration->getArrayString($key) : [] as $value) {
+            $ip = self::normalizeIp($value);
+            if ($ip === null) {
+                throw new SeablastConfigurationException($key . ' requires exact IP addresses.');
+            }
+            $result[] = $ip;
+        }
+        return $result;
+    }
+
+    public function getClientIp(): ?string
+    {
+        return $this->clientIp;
+    }
+
+    public function isDebugAllowed(): bool
+    {
+        return $this->debugAllowed;
+    }
+
     /**
      * Checks whether the current request was made using HTTPS.
      *
@@ -107,16 +131,6 @@ final class SeablastRequestContext
         return $this->https;
     }
 
-    public function getClientIp(): ?string
-    {
-        return $this->clientIp;
-    }
-
-    public function isDebugAllowed(): bool
-    {
-        return $this->debugAllowed;
-    }
-
     /** @param mixed $value */
     private static function normalizeIp($value): ?string
     {
@@ -125,19 +139,5 @@ final class SeablastRequestContext
         }
         $binary = inet_pton($value);
         return $binary === false ? null : (inet_ntop($binary) ?: null);
-    }
-
-    /** @return string[] */
-    private static function configuredIps(SeablastConfiguration $configuration, string $key): array
-    {
-        $result = [];
-        foreach ($configuration->exists($key) ? $configuration->getArrayString($key) : [] as $value) {
-            $ip = self::normalizeIp($value);
-            if ($ip === null) {
-                throw new SeablastConfigurationException($key . ' requires exact IP addresses.');
-            }
-            $result[] = $ip;
-        }
-        return $result;
     }
 }

@@ -13,6 +13,13 @@ use Seablast\Seablast\SeablastRequestContext;
 
 class SeablastRequestContextTest extends TestCase
 {
+    private function configuration(): SeablastConfiguration
+    {
+        $configuration = new SeablastConfiguration();
+        $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['127.0.0.1', '2001:db8::1']);
+        return $configuration;
+    }
+
     public function testDirectConnectionsIgnoreAllForwardingHeaders(): void
     {
         foreach ([[], ['HTTPS' => 'on'], ['REQUEST_SCHEME' => 'https'], ['SERVER_PORT' => '443']] as $tls) {
@@ -34,36 +41,22 @@ class SeablastRequestContextTest extends TestCase
         }
     }
 
-    public function testProxyChainUsesFirstUntrustedHopAndExternalScheme(): void
+    public function testExactIpConfigurationAndLoopbackDefaults(): void
     {
-        $configuration = $this->configuration();
-        $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7', '127.0.0.1']);
-        $cases = [
-            ['198.51.100.7', '198.51.100.7', true],
-            ['127.0.0.1, 198.51.100.8, 2001:db8::1', '198.51.100.8', false],
-            ['198.51.100.7, 2001:0db8:0:0:0:0:0:1', '198.51.100.7', true],
-            ['127.0.0.1, 2001:db8::1', null, false],
-        ];
-        foreach ($cases as $case) {
-            $context = new SeablastRequestContext($configuration, [
-                'REMOTE_ADDR' => '127.0.0.1',
-                'HTTPS' => 'on',
-                'HTTP_X_FORWARDED_PROTO' => 'http',
-                'HTTP_X_FORWARDED_FOR' => $case[0],
-            ]);
-            $this->assertFalse($context->isHttps());
-            $this->assertSame($case[1], $context->getClientIp());
-            $this->assertSame($case[2], $context->isDebugAllowed());
+        foreach (['127.0.0.1', '0:0:0:0:0:0:0:1'] as $ip) {
+            $context = new SeablastRequestContext(new SeablastConfiguration(), ['REMOTE_ADDR' => $ip]);
+            $this->assertTrue($context->isDebugAllowed());
         }
-        $context = new SeablastRequestContext($configuration, [
-            'REMOTE_ADDR' => '2001:0db8:0:0:0:0:0:1',
-            'HTTP_X_FORWARDED_PROTO' => ' HTTPS ',
-            'HTTP_X_FORWARDED_FOR' => '2001:db8::2',
-        ]);
-        $this->assertTrue($context->isHttps());
-        $this->assertSame('2001:db8::2', $context->getClientIp());
-        $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['2001:db8::2']);
-        $this->assertFalse($context->isDebugAllowed(), 'The resolved snapshot must remain immutable.');
+        foreach (['*', '127.0.0.0/8', 'localhost', '198.51.100.8:80', ''] as $ip) {
+            $configuration = new SeablastConfiguration();
+            $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, [$ip]);
+            try {
+                new SeablastRequestContext($configuration, []);
+                $this->fail('Invalid proxy configuration accepted.');
+            } catch (SeablastConfigurationException $e) {
+                $this->assertStringContainsString('exact IP addresses', $e->getMessage());
+            }
+        }
     }
 
     public function testMalformedTrustedProxyMetadataFailsClosed(): void
@@ -103,28 +96,35 @@ class SeablastRequestContextTest extends TestCase
         }
     }
 
-    public function testExactIpConfigurationAndLoopbackDefaults(): void
+    public function testProxyChainUsesFirstUntrustedHopAndExternalScheme(): void
     {
-        foreach (['127.0.0.1', '0:0:0:0:0:0:0:1'] as $ip) {
-            $context = new SeablastRequestContext(new SeablastConfiguration(), ['REMOTE_ADDR' => $ip]);
-            $this->assertTrue($context->isDebugAllowed());
+        $configuration = $this->configuration();
+        $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7', '127.0.0.1']);
+        $cases = [
+            ['198.51.100.7', '198.51.100.7', true],
+            ['127.0.0.1, 198.51.100.8, 2001:db8::1', '198.51.100.8', false],
+            ['198.51.100.7, 2001:0db8:0:0:0:0:0:1', '198.51.100.7', true],
+            ['127.0.0.1, 2001:db8::1', null, false],
+        ];
+        foreach ($cases as $case) {
+            $context = new SeablastRequestContext($configuration, [
+                'REMOTE_ADDR' => '127.0.0.1',
+                'HTTPS' => 'on',
+                'HTTP_X_FORWARDED_PROTO' => 'http',
+                'HTTP_X_FORWARDED_FOR' => $case[0],
+            ]);
+            $this->assertFalse($context->isHttps());
+            $this->assertSame($case[1], $context->getClientIp());
+            $this->assertSame($case[2], $context->isDebugAllowed());
         }
-        foreach (['*', '127.0.0.0/8', 'localhost', '198.51.100.8:80', ''] as $ip) {
-            $configuration = new SeablastConfiguration();
-            $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, [$ip]);
-            try {
-                new SeablastRequestContext($configuration, []);
-                $this->fail('Invalid proxy configuration accepted.');
-            } catch (SeablastConfigurationException $e) {
-                $this->assertStringContainsString('exact IP addresses', $e->getMessage());
-            }
-        }
-    }
-
-    private function configuration(): SeablastConfiguration
-    {
-        $configuration = new SeablastConfiguration();
-        $configuration->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['127.0.0.1', '2001:db8::1']);
-        return $configuration;
+        $context = new SeablastRequestContext($configuration, [
+            'REMOTE_ADDR' => '2001:0db8:0:0:0:0:0:1',
+            'HTTP_X_FORWARDED_PROTO' => ' HTTPS ',
+            'HTTP_X_FORWARDED_FOR' => '2001:db8::2',
+        ]);
+        $this->assertTrue($context->isHttps());
+        $this->assertSame('2001:db8::2', $context->getClientIp());
+        $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['2001:db8::2']);
+        $this->assertFalse($context->isDebugAllowed(), 'The resolved snapshot must remain immutable.');
     }
 }

@@ -66,6 +66,63 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     }
 
     /**
+     * Allow specialized endpoints to reject requests before reading any input.
+     */
+    protected function beforeInput(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Checks whether the announced request body size is too large.
+     *
+     * @return bool
+     */
+    private function contentLengthExceedsLimit(): bool
+    {
+        if (!isset($this->superglobals->server['CONTENT_LENGTH'])) {
+            return false;
+        }
+        if (!is_scalar($this->superglobals->server['CONTENT_LENGTH'])) {
+            return false;
+        }
+        $contentLength = trim((string) $this->superglobals->server['CONTENT_LENGTH']);
+        if ($contentLength === '' || !ctype_digit($contentLength)) {
+            return false;
+        }
+        return (int) $contentLength > static::JSON_INPUT_MAX_BYTES;
+    }
+
+    /**
+     * Checks whether request Content-Type is JSON.
+     *
+     * @return bool
+     */
+    private function hasJsonContentType(): bool
+    {
+        $contentType = $this->superglobals->server['CONTENT_TYPE']
+            ?? $this->superglobals->server['HTTP_CONTENT_TYPE']
+            ?? '';
+        if (!is_scalar($contentType)) {
+            return false;
+        }
+        $mediaTypeParts = explode(';', (string) $contentType, 2);
+        $mediaType = strtolower(trim($mediaTypeParts[0]));
+        if ($mediaType === 'application/json') {
+            return true;
+        }
+        return strpos($mediaType, '/') !== false && substr($mediaType, -5) === '+json';
+    }
+
+    /**
+     * Specialized ingestion endpoints must not turn rejected input into more log entries.
+     */
+    protected function inputDiagnosticsEnabled(): bool
+    {
+        return true;
+    }
+
+    /**
      * If the returned status >= 400, then it doesn't make sense to process anymore,
      * but return the same status to SeablastView.
      *
@@ -208,47 +265,6 @@ class GenericRestApiJsonModel implements SeablastModelInterface
     }
 
     /**
-     * Checks whether the announced request body size is too large.
-     *
-     * @return bool
-     */
-    private function contentLengthExceedsLimit(): bool
-    {
-        if (!isset($this->superglobals->server['CONTENT_LENGTH'])) {
-            return false;
-        }
-        if (!is_scalar($this->superglobals->server['CONTENT_LENGTH'])) {
-            return false;
-        }
-        $contentLength = trim((string) $this->superglobals->server['CONTENT_LENGTH']);
-        if ($contentLength === '' || !ctype_digit($contentLength)) {
-            return false;
-        }
-        return (int) $contentLength > static::JSON_INPUT_MAX_BYTES;
-    }
-
-    /**
-     * Checks whether request Content-Type is JSON.
-     *
-     * @return bool
-     */
-    private function hasJsonContentType(): bool
-    {
-        $contentType = $this->superglobals->server['CONTENT_TYPE']
-            ?? $this->superglobals->server['HTTP_CONTENT_TYPE']
-            ?? '';
-        if (!is_scalar($contentType)) {
-            return false;
-        }
-        $mediaTypeParts = explode(';', (string) $contentType, 2);
-        $mediaType = strtolower(trim($mediaTypeParts[0]));
-        if ($mediaType === 'application/json') {
-            return true;
-        }
-        return strpos($mediaType, '/') !== false && substr($mediaType, -5) === '+json';
-    }
-
-    /**
      * Read only the maximum accepted JSON bytes plus one byte to detect overflow.
      *
      * @return string|false
@@ -281,22 +297,6 @@ class GenericRestApiJsonModel implements SeablastModelInterface
         }
         $this->httpCode = $httpCode;
         $this->message = $message;
-    }
-
-    /**
-     * Allow specialized endpoints to reject requests before reading any input.
-     */
-    protected function beforeInput(): bool
-    {
-        return true;
-    }
-
-    /**
-     * Specialized ingestion endpoints must not turn rejected input into more log entries.
-     */
-    protected function inputDiagnosticsEnabled(): bool
-    {
-        return true;
     }
 
     /**
