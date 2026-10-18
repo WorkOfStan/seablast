@@ -58,8 +58,25 @@ class ApiTableUpdateModel extends GenericRestApiJsonModel
         if (
             empty($cols['edit'] ?? []) || !in_array($this->superglobals->get['key'], $cols['edit']) //
             || !isset($this->superglobals->get['id']) || !is_scalar($this->superglobals->get['id']) //
-            || (int) $this->superglobals->get['id'] === 0 || !isset($this->data->val)
+            || (int) $this->superglobals->get['id'] === 0
         ) {
+            return self::response(403, 'Nothing to edit.');
+        }
+        if (
+            $this->configuration->exists(SeablastConstant::ADMIN_COLOR_FIELDS)
+            && in_array(
+                $this->superglobals->get['key'],
+                $this->configuration->getArrayString(SeablastConstant::ADMIN_COLOR_FIELDS),
+                true
+            )
+        ) {
+            $color = AdminColor::normalize($this->data->val ?? null);
+            if ($color === null) {
+                return self::response(400, 'Color must use the #rrggbb format.');
+            }
+            Assert::isInstanceOf($this->data, stdClass::class);
+            $this->data->val = $color;
+        } elseif (!isset($this->data->val)) {
             return self::response(403, 'Nothing to edit.');
         }
         Assert::string($this->data->val);

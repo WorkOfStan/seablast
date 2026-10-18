@@ -282,19 +282,13 @@ export class Overlay {
    * @returns {string|null} "#rrggbb" or null
    */
   normalizeHexColor(v) {
-    if (!v) return null;
-    const s = String(v).trim().toLowerCase();
+    if (typeof v !== "string") return null;
+    const s = v.toLowerCase();
 
-    // "#abc" -> "#aabbcc"
-    const m3 = s.match(/^#([0-9a-f]{3})$/i);
-    if (m3) {
-      const a = m3[1].split("");
-      return "#" + a.map((ch) => ch + ch).join("");
-    }
-
+    // "#abc" -> "#aabbcc" is intentionally unsupported by the strict color policy.
     // "#aabbcc"
-    const m6 = s.match(/^#([0-9a-f]{6})$/i);
-    if (m6) return "#" + m6[1];
+    const m6 = s.match(/^#[0-9a-f]{6}$/);
+    if (m6 && s.length === 7) return s;
 
     return null;
   }
