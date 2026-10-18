@@ -52,7 +52,9 @@ class AdminColorSecurityTest extends TestCase
             $this->assertIsString($json);
             $configuration->setString(SeablastConstant::JSON_INPUT, $json);
             $model = new ApiTableUpdateModel($configuration, new Superglobals(
-                ['key' => 'color', 'id' => '1'], [], ['REQUEST_METHOD' => 'POST']
+                ['key' => 'color', 'id' => '1'],
+                [],
+                ['REQUEST_METHOD' => 'POST']
             ));
             $helper = $this->getMockBuilder(AdminHelper::class)->disableOriginalConstructor()->getMock();
             $helper->method('getAllowedColumns')->willReturn(['edit' => ['color']]);
@@ -92,7 +94,9 @@ class AdminColorSecurityTest extends TestCase
             $this->assertIsString($json);
             $configuration->setString(SeablastConstant::JSON_INPUT, $json);
             $model = new ApiTableUpdateModel($configuration, new Superglobals(
-                ['key' => 'color', 'id' => '1'], [], ['REQUEST_METHOD' => 'POST']
+                ['key' => 'color', 'id' => '1'],
+                [],
+                ['REQUEST_METHOD' => 'POST']
             ));
             $helper = $this->getMockBuilder(AdminHelper::class)->disableOriginalConstructor()->getMock();
             $helper->method('getAllowedColumns')->willReturn(['edit' => ['color']]);
@@ -134,7 +138,9 @@ class AdminColorSecurityTest extends TestCase
                 Assert::string($json);
                 $configuration->setString(SeablastConstant::JSON_INPUT, $json);
                 $model = new ApiTableUpdateModel($configuration, new Superglobals(
-                    ['key' => 'color', 'id' => '1'], [], ['REQUEST_METHOD' => 'POST']
+                    ['key' => 'color', 'id' => '1'],
+                    [],
+                    ['REQUEST_METHOD' => 'POST']
                 ));
                 // Temporary table metadata is not exposed through information_schema.COLUMNS.
                 $helper = $this->getMockBuilder(AdminHelper::class)->disableOriginalConstructor()->getMock();
