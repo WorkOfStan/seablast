@@ -122,10 +122,12 @@ class BannerManager {
     }
     const banner = document.createElement("div");
     banner.className = `banner ${type}`;
-    banner.innerHTML = `<span>${message}</span>`;
+    const span = document.createElement("span");
+    span.textContent = message;
+    banner.appendChild(span);
 
     const closeButton = document.createElement("button");
-    closeButton.innerHTML = "✖";
+    closeButton.textContent = "✖";
     closeButton.onclick = () => banner.remove();
     banner.appendChild(closeButton);
 
