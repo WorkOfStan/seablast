@@ -110,7 +110,7 @@
                 <tbody>
                     <tr n:foreach="$table as $row">
                         {* todo is row['id'] universal row identification? *}
-                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} color-edit{/if}{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('SB:APP_SELECTED_TABLE')}&key={$key}&id={$row['id']}"{/if}{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} style="background-color:{$value|noescape};"{/if}>{$value}</td>
+                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} color-edit{/if}{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('SB:APP_SELECTED_TABLE')}&key={$key}&id={$row['id']}"{/if}{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'), true) && Seablast\Seablast\Admin\AdminColor::normalize($value) !== null} style="background-color:#{substr(Seablast\Seablast\Admin\AdminColor::normalize($value), 1)};"{/if}>{$value}</td>
                     </tr>
                 </tbody>
             </table>
@@ -161,15 +161,33 @@
 
       // Function to add a new condition
       function addCondition() {
-        const html = '<div class="condition-group">' +
-                '<select class="condition-index" name="condition-index">' +
-                '<option value="">-- Select Column --</option>' +
-        {foreach $columns as $index => $column}'<option value={$index}>{$column|noescape}</option>' +{/foreach}
-        '</select>' +
-                '<input class="condition-rule" name="condition-rule" type="text" placeholder="Condition"/>' +
-                '<button type="button" class="remove-condition">Remove Condition</button>' +
-                '</div>';
-        conditionContainer.append(html);
+        const group = document.createElement('div');
+        group.className = 'condition-group';
+        const select = document.createElement('select');
+        select.className = 'condition-index';
+        select.name = 'condition-index';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Select Column --';
+        select.appendChild(placeholder);
+        const columns = {$columns};
+        Object.entries(columns).forEach(([index, column]) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = column;
+          select.appendChild(option);
+        });
+        const input = document.createElement('input');
+        input.className = 'condition-rule';
+        input.name = 'condition-rule';
+        input.type = 'text';
+        input.placeholder = 'Condition';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'remove-condition';
+        button.textContent = 'Remove Condition';
+        group.append(select, input, button);
+        conditionContainer.append(group);
       }
 
       // Function to remove a condition

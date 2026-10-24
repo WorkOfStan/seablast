@@ -21,6 +21,16 @@ It works best when the app keeps business code simple and explicit:
 For new projects, start from `seablast-dist` when possible and remove demo code deliberately.
 For existing app migrations, reshape the app into the Seablast structure instead of keeping a parallel framework layout alive.
 
+## Bundled Administration Color Fields
+
+Configured `ADMIN_COLOR_FIELDS` accept only six-digit hexadecimal colors (`#rrggbb`).
+Uppercase hexadecimal digits are accepted and stored in lowercase. Whitespace,
+empty values, color names, and shorthand `#RGB` are rejected with HTTP 400.
+Existing invalid values remain visible as escaped text without a background and
+can be corrected with the color editor; no automatic data migration is performed.
+Applications overriding `admin.latte` must adopt the validated, escaped rendering
+and safe DOM construction for filter options from the bundled template.
+
 ## Bootstrap And Project Shape
 
 Normal web requests should enter through:

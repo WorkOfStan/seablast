@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [0.2.20] - TBD
+
+docs: select explicitly flag names to be available for JavaScript
+
+### Changed
+
+- Clarify that BlueprintWeb.latte exposes only explicitly selected, enabled flag names in its JavaScript flags array.
+
+### Security
+
+- Fix stored XSS in admin color fields with strict six-digit hex validation, escaped rendering, and safe filter option construction.
+
 ## [0.2.19] - 2026-10-17
 
 fix!: Restrict debug logging and preserve independent PDO errors
