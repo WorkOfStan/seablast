@@ -431,11 +431,6 @@ Complete model results and view parameters are not logged. View model and parame
 Tracy dumps require `SB_LOGGING_LEVEL >= 5` and can still expose secrets; SQL logging
 and other diagnostics remain subject to access and retention controls.
 
-`BannerManager.addBanner(message, type)` and `changeBanner(banner, message, type)`
-render messages as plain text; HTML markup is displayed literally. Preserve this
-contract for both creation and updates. Run `node tests/banner-manager.test.cjs`
-to check text safety, banner types, closing, and movement.
-
 For frontend logging, use `ErrorLogger`, which is always exported by
 `assets/scripts/seablast.js`. Import it into the consuming JavaScript module,
 instantiate it with `new ErrorLogger(csrfToken, apiBase)`, and call
