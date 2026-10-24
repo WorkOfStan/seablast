@@ -83,9 +83,13 @@ const context = vm.createContext({
 const source = fs
   .readFileSync(path.join(__dirname, "../assets/scripts/seablast.js"), "utf8")
   .replace(/^export\s*\{[^}]*\};?\s*$/gm, "");
-vm.runInContext(source + "\nglobalThis.BannerManager = BannerManager;", context);
+vm.runInContext(
+  source + "\nglobalThis.BannerManager = BannerManager;",
+  context,
+);
 const manager = new context.BannerManager();
-const payload = '<img src=x onerror="alert(1)"><script>alert(2)</script> & \'text\'';
+const payload =
+  "<img src=x onerror=\"alert(1)\"><script>alert(2)</script> & 'text'";
 const updated = '<svg onload="alert(3)"></svg> &amp; "quoted"';
 
 const banner = manager.addBanner(payload);
@@ -137,4 +141,6 @@ assert.equal(floating.className, "banner info");
 floating.querySelector("button").onclick();
 assert.deepEqual(container.children, [second, invalid]);
 
-console.log("BannerManager text safety, types, closing, and movement tests passed.");
+console.log(
+  "BannerManager text safety, types, closing, and movement tests passed.",
+);
