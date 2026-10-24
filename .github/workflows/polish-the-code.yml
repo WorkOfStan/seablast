@@ -22,13 +22,30 @@ permissions:
   contents: read
 
 jobs:
-  client-error-javascript:
+  javascript-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - run: node tests/error-logger.test.cjs
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      # The admin color regression renders the real Latte template through PHP.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Run all JavaScript regressions
+        shell: bash
+        run: |
+          for test in tests/*.test.cjs; do
+            node "$test" || exit 1
+          done
 
   commit-check:
     runs-on: ubuntu-latest
@@ -74,7 +91,7 @@ jobs:
       runs-on: "ubuntu-latest"
 
   prettier-fix:
-    needs: [php-composer-unit-stan, client-error-javascript, commit-check]
+    needs: [php-composer-unit-stan, javascript-tests, commit-check]
     # Note: runs-on doesn't accept all expressions, so a string is used
     runs-on: "ubuntu-latest"
     permissions:

@@ -97,6 +97,10 @@ the code and legacy tests to simplify when PHP 7.2 support ends.
 
 ### Browser error reporting
 
+`BannerManager.addBanner(message, type)` and `changeBanner(banner, message, type)`
+display messages as plain text. HTML markup is displayed literally, including
+when a banner shows an error returned by a server.
+
 `ErrorLogger.log(message, severity)` posts browser diagnostics to `/api/error`.
 Reporting remains enabled by default and accepts anonymous visitors with a valid
 session-bound CSRF token. To disable ingestion in your application configuration:

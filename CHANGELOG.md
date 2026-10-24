@@ -21,15 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.20] - TBD
 
-docs: select explicitly flag names to be available for JavaScript
+fix: fix DOM XSS in banner messages, stored XSS in admin color fields
 
 ### Changed
 
 - Clarify that BlueprintWeb.latte exposes only explicitly selected, enabled flag names in its JavaScript flags array.
+- Run all tests/*.test.cjs regressions in the javascript-tests CI job with Node.js 24, PHP 8.4, and Composer dependencies for rendered-template coverage.
 
 ### Security
 
-- Fix stored XSS in admin color fields with strict six-digit hex validation, escaped rendering, and safe filter option construction.
+- fix(overlay.js): Fix stored XSS in admin color fields with strict six-digit hex validation, escaped rendering, and safe filter option construction.
+- fix(seablast.js): Fix DOM XSS in banner messages by rendering message text and the close-button glyph with textContent.
 
 ## [0.2.19] - 2026-10-17
 
@@ -61,7 +63,7 @@ fix!: Restrict debug logging and preserve independent PDO errors
   - The vulnerability affects several `FunctionsBuilder` methods when user-controlled values are passed to SQL function parameters.
   - This exception should be removed once CakePHP provides a patched release compatible with PHP 7.3, or when PHP is upgraded to a version supported by the currently patched CakePHP releases.
 - Prevent model data from being copied into debug logs with different access and retention rules.
-- Record disabled model and view parameter logging as a partial SEC-004 mitigation; keep SQL logging and remaining sensitive debug dumps open.
+- Record disabled model and view parameter logging; keep SQL logging and remaining sensitive debug dumps open.
 - Disable complete view parameter logging, including the injected CSRF token, and gate model and parameter Tracy dumps on `SB_LOGGING_LEVEL >= 5`.
 - fix!: Require an explicit `DEBUG_IP_LIST` match for Tracy development mode and maintenance bypass, **including localhost (i.e. `127.0.0.1` or `::1`)**.
 
