@@ -37,8 +37,7 @@ class RequestContextHttpTest extends TestCase
         string $method = 'GET',
         string $body = '',
         string $host = 'app.example.com'
-    ): array
-    {
+    ): array {
         $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
         // PHP 7.2 must see Host before X-Forwarded-Host to avoid adding a duplicate Host header.
         array_unshift($headers, 'Host: ' . $host);
@@ -314,8 +313,10 @@ class RequestContextHttpTest extends TestCase
 
     public function testHostRejectionsPrecedeSessionsMaintenanceAndDebug(): void
     {
-        foreach (['evil.example', 'app.example.com:8080', 'app.example.com.evil', 'user@app.example.com',
-            'app.example.com,evil.example', 'app.example.com.', 'app.example.com:0'] as $host) {
+        foreach (
+            ['evil.example', 'app.example.com:8080', 'app.example.com.evil', 'user@app.example.com',
+            'app.example.com,evil.example', 'app.example.com.', 'app.example.com:0'] as $host
+        ) {
             foreach ([[], ['maintenance' => '1']] as $query) {
                 $response = $this->request($query + ['allowDebug' => '1'], [
                     'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7',
