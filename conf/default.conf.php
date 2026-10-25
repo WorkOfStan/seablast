@@ -20,6 +20,11 @@ return static function (SeablastConfiguration $SBConfig): void {
     ;
     $SBConfig
         // Environment
+        ->setString(SeablastConstant::SB_CACHE_CONTROL, 'no-store')
+        ->setString(SeablastConstant::SB_CSP_MODE, 'report-only')
+        ->setString(SeablastConstant::SB_CSP_REPORT_URI, '')
+        ->setArrayString(SeablastConstant::SB_FRAME_ANCESTORS, ["'self'"])
+        ->setString(SeablastConstant::SB_REFERRER_POLICY, 'strict-origin-when-cross-origin')
         ->setInt(SeablastConstant::SB_ERROR_REPORTING, E_ALL & ~E_NOTICE)
         ->setInt(SeablastConstant::SB_SESSION_SET_COOKIE_LIFETIME, 60 * 60 * 24 * 2) // 2 days
         ->setInt(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME, 60 * 60 * 3) // 3 hours

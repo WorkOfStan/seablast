@@ -35,6 +35,19 @@ class RequestContextHttpModel
             session_regenerate_id(true);
         }
         $result = new stdClass();
+        header('X-Fixture: preserved');
+        if (isset($this->superglobals->get['authenticated'])) {
+            $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+        }
+        if (isset($this->superglobals->get['html']) || isset($this->superglobals->get['redirect'])) {
+            $this->configuration->setString(SeablastConstant::LATTE_TEMPLATE, __DIR__ . '/Fixtures');
+            $result->cspNonce = 'model-value-must-be-overridden';
+            if (isset($this->superglobals->get['redirect'])) {
+                $result->redirectionUrl = '/target';
+                $result->httpCode = 303;
+            }
+            return $result;
+        }
         $result->rest = [
             'root' => $this->configuration->getString(SeablastConstant::SB_APP_ROOT_ABSOLUTE_URL),
             'debug' => !Debugger::$productionMode,

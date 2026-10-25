@@ -111,6 +111,8 @@ class SeablastConstant
      * @var string string The absolute URL of the root of the application. The literal is expected in Latte.
      */
     public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';
+    /** @var string Dynamic-response cache policy; defaults to no-store. */
+    public const SB_CACHE_CONTROL = 'SB_CACHE_CONTROL';
     /**
      * @var string mysqli::set_charset('utf8');
      */
@@ -131,6 +133,12 @@ class SeablastConstant
      * @var string Optional absolute local state file; defaults to an app-specific system temp file.
      */
     public const SB_CLIENT_ERROR_RATE_LIMIT_FILE = 'SB:client_error:rate_limit_file';
+    /** @var string CSP directive => source-token lists, overriding individual defaults. */
+    public const SB_CSP_DIRECTIVES = 'SB_CSP_DIRECTIVES';
+    /** @var string Content policy mode: report-only (default), enforce, or off. */
+    public const SB_CSP_MODE = 'SB_CSP_MODE';
+    /** @var string Optional CSP report destination; no report receiver is bundled. */
+    public const SB_CSP_REPORT_URI = 'SB_CSP_REPORT_URI';
     /**
      * @var string mb_internal_encoding('UTF-8'); mb_http_output('UTF-8');
      */
@@ -139,6 +147,8 @@ class SeablastConstant
      * @var string Level of PHP built-in error_reporting
      */
     public const SB_ERROR_REPORTING = 'SB:error_reporting';
+    /** @var string Allowed embedding origins; defaults to the single token 'self'. */
+    public const SB_FRAME_ANCESTORS = 'SB_FRAME_ANCESTORS';
     /**
      * @var string stringName of an expected and accepted string GET argument
      */
@@ -173,6 +183,8 @@ class SeablastConstant
      * @ var string phinxEnvironment for database connection to override $phinx['environments']['default_environment']
      */
     public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
+    /** @var string Browser referrer policy; defaults to strict-origin-when-cross-origin. */
+    public const SB_REFERRER_POLICY = 'SB_REFERRER_POLICY';
     /**
      * @var string ini_set('session.cokie_lifetime', '2000000');
      */

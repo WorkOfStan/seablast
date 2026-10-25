@@ -21,17 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.20] - TBD
 
-fix: fix DOM XSS in banner messages, stored XSS in admin color fields
+fix!: fix XSS, introduce Content Security Policy
 
 ### Changed
 
 - Clarify that BlueprintWeb.latte exposes only explicitly selected, enabled flag names in its JavaScript flags array.
 - Run all tests/*.test.cjs regressions in the javascript-tests CI job with Node.js 24, PHP 8.4, and Composer dependencies for rendered-template coverage.
+- Read application maintenance pages as HTML and replace the CSP nonce placeholder to support inline styles and scripts.
 
 ### Security
 
 - fix(overlay.js): Fix stored XSS in admin color fields with strict six-digit hex validation, escaped rendering, and safe filter option construction.
 - fix(seablast.js): Fix DOM XSS in banner messages by rendering message text and the close-button glyph with textContent.
+- Add configurable browser security headers with enforced same-origin framing and no-store, report-only nonce-based CSP, and CSP-compatible bundled templates (content enforcement remains pending).
+- Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external stylesheet and URL rewriting.
 
 ## [0.2.19] - 2026-10-17
 

@@ -305,6 +305,43 @@ The browser logger honors `429`/`Retry-After` and stops that instance on disable
 and reject ingestion. Follow the [browser reporting contract](README.md#browser-error-reporting)
 for field limits, HTTP errors, storage permissions, and deployment requirements.
 
+## Browser Security Header Contract
+
+Core applies one immutable `SeablastSecurityHeaders` policy per request through
+`SeablastConfiguration::securityHeaders()`. Bootstrap applies it before request
+validation; controller/session startup and view reapply it before output. This
+covers early 400s, maintenance, HTML, JSON, and redirects without changing status
+codes, cookies, or unrelated headers. Finish configuration before first access and
+never reuse the configuration across HTTP requests.
+
+Defaults enforce same-origin framing, nosniff, strict-origin-when-cross-origin,
+and no-store for all dynamic responses. Content restrictions remain report-only;
+SEC-009 is partially mitigated until enforcement is reviewed. Configure
+`SB_CSP_MODE`, `SB_CSP_DIRECTIVES`, `SB_CSP_REPORT_URI`, `SB_FRAME_ANCESTORS`,
+`SB_REFERRER_POLICY`, and `SB_CACHE_CONTROL` inside the configuration closure.
+See [Browser security headers](README.md#browser-security-headers) for exact policy,
+override semantics, optional reporting, and server-header coexistence. HSTS and
+static-asset headers remain deployment responsibilities.
+
+The view overwrites any model-provided `cspNonce` with the request nonce. Use it on
+intentional inline script/style blocks in application overrides; never cache or
+configure a fixed nonce. Standalone renderers must apply the same configuration's
+policy before output. Custom bootstraps must reapply after session startup. Avoid
+inline event/style attributes; admin colors use validated `data-admin-color` and
+DOM style properties. Bump the application's asset version on deployment.
+
+Before enforcing CSP, review browser reports for application overrides, optional
+auth/i18n assets, and Tracy (including error pages). Report-only mode deliberately
+preserves existing integrations. Explicit cache overrides must exclude personalized
+and token-bearing responses. Bundled maintenance CSS stays inline: the controller
+replaces `__SEABLAST_CSP_NONCE__` with the escaped response nonce. Application
+maintenance overrides are read as HTML and receive the same replacement; use
+`nonce="__SEABLAST_CSP_NONCE__"` on intentional inline style/script elements.
+Real HTTP regressions cover header persistence, modes, framing, nonce agreement,
+invalid configuration, sessions, and early rejections; JavaScript regressions
+include admin color initialization under the new markup contract.
+
+
 ## Testing Checklist
 
 Useful app-level tests:

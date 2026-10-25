@@ -95,6 +95,86 @@ PHP 7.2 remains supported through an isolated SameSite compatibility path.
 The `TODO PHP-7.2` removal note in `SeablastSessionCookie` and `AGENTS.md` identifies
 the code and legacy tests to simplify when PHP 7.2 support ends.
 
+### Browser security headers
+
+Dynamic responses default to same-origin framing (`frame-ancestors 'self'` and
+`X-Frame-Options: SAMEORIGIN`), `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin`, and `Cache-Control: no-store`.
+This includes anonymous HTML containing CSRF tokens, JSON, redirects, maintenance,
+and invalid-request responses. Static assets remain under web-server cache policy.
+HSTS remains a deployment choice: enable it only after reviewing HTTPS and subdomains.
+
+Content restrictions start in **report-only** mode; they do not yet block scripts
+or styles. Framing restrictions are always enforced separately. Bundled defaults
+allow same-origin resources, nonce-authorized inline scripts/styles, the exact
+bundled jQuery and WebHotkeys CDN paths, Google Fonts CSS at `/css2`, and fonts from
+`fonts.gstatic.com`. They prohibit objects and limit base URLs to the same origin,
+without `unsafe-inline` or `unsafe-eval`. Font file paths vary with font/browser,
+so that font origin is allowed rather than a fixed file URL.
+
+Configure the policy inside your application's configuration closure:
+
+```php
+$SBConfig
+    ->setString(SeablastConstant::SB_CSP_MODE, 'report-only')
+    ->setArrayString(SeablastConstant::SB_FRAME_ANCESTORS, ["'self'"])
+    ->setString(SeablastConstant::SB_REFERRER_POLICY, 'strict-origin-when-cross-origin')
+    ->setString(SeablastConstant::SB_CACHE_CONTROL, 'no-store')
+    ->setArrayArrayString(SeablastConstant::SB_CSP_DIRECTIVES, 'connect-src', [
+        "'self'", 'https://api.example.com',
+    ])
+    ->setString(SeablastConstant::SB_CSP_REPORT_URI, '');
+```
+
+`SB_CSP_DIRECTIVES` overrides individual default directives with lists of separate
+source tokens; other defaults remain. Nonces are generated automatically for
+`script-src` and `style-src` unless that directive is exactly `["'none'"]`.
+Do not configure fixed nonces. `frame-ancestors` and reporting are managed by their
+separate settings. Invalid modes, control characters, and directive separators
+inside tokens are rejected before headers are applied.
+
+`SB_CSP_MODE` accepts `report-only`, `enforce`, or `off`; `off` only disables content
+restrictions, not framing, MIME, referrer, or cache protection. Framing accepts
+`["'none'"]` to prohibit embedding, `["'self'"]` for same-origin embedding, or an
+explicit list of HTTP/HTTPS origins (optionally including `'self'`). The first two
+also emit `DENY` or `SAMEORIGIN`; explicit external origins omit X-Frame-Options.
+
+Set `SB_CSP_REPORT_URI` to an existing local path such as `/csp-report` or an HTTPS
+URL with a path to collect reports through `report-uri`. No collector is bundled;
+protect and rate-limit your collector and consider sensitive URLs in reports.
+Without a destination, review browser-console violations. Review application
+templates, optional auth/i18n integrations, third-party assets, and Tracy diagnostics
+before switching to `enforce`. Report-only rollout does not constitute full SEC-009
+closure. A content policy does not replace escaping or Host validation.
+
+The view supplies a framework-owned `cspNonce`. Application templates should use
+`<script nonce="{$cspNonce}">` and `<style nonce="{$cspNonce}">` for intentional inline
+blocks. Move inline event handlers to listeners and style attributes to stylesheets
+or validated DOM style properties. Bundled admin colors use validated
+`data-admin-color` attributes. Upgrade overridden admin/layout templates and bump
+your application's `SB_WEB_FORCE_ASSET_VERSION` when deploying changed assets.
+
+`SeablastConfiguration::securityHeaders()` lazily creates one immutable
+`SeablastSecurityHeaders` instance per request. Finish configuration before first
+use; do not reuse that configuration across requests in long-running workers.
+Custom bootstraps should call `securityHeaders()->apply()` before request parsing
+and output, and again after any session startup that sets cache headers. The core
+controller and view do this automatically. `getNonce()` supports custom renderers;
+`getHeaders()` exposes the validated header map. Renderers outside `SeablastView`
+must apply the same policy whose nonce they render. The bundled maintenance page
+keeps its CSS inline; the controller replaces `__SEABLAST_CSP_NONCE__` with the
+HTML-escaped response nonce. Application-provided maintenance HTML supports the
+same replacement after reading the HTML file: use `<style nonce="__SEABLAST_CSP_NONCE__">`
+for inline styles or the same nonce attribute on intentional inline scripts.
+
+The framework owns these header names in PHP and preserves unrelated headers and
+cookies. Web-server/proxy CSP headers can coexist as additional restrictions;
+policies are intersected, not relaxed by the application. Coordinate those layers
+instead of expecting an application setting to override a stricter server policy.
+An explicit `SB_CACHE_CONTROL` override affects every dynamic response in that
+configuration: never enable public caching for personalized or token-bearing pages.
+PHP may retain more restrictive session-generated `Expires`/`Pragma` headers.
+
 ### Browser error reporting
 
 `BannerManager.addBanner(message, type)` and `changeBanner(banner, message, type)`

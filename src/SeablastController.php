@@ -51,6 +51,7 @@ class SeablastController
         // Wrapped _GET, _POST, _SERVER and _SESSION for sanitizing and testing
         $this->superglobals = $superglobals;
         $this->configuration = $configuration;
+        $configuration->securityHeaders()->apply(); // custom bootstraps share the request policy
         $this->requestContext = $requestContext ?? new SeablastRequestContext($configuration, $superglobals->server);
         $cookie = new SeablastSessionCookie(
             $configuration,
@@ -339,9 +340,17 @@ class SeablastController
         if (session_status() === PHP_SESSION_NONE) {
             $this->startSession(); // because it couldn't be started sooner
         }
-        //TODO TEST include from app, if it is present, otherwise use this default:
-        include file_exists(APP_DIR . '/under-construction.html')
-            ? APP_DIR . '/under-construction.html' : __DIR__ . '/../under-construction.html';
+        $page = file_get_contents(
+            file_exists(APP_DIR . '/under-construction.html')
+                ? APP_DIR . '/under-construction.html'
+                : __DIR__ . '/../under-construction.html'
+        );
+        Assert::string($page);
+        echo str_replace(
+            '__SEABLAST_CSP_NONCE__',
+            htmlspecialchars($this->configuration->securityHeaders()->getNonce(), ENT_QUOTES, 'UTF-8'),
+            $page
+        );
         exit;
     }
 
@@ -541,6 +550,7 @@ class SeablastController
     private function startSession(): void
     {
         session_start() || error_log('session_start failed');
+        $this->configuration->securityHeaders()->apply(); // replace PHP's session cache-limiter policy
         if (!is_null($this->tracyLogger)) {
             Debugger::setLogger($this->tracyLogger);
         }

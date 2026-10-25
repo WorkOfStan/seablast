@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/styles/default.css?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}">
     </head>
     <body>
-        <script>
+        <script nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}">
             const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
             const csrfToken = {$csrfToken};{* id:sb_json *}
             {* Security: The template can access configuration, but this JavaScript array exposes only enabled flag names explicitly listed in $selectedFlags below. *}
@@ -39,6 +39,6 @@
         {if $configuration->flag->status('I18n:SHOW_LANGUAGE_SELECTOR')}
             {include '../../../../vendor/seablast/i18n/views/uls.js.latte'}
         {/if}
-        {block script}{/block} {* Note: content of block script MUST use <script></script> *}
+        {block script}{/block} {* Note: content of block script MUST use <script nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}"></script> *}
     </body>
 </html>

@@ -34,6 +34,8 @@ class SeablastConfiguration
     private $optionsString = [];
     /** @var SeablastPdo|null */
     private $pdo = null;
+    /** @var SeablastSecurityHeaders|null One immutable policy and nonce per request. */
+    private $securityHeaders = null;
     /** @var string|null for db logging */
     private $user = null;
 
@@ -386,6 +388,15 @@ class SeablastConfiguration
     public function pdoStatus(): bool
     {
         return $this->pdo instanceof \PDO;
+    }
+
+    /** Finalize configuration before first use; reuse this configuration only within one request. */
+    public function securityHeaders(): SeablastSecurityHeaders
+    {
+        if ($this->securityHeaders === null) {
+            $this->securityHeaders = new SeablastSecurityHeaders($this);
+        }
+        return $this->securityHeaders;
     }
 
     /**

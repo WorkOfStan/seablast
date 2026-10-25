@@ -30,7 +30,9 @@ return static function (SeablastConfiguration $configuration): void {
     }
     $configuration->setArrayArrayString(SeablastConstant::APP_MAPPING, '/probe', [
         'model' => RequestContextHttpModel::class,
+        'template' => 'security-headers',
     ]);
+    // The model selects the repository template path when HTML output is requested.
     if (isset($_GET['maintenance'])) {
         $configuration->flag->deactivate(SeablastConstant::FLAG_WEB_RUNNING);
     }
@@ -38,10 +40,16 @@ return static function (SeablastConfiguration $configuration): void {
         'sameSite' => SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE,
         'domain' => SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_DOMAIN,
         'path' => SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH,
+        'cspMode' => SeablastConstant::SB_CSP_MODE,
+        'cachePolicy' => SeablastConstant::SB_CACHE_CONTROL,
+        'reportUri' => SeablastConstant::SB_CSP_REPORT_URI,
     ];
     foreach ($cases as $query => $constant) {
         if (isset($_GET[$query]) && is_string($_GET[$query])) {
             $configuration->setString($constant, $_GET[$query]);
         }
+    }
+    if (isset($_GET['frameOrigin']) && is_string($_GET['frameOrigin'])) {
+        $configuration->setArrayString(SeablastConstant::SB_FRAME_ANCESTORS, [$_GET['frameOrigin']]);
     }
 };

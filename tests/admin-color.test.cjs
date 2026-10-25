@@ -29,6 +29,22 @@ for (const value of [
 assert.equal(context.normalize("#ABCDEF"), "#abcdef");
 assert.equal(context.normalize("#000000"), "#000000");
 
+vm.runInContext("globalThis.Overlay = Overlay;", context);
+const overlay = new context.Overlay({}, {});
+const colorElements = ["#ABCDEF", "red", "#123456; color:red"].map((value) => ({
+  getAttribute: () => value,
+  style: {},
+}));
+overlay.applyColorFields({
+  querySelectorAll(selector) {
+    assert.equal(selector, "[data-admin-color]");
+    return colorElements;
+  },
+});
+assert.equal(colorElements[0].style.backgroundColor, "#abcdef");
+assert.equal(colorElements[1].style.backgroundColor, undefined);
+assert.equal(colorElements[2].style.backgroundColor, undefined);
+
 // Render the production template, so the test includes Latte's JavaScript serialization.
 const php = String.raw`
 require 'vendor/autoload.php';
