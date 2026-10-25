@@ -1,7 +1,7 @@
 {* template latte where app version should be used instead of library version *}
 {layout 'BlueprintWeb.latte'}
 {block mainblock}
-        <style>
+        <style nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}">
             .message-container {
                 font-family: 'Roboto', sans-serif;
                 background-color: #f4f4f4;

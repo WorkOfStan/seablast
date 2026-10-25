@@ -9,7 +9,7 @@
 3) variable $table = array of 10 rows and 6 columns (id, date, language, code, text, active) to be displayed as table.
 *}
     <link rel="stylesheet" href="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/styles/seablast.css?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}">
-    <style>
+    <style nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}">
         .menu, .content-menu {
             list-style-type: none;
             padding: 0;
@@ -110,7 +110,7 @@
                 <tbody>
                     <tr n:foreach="$table as $row">
                         {* todo is row['id'] universal row identification? *}
-                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} color-edit{/if}{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('SB:APP_SELECTED_TABLE')}&key={$key}&id={$row['id']}"{/if}{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'), true) && Seablast\Seablast\Admin\AdminColor::normalize($value) !== null} style="background-color:#{substr(Seablast\Seablast\Admin\AdminColor::normalize($value), 1)};"{/if}>{$value}</td>
+                        <td n:foreach="$row as $key => $value" class="{if $key === "id"}fixed-column{/if}{if in_array($key, $editable)} editable{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'))} color-edit{/if}{/if}"{if in_array($key, $editable)} data-api-parameter="val" data-api="api/poseidon/?t={$configuration->getString('SB:APP_SELECTED_TABLE')}&key={$key}&id={$row['id']}"{/if}{if $configuration->exists('SB:ADMIN_COLOR_FIELDS') && in_array($key, $configuration->getArrayString('SB:ADMIN_COLOR_FIELDS'), true) && Seablast\Seablast\Admin\AdminColor::normalize($value) !== null} data-admin-color="{Seablast\Seablast\Admin\AdminColor::normalize($value)}"{/if}>{$value}</td>
                     </tr>
                 </tbody>
             </table>
@@ -123,7 +123,7 @@
 {* scripts using seablast objects MUST use defer, so that the expected objects are already defined *}
 <script defer src="{$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')}/vendor/seablast/seablast/assets/scripts/mit.js?v={$configuration->getInt('SB_WEB_FORCE_ASSET_VERSION')}"></script> {* initEditable(); *}
 <script src="https://cdn.jsdelivr.net/gh/e3rd/WebHotkeys@0.9.4/WebHotkeys.js?register" integrity="sha384-VtSHOatDaywsjcaoV86liUBBl28v5GV/w+ee6ls5ZXHWpbjiI2QuMc/r+JEYDILa" crossorigin="anonymous"></script>
-<script> {* todo make this an external js *}
+<script nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}"> {* todo make this an external js *}
     $(document).ready(function () {
 
       $(".table-order").click(function () {

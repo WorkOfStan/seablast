@@ -40,6 +40,7 @@ class RequestContextHttpTest extends TestCase
             'method' => $method,
             'content' => $body,
             'ignore_errors' => true,
+            'follow_location' => 0,
             'timeout' => 10,
             'header' => implode("\r\n", $headers),
         ]]);
@@ -76,7 +77,7 @@ class RequestContextHttpTest extends TestCase
     {
         $root = dirname(__DIR__);
         self::$app = sys_get_temp_dir() . '/seablast-request-context-' . bin2hex(random_bytes(6));
-        foreach (['/vendor/seablast/seablast', '/conf', '/log', '/sessions'] as $directory) {
+        foreach (['/vendor/seablast/seablast', '/cache', '/conf', '/log', '/sessions'] as $directory) {
             mkdir(self::$app . $directory, 0777, true);
         }
         foreach (['index.php', 'defineAppDir.php'] as $file) {
@@ -163,7 +164,7 @@ class RequestContextHttpTest extends TestCase
             proc_close(self::$process);
         }
         // Clean only this fixture's known files; never traverse unrelated test directories.
-        foreach (['/sessions/*', '/log/*'] as $pattern) {
+        foreach (['/sessions/*', '/log/*', '/cache/*'] as $pattern) {
             foreach (glob(self::$app . $pattern) ?: [] as $file) {
                 unlink($file);
             }
@@ -175,7 +176,9 @@ class RequestContextHttpTest extends TestCase
         foreach ($cases as $file) {
             unlink(self::$app . $file);
         }
-        $directories = ['/vendor/seablast/seablast', '/vendor/seablast', '/vendor', '/conf', '/log', '/sessions', ''];
+        $directories = [
+            '/vendor/seablast/seablast', '/vendor/seablast', '/vendor', '/cache', '/conf', '/log', '/sessions', '',
+        ];
         foreach ($directories as $dir) {
             rmdir(self::$app . $dir);
         }
@@ -190,6 +193,60 @@ class RequestContextHttpTest extends TestCase
         $this->assertIsString($body['sessionId']);
         $this->assertContains('X-Initial-Session: ' . $body['sessionId'], $response['headers']);
         $this->assertCount(1, $this->sessionCookies($response['headers']));
+    }
+
+    public function testApplicationMaintenanceUsesResponseNonceForInlineStyles(): void
+    {
+        $file = self::$app . '/under-construction.html';
+        $original = file_get_contents($file);
+        $this->assertIsString($original);
+        file_put_contents($file, 'maintenance fixture'
+            . '<style nonce="__SEABLAST_CSP_NONCE__">body { color: black; }</style>');
+        try {
+            foreach (['report-only', 'enforce'] as $mode) {
+                $response = $this->request(['maintenance' => '1', 'cspMode' => $mode]);
+                $this->assertSame(200, $response['status']);
+                $this->assertStringContainsString('maintenance fixture<style nonce="', $response['body']);
+                $this->assertSame(
+                    1,
+                    preg_match('/<style nonce="([A-Za-z0-9+\\/=]+)"/', $response['body'], $matches)
+                );
+                $this->assertStringContainsString(
+                    "'nonce-" . ($matches[1] ?? '') . "'",
+                    implode("\n", $response['headers'])
+                );
+                $this->assertStringNotContainsString('__SEABLAST_CSP_NONCE__', $response['body']);
+            }
+        } finally {
+            file_put_contents($file, $original);
+        }
+    }
+
+    public function testBundledMaintenanceUsesResponseNonceForInlineStyles(): void
+    {
+        $file = self::$app . '/under-construction.html';
+        rename($file, $file . '.saved');
+        try {
+            $previousNonce = '';
+            foreach (['report-only', 'enforce'] as $mode) {
+                $response = $this->request(['maintenance' => '1', 'cspMode' => $mode]);
+                $this->assertSame(200, $response['status']);
+                $this->assertContains('Cache-Control: no-store', $response['headers']);
+                $this->assertSame(
+                    1,
+                    preg_match('/<style nonce="([A-Za-z0-9+\/=]+)"/', $response['body'], $matches)
+                );
+                $nonce = $matches[1] ?? '';
+                $this->assertNotSame('', $nonce);
+                $this->assertNotSame($previousNonce, $nonce);
+                $this->assertStringContainsString("'nonce-" . $nonce . "'", implode("\n", $response['headers']));
+                $this->assertStringNotContainsString('__SEABLAST_CSP_NONCE__', $response['body']);
+                $this->assertStringNotContainsString('under-construction.css', $response['body']);
+                $previousNonce = $nonce;
+            }
+        } finally {
+            rename($file . '.saved', $file);
+        }
     }
 
     public function testClientErrorHttpResponsesAndSessionBoundToken(): void
@@ -374,6 +431,74 @@ class RequestContextHttpTest extends TestCase
         $this->assertFalse(self::isRunningStatus(false));
         $this->assertFalse(self::isRunningStatus(['running' => false]));
         $this->assertTrue(self::isRunningStatus(['running' => true]));
+    }
+
+    public function testSecurityHeaderModesOverridesAndNonce(): void
+    {
+        $previousNonce = '';
+        foreach (['report-only', 'enforce', 'off'] as $mode) {
+            $response = $this->request(['html' => '1', 'cspMode' => $mode]);
+            $this->assertSame(200, $response['status'], $response['body']);
+            $headers = implode("\n", $response['headers']);
+            $this->assertStringContainsString("frame-ancestors 'self'", $headers);
+            $this->assertStringContainsString('X-Frame-Options: SAMEORIGIN', $headers);
+            $this->assertSame(
+                $mode === 'report-only',
+                strpos($headers, 'Content-Security-Policy-Report-Only:') !== false
+            );
+            $this->assertSame(1, preg_match('/<script nonce="([A-Za-z0-9+\/=]+)"/', $response['body'], $matches));
+            $nonce = $matches[1] ?? '';
+            $this->assertNotSame('', $nonce);
+            $this->assertNotSame($previousNonce, $nonce);
+            $this->assertStringNotContainsString('model-value-must-be-overridden', $response['body']);
+            if ($mode !== 'off') {
+                $this->assertStringContainsString("'nonce-" . $nonce . "'", $headers);
+            }
+            $previousNonce = $nonce;
+        }
+        $response = $this->request([
+            'frameOrigin' => 'https://embed.example.com', 'cachePolicy' => 'private, max-age=0',
+            'reportUri' => '/reports',
+        ]);
+        $headers = implode("\n", $response['headers']);
+        $this->assertStringNotContainsString('X-Frame-Options:', $headers);
+        $this->assertStringContainsString('frame-ancestors https://embed.example.com', $headers);
+        $this->assertStringContainsString('Cache-Control: private, max-age=0', $headers);
+        $this->assertStringContainsString('report-uri /reports', $headers);
+        $response = $this->request(['frameOrigin' => "'none'"]);
+        $this->assertContains('X-Frame-Options: DENY', $response['headers']);
+        $invalid = $this->request(['cachePolicy' => "no-store\r\nX-Injected: yes"]);
+        $this->assertSame(500, $invalid['status']);
+        $this->assertStringNotContainsString('X-Injected:', implode("\n", $invalid['headers']));
+    }
+
+    public function testSecurityHeadersCoverDynamicResponsesAndPreserveContracts(): void
+    {
+        foreach (
+            [[], ['html' => '1'], ['authenticated' => '1'], ['active' => '1'],
+            ['maintenance' => '1'], ['redirect' => '1'], ['errorApi' => '1']] as $query
+        ) {
+            $response = $this->request($query);
+            $expected = isset($query['redirect']) ? 303 : (isset($query['errorApi']) ? 405 : 200);
+            $this->assertSame($expected, $response['status'], $response['body']);
+            $this->assertContains('Cache-Control: no-store', $response['headers']);
+            $this->assertContains('X-Content-Type-Options: nosniff', $response['headers']);
+            $this->assertContains('Referrer-Policy: strict-origin-when-cross-origin', $response['headers']);
+            $this->assertContains('X-Frame-Options: SAMEORIGIN', $response['headers']);
+            $this->assertContains("Content-Security-Policy: frame-ancestors 'self'", $response['headers']);
+            $this->assertNotEmpty($this->sessionCookies($response['headers']));
+            if (isset($query['redirect'])) {
+                $this->assertContains('Location: /target', $response['headers']);
+            }
+            if (!isset($query['maintenance']) && !isset($query['errorApi'])) {
+                $this->assertContains('X-Fixture: preserved', $response['headers']);
+            }
+        }
+        $invalid = $this->request([], ['X-Forwarded-Proto: invalid', 'X-Forwarded-For: 198.51.100.8']);
+        $this->assertSame(400, $invalid['status']);
+        $this->assertContains('Cache-Control: no-store', $invalid['headers']);
+        $this->assertContains("Content-Security-Policy: frame-ancestors 'self'", $invalid['headers']);
+        $this->assertSame([], $this->sessionCookies($invalid['headers']));
     }
 
     public function testTracyAndMaintenanceShareVerifiedClientDecision(): void

@@ -28,6 +28,18 @@ export class Overlay {
     this.overlayDiv = null;
   }
 
+  /** Apply validated colors through DOM properties, without inline style attributes in HTML. */
+  applyColorFields(root = document) {
+    root.querySelectorAll("[data-admin-color]").forEach((element) => {
+      const color = this.normalizeHexColor(
+        element.getAttribute("data-admin-color"),
+      );
+      if (color !== null) {
+        element.style.backgroundColor = color;
+      }
+    });
+  }
+
   /**
    * Syntactic sugar
    * @param {JQuery} element

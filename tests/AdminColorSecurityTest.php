@@ -186,6 +186,13 @@ class AdminColorSecurityTest extends TestCase
             $injected = $xpath->query('//*[@onmouseover or @id="injected" or @id="column-injected"]');
             Assert::isInstanceOf($injected, DOMNodeList::class);
             $this->assertSame(0, $injected->length);
+            $inline = $xpath->query('//script[not(@src)] | //style');
+            Assert::isInstanceOf($inline, DOMNodeList::class);
+            $this->assertGreaterThan(0, $inline->length);
+            foreach ($inline as $element) {
+                Assert::isInstanceOf($element, DOMElement::class);
+                $this->assertSame($configuration->securityHeaders()->getNonce(), $element->getAttribute('nonce'));
+            }
             $cells = $xpath->query('//td[contains(@class, "color-edit")]');
             Assert::isInstanceOf($cells, DOMNodeList::class);
             $this->assertSame(2, $cells->length);
@@ -195,7 +202,9 @@ class AdminColorSecurityTest extends TestCase
             Assert::isInstanceOf($validCell, DOMElement::class);
             $this->assertSame($payload, $invalidCell->textContent);
             $this->assertFalse($invalidCell->hasAttribute('style'));
-            $this->assertSame('background-color:#abcdef;', $validCell->getAttribute('style'));
+            $this->assertFalse($invalidCell->hasAttribute('data-admin-color'));
+            $this->assertFalse($validCell->hasAttribute('style'));
+            $this->assertSame('#abcdef', $validCell->getAttribute('data-admin-color'));
         } finally {
             libxml_clear_errors();
             libxml_use_internal_errors($previous);

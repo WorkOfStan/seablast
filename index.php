@@ -22,6 +22,7 @@ Debugger::setSessionStorage(new Tracy\NativeSession());
 // Configuration failures must never expose a development error page.
 Debugger::enable(Debugger::PRODUCTION);
 $setup = new SeablastSetup(); // combine configuration files into a valid configuration
+$setup->getConfiguration()->securityHeaders()->apply(); // also protect early request-context rejection
 // $setup contains the info for Debugger setup
 Debugger::$logDirectory = $setup->getConfiguration()->getString(SeablastConstant::SB_LOG_DIRECTORY);
 

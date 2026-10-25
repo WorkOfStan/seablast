@@ -39,6 +39,7 @@ $(() => {
 
   const bannerManager = new BannerManager();
   const overlay = new Overlay(env, bannerManager);
+  overlay.applyColorFields();
   initEditable();
 
   function initEditable() {

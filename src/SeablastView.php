@@ -32,6 +32,9 @@ class SeablastView
         // Do not log view data: application access rules may be stricter than log access and retention rules.
         // Debugger::log('Params for SeablastView: ' . print_r($this->params, true), ILogger::DEBUG);
         $this->params->configuration = $this->model->getConfiguration();
+        $securityHeaders = $this->params->configuration->securityHeaders();
+        $securityHeaders->apply();
+        $this->params->cspNonce = $securityHeaders->getNonce();
         // Dump when severity DEBUG
         if ($this->params->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) {
             Debugger::barDump($this->model, 'Model passed to SeablastView');
