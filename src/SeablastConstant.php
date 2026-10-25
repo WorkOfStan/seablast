@@ -103,6 +103,12 @@ class SeablastConstant
      */
     public const LATTE_TEMPLATE = 'SB:LATTE_TEMPLATE';
     /**
+     * @var string arrayString of exact allowed Host authorities, including any explicit port.
+     * Prevents forged Host headers from poisoning absolute URLs; supports DNS names, IPv4, and bracketed IPv6.
+     * Missing or empty configuration temporarily permits valid hosts and emits a DEBUG reminder.
+     */
+    public const SB_ALLOWED_HOSTS = 'SB_ALLOWED_HOSTS';
+    /**
      * @var string string The absolute URL of the root of the application. The literal is expected in Latte.
      */
     public const SB_APP_ROOT_ABSOLUTE_URL = 'SB_APP_ROOT_ABSOLUTE_URL';

@@ -7,13 +7,19 @@ namespace Seablast\Seablast;
 use Seablast\Seablast\Exceptions\InvalidRequestContextException;
 use Seablast\Seablast\Exceptions\SeablastConfigurationException;
 
-/** Immutable security decisions from one request snapshot; Host is deliberately not trusted here. */
+/** Immutable security decisions from one request snapshot; Host is validated before use. */
 final class SeablastRequestContext
 {
     /** @var string|null */
     private $clientIp;
     /** @var bool */
     private $debugAllowed;
+    /** @var string */
+    private $host;
+    /** @var bool */
+    private $hostAllowListConfigured;
+    /** @var string */
+    private $hostname;
     /** @var bool */
     private $https;
 
@@ -71,6 +77,7 @@ final class SeablastRequestContext
                 }
             }
         }
+        $this->configureHost($configuration, $server);
         $this->debugAllowed = $this->clientIp !== null && in_array(
             $this->clientIp,
             $debugIps,
@@ -92,11 +99,55 @@ final class SeablastRequestContext
         return $result;
     }
 
+    /** @param mixed[] $server */
+    private function configureHost(SeablastConfiguration $configuration, array $server): void
+    {
+        // todo once SB_ALLOWED_HOSTS is required (in v0.3.0) this should be reduced to comparison
+        $allowed = [];
+        $key = SeablastConstant::SB_ALLOWED_HOSTS;
+        foreach ($configuration->exists($key) ? $configuration->getArrayString($key) : [] as $value) {
+            $host = self::normalizeHost($value);
+            if ($host === null) {
+                throw new SeablastConfigurationException($key . ' requires exact hosts with optional ports.');
+            }
+            $allowed[] = $host['authority'];
+        }
+        $this->hostAllowListConfigured = $allowed !== [];
+        $host = self::normalizeHost($server['HTTP_HOST'] ?? null);
+        if ($host === null || ($this->hostAllowListConfigured && !in_array($host['authority'], $allowed, true))) {
+            throw new InvalidRequestContextException();
+        }
+        $this->host = $host['authority'];
+        $this->hostname = $host['hostname'];
+    }
+
     public function getClientIp(): ?string
     {
         return $this->clientIp;
     }
 
+    /** Normalized authority for absolute URLs, including brackets and any explicit port. */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /** Normalized hostname without port or IPv6 brackets, for cookie-domain validation. */
+    public function getHostname(): string
+    {
+        return $this->hostname;
+    }
+
+    /** Returns whether a nonempty allowed-host list is configured. */
+    public function hasAllowedHosts(): bool
+    {
+        return $this->hostAllowListConfigured;
+    }
+
+    /**
+     * Returns whether the resolved client IP is explicitly listed in DEBUG_IP_LIST.
+     * Controls Tracy development mode and maintenance bypass; an unresolved client or empty list denies both.
+     */
     public function isDebugAllowed(): bool
     {
         return $this->debugAllowed;
@@ -129,6 +180,52 @@ final class SeablastRequestContext
     public function isHttps(): bool
     {
         return $this->https;
+    }
+
+    /**
+     * @param mixed $value
+     * @return array{authority: string, hostname: string}|null
+     */
+    private static function normalizeHost($value): ?array
+    {
+        if (!is_string($value) || strlen($value) > 260) {
+            return null;
+        }
+        $pattern = '/\A(?:\[([0-9a-fA-F:.]+)\]|([A-Za-z0-9.-]+))(?::([1-9][0-9]{0,4}))?\z/';
+        if (preg_match($pattern, $value, $parts) !== 1) {
+            return null;
+        }
+        $port = $parts[3] ?? '';
+        if ($port !== '' && (int) $port > 65535) {
+            return null;
+        }
+        if (($parts[1] ?? '') !== '') {
+            if (filter_var($parts[1], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false) {
+                return null;
+            }
+            $hostname = self::normalizeIp($parts[1]);
+            if ($hostname === null) {
+                return null;
+            }
+            $authority = '[' . $hostname . ']';
+        } else {
+            $hostname = strtolower($parts[2] ?? '');
+            if (
+                substr($hostname, -1) === '.' ||
+                filter_var($hostname, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false
+            ) {
+                return null;
+            }
+            // Reject alternative numeric IP spellings that browsers can interpret differently from PHP.
+            if (
+                filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false &&
+                preg_match('/(?:\A|\.)(?:[0-9]+|0x[0-9a-f]+)\z/i', $hostname)
+            ) {
+                return null;
+            }
+            $authority = $hostname;
+        }
+        return ['authority' => $authority . ($port === '' ? '' : ':' . $port), 'hostname' => $hostname];
     }
 
     /** @param mixed $value */

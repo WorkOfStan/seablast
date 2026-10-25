@@ -224,8 +224,9 @@ differences make the browser reject the script.
 ## Trusted Request Context and Session Policy
 
 `SeablastRequestContext` is immutable and accepts configuration plus a server-array
-snapshot. Its public accessors are `isHttps()`, `getClientIp(): ?string`, and
-`isDebugAllowed(): bool`. `SeablastController` accepts an optional third context
+snapshot, including a required `HTTP_HOST`. Its public accessors are `isHttps()`,
+`getClientIp(): ?string`, `isDebugAllowed(): bool`, `getHost(): string`,
+`getHostname(): string`, and `hasAllowedHosts(): bool`. `SeablastController` accepts an optional third context
 argument; two-argument construction resolves the context internally. Custom
 bootstraps must share the same snapshot for their debug decision and controller.
 Catch `InvalidRequestContextException` as a generic HTTP 400 before output or
@@ -237,6 +238,7 @@ Configure inside the application's configuration closure:
 
 ```php
 $SBConfig
+    ->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, ['app.example.com'])
     ->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['192.0.2.10'])
     ->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7'])
     ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE, 'Lax')
@@ -267,7 +269,25 @@ Reject control characters, malformed IP entries, missing required proxy headers,
 scheme lists, schemes other than HTTP/HTTPS, proto values over 32 bytes, and
 client chains over 8192 bytes. Ignore `Forwarded`, `X-Forwarded-Host`,
 `X-Forwarded-Port`, and `X-Forwarded-Ssl`; do not auto-detect header families.
-SEC-003 remains open: URL authority still uses the current Host behavior.
+Host syntax and the `SB_ALLOWED_HOSTS` arrayString allow-list are validated in the
+same snapshot before development-mode selection or session creation. Use exact
+DNS names, IPv4, or bracketed IPv6 with any explicit port; the port is part of the
+match, including default ports. DNS case and IPv6 spelling are normalized. Reject
+URLs, wildcards, whitespace, controls, user-info, lists, trailing DNS dots, ambiguous
+numeric IP spellings, and invalid ports. Malformed configuration is an error;
+malformed or unlisted request hosts yield a generic 400 without reflecting input.
+`getHost()` returns the normalized authority for URLs; `getHostname()` omits ports
+and IPv6 brackets for cookie validation. Neither forwarded host headers nor
+`SERVER_NAME` are fallback authorities. Web servers must reject duplicate Host
+fields before PHP when the SAPI would collapse them.
+
+Missing or empty `SB_ALLOWED_HOSTS` temporarily accepts valid hosts. The controller
+emits a static `ILogger::DEBUG` reminder through its configured Tracy logger
+adapter, or the current Tracy logger for an already active session. This happens
+before maintenance output, respects the configured logger's severity filtering,
+and never includes the request host. SEC-003 remains partially mitigated for
+unconfigured applications; populate the list to enforce the allow-list. See
+[Allowed request hosts](README.md#allowed-request-hosts) for examples and limits.
 
 `SeablastSessionCookie` validates policy on construction, even for active sessions.
 Its `apply()` method must run before `session_start()`. Defaults are host-only

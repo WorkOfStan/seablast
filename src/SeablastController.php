@@ -73,6 +73,16 @@ class SeablastController
                 ILogger::INFO
             );
         }
+        // todo once SB_ALLOWED_HOSTS is required (in v0.3.0) this should throw an exception
+        if (!$this->requestContext->hasAllowedHosts()) {
+            $message = 'Define SeablastConstant::SB_ALLOWED_HOSTS to restrict Host headers and protect absolute URLs.';
+            // todo it's not clear already whether Debugger::log already is set to $this->tracyLogger ?
+            if ($this->tracyLogger !== null) {
+                $this->tracyLogger->log($message, ILogger::DEBUG);
+            } else {
+                Debugger::log($message, ILogger::DEBUG);
+            }
+        }
         $this->pageUnderConstruction();
         if (session_status() === PHP_SESSION_NONE) {
             $this->startSession();
@@ -186,8 +196,7 @@ class SeablastController
      */
     private function getAppHost(): string
     {
-        Assert::string($this->superglobals->server['HTTP_HOST']);
-        return $this->superglobals->server['HTTP_HOST'];
+        return $this->requestContext->getHost();
     }
 
     /**
@@ -197,15 +206,9 @@ class SeablastController
      */
     private function getAppHostWithoutPort(): string
     {
-        $host = $this->getAppHost();
-        // If there's a colon and it's not an IPv6 address
-        if (strpos($host, ':') !== false && strpos($host, ']') === false) {
-            $parts = explode(':', $host, 2);
-            return $parts[0];
-        }
-
-        // IPv6 address or no port
-        return $host;
+        // If there's a colon and it's not an IPv6 address, the context has already separated the port.
+        // IPv6 address or no port: the context also removes brackets for cookie-domain validation.
+        return $this->requestContext->getHostname();
     }
 
     /**

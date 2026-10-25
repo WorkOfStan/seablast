@@ -36,6 +36,7 @@ fix: fix XSS, introduce Content Security Policy
 - Add configurable browser security headers with enforced same-origin framing and no-store, report-only nonce-based CSP, and CSP-compatible bundled templates (content enforcement remains pending).
 - Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external style sheet and URL rewriting.
 - Remove the JSON-as-HTML debugging mode and always send JSON Content-Type, including in Tracy development mode; remove obsolete flag configuration from applications when upgrading.
+- Validate request Host syntax and enforce the SB_ALLOWED_HOSTS arrayString allow-list before sessions and debug output; log only a DEBUG configuration reminder when the list is missing or empty.
 
 ## [0.2.19] - 2026-10-17
 

@@ -7,6 +7,17 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Tests\RequestContextHttpModel;
 
 return static function (SeablastConfiguration $configuration): void {
+    if (!isset($_GET['missingHosts'])) {
+        $configuration->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, isset($_GET['emptyHosts']) ? [] : [
+            'app.example.com', 'localhost', '192.168.1.10', 'localhost:8080', '[::1]:8080',
+        ]);
+    }
+    if (isset($_GET['hostDebugLog'])) {
+        $configuration->setInt(SeablastConstant::SB_LOGGING_LEVEL, 5);
+    }
+    if (isset($_GET['invalidHosts'])) {
+        $configuration->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, ['*.example.com']);
+    }
     $configuration->setString(
         SeablastConstant::SB_CLIENT_ERROR_RATE_LIMIT_FILE,
         APP_DIR . '/log/client-error-state.json'
