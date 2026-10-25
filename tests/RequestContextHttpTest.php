@@ -40,7 +40,8 @@ class RequestContextHttpTest extends TestCase
     ): array
     {
         $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
-        $headers[] = 'Host: ' . $host;
+        // PHP 7.2 must see Host before X-Forwarded-Host to avoid adding a duplicate Host header.
+        array_unshift($headers, 'Host: ' . $host);
         $headers[] = 'Connection: close';
         $context = stream_context_create(['http' => [
             'method' => $method,
@@ -198,7 +199,7 @@ class RequestContextHttpTest extends TestCase
                 'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8',
                 'X-Forwarded-Host: evil.example', 'Forwarded: host=evil.example', 'X-Forwarded-Port: 666',
             ], 'GET', '', $host);
-            $this->assertSame(200, $response['status']);
+            $this->assertSame(200, $response['status'], 'Allowed Host: ' . $host);
             $body = json_decode($response['body'], true);
             $this->assertIsArray($body);
             $authority = $host === '[0:0:0:0:0:0:0:1]:8080' ? '[::1]:8080' : strtolower($host);

@@ -28,6 +28,7 @@ fix: fix XSS, introduce Content Security Policy
 - Clarify that BlueprintWeb.latte exposes only explicitly selected, enabled flag names in its JavaScript flags array.
 - Run all tests/*.test.cjs regressions in the javascript-tests CI job with Node.js 24, PHP 8.4, and Composer dependencies for rendered-template coverage.
 - Read application maintenance pages as HTML and replace the CSP nonce placeholder to support inline styles and scripts.
+- Send Host before X-Forwarded-Host in HTTP tests to prevent PHP 7.2 from adding a duplicate Host header.
 
 ### Security
 
