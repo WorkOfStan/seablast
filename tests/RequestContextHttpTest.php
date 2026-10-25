@@ -474,8 +474,10 @@ class RequestContextHttpTest extends TestCase
 
     public function testSecurityHeadersCoverDynamicResponsesAndPreserveContracts(): void
     {
-        foreach ([[], ['html' => '1'], ['authenticated' => '1'], ['active' => '1'],
-            ['maintenance' => '1'], ['redirect' => '1'], ['errorApi' => '1']] as $query) {
+        foreach (
+            [[], ['html' => '1'], ['authenticated' => '1'], ['active' => '1'],
+            ['maintenance' => '1'], ['redirect' => '1'], ['errorApi' => '1']] as $query
+        ) {
             $response = $this->request($query);
             $expected = isset($query['redirect']) ? 303 : (isset($query['errorApi']) ? 405 : 200);
             $this->assertSame($expected, $response['status'], $response['body']);

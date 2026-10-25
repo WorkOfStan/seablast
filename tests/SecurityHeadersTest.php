@@ -62,13 +62,15 @@ class SecurityHeadersTest extends TestCase
                 $this->assertNotSame('', $e->getMessage());
             }
         }
-        foreach ([
+        foreach (
+            [
             'frame-ancestors' => ["'self'"],
             'script-src;' => ["'self'"],
             'script-src' => ["'self';", "'nonce-fixed'"],
             'style-src' => ["'none'", "'self'"],
             'img-src' => ["https://example.com\t"],
-        ] as $name => $values) {
+            ] as $name => $values
+        ) {
             $configuration = new SeablastConfiguration();
             $configuration->setArrayArrayString(SeablastConstant::SB_CSP_DIRECTIVES, $name, $values);
             try {
