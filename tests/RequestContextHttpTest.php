@@ -345,6 +345,26 @@ class RequestContextHttpTest extends TestCase
         }
     }
 
+    public function testJsonContentTypeAndMarkupPayloadInProductionAndDevelopment(): void
+    {
+        $value = '</script><script>alert(1)</script><img src=x onerror="alert(2)">';
+        foreach ([false, true] as $development) {
+            $response = $this->request(
+                ['allowDebug' => '1', 'jsonValue' => $value],
+                ['X-Forwarded-Proto: https', 'X-Forwarded-For: '
+                    . ($development ? '198.51.100.7' : '198.51.100.8')]
+            );
+            $this->assertSame(200, $response['status']);
+            $this->assertContains('Content-Type: application/json; charset=utf-8', $response['headers']);
+            $this->assertContains('X-Content-Type-Options: nosniff', $response['headers']);
+            $body = json_decode($response['body'], true);
+            $this->assertSame(JSON_ERROR_NONE, json_last_error());
+            $this->assertIsArray($body);
+            $this->assertSame($development, $body['debug']);
+            $this->assertSame($value, $body['value']);
+        }
+    }
+
     public function testLocalhostAndUnconfiguredProxyRequireExplicitDebugPermission(): void
     {
         foreach (['ipv4', 'ipv6'] as $loopback) {

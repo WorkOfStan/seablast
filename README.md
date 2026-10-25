@@ -237,6 +237,9 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 - If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302, 303, 307, or 308 by the `httpCode` property.
 - If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
 
+REST responses always use `Content-Type: application/json; charset=utf-8`, including
+when Tracy development mode is enabled.
+
 ```php
 SeablastConstant::APP_MAPPING = route => [
     'model' => '\App\Project\ResponseModel', // class name of the model,

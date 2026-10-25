@@ -114,6 +114,9 @@ Special response properties:
 - `redirectionUrl`: send a redirect and render `redirection.latte`
 - `title`: used by the default `BlueprintWeb.latte` page title
 
+REST responses always use `Content-Type: application/json; charset=utf-8`, including
+when Tracy development mode is enabled.
+
 Redirect status codes are limited to `301`, `302`, `303`, `307`, and `308`.
 Prefer app-relative redirect URLs unless a trusted external host is explicitly allowed.
 

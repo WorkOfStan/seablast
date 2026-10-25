@@ -16,7 +16,7 @@
             const API_BASE = {$configuration->getString('SB_APP_ROOT_ABSOLUTE_URL')};
             const csrfToken = {$csrfToken};{* id:sb_json *}
             {* Security: The template can access configuration, but this JavaScript array exposes only enabled flag names explicitly listed in $selectedFlags below. *}
-            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR','SB:debug:json']}
+            const flags = [{var $selectedFlags = ['I18n:SHOW_LANGUAGE_SELECTOR']}
                 {foreach $selectedFlags as $selected}{if $configuration->flag->status($selected)}{$selected},{/if}{/foreach}
             ];
         </script>

@@ -35,6 +35,7 @@ fix: fix XSS, introduce Content Security Policy
 - fix(seablast.js): Fix DOM XSS in banner messages by rendering message text and the close-button glyph with textContent.
 - Add configurable browser security headers with enforced same-origin framing and no-store, report-only nonce-based CSP, and CSP-compatible bundled templates (content enforcement remains pending).
 - Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external style sheet and URL rewriting.
+- Remove the JSON-as-HTML debugging mode and always send JSON Content-Type, including in Tracy development mode; remove obsolete flag configuration from applications when upgrading.
 
 ## [0.2.19] - 2026-10-17
 
@@ -608,7 +609,6 @@ SeablastMysqli error logging improved, HTTPS identified
 - GET parameters passed to model in configuration fields SB_GET_ARGUMENT_ID|SB_GET_ARGUMENT_CODE
 - SeablastModelInterface.php to define minimal requirements for a model used by SeablastModel
 - SeablastModel uses permanent argument Superglobals $superglobals (instead of injection `$m->setSuperglobals($superglobals);` if required by APP_MAPPING, so that it is always easily available)
-- FLAG_DEBUG_JSON: Output JSON as HTML instead of `application/json` so that Tracy is displayed
 - `declare(strict_types=1);` everywhere
 - SB_WEB_FORCE_ASSET_VERSION Int to forced update of external CSS and JavaScript files
 - SB_APP_ROOT_ABSOLUTE_URL The absolute URL of the root of the application
