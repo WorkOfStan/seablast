@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.20] - TBD
 
-fix!: fix XSS, introduce Content Security Policy
+fix: fix XSS, introduce Content Security Policy
 
 ### Changed
 
