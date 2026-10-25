@@ -144,6 +144,7 @@ Important consequences:
 
 - A model must return `stdClass`, not an array.
 - JSON responses can return `rest` as either an object or an array.
+- REST responses always use `Content-Type: application/json; charset=utf-8`, including in Tracy development mode.
 - Redirect codes are limited to `301`, `302`, `303`, `307`, and `308`.
 - For non-REST HTML responses with `httpCode >= 400`, `SeablastView` forces the `error` template.
 
@@ -484,8 +485,6 @@ Tracy is enabled in development mode for these verified request-context clients:
 - IPs explicitly listed in `DEBUG_IP_LIST`
 
 Localhost is opt-in; an empty list keeps Tracy in production mode for every client.
-
-`FLAG_DEBUG_JSON` intentionally suppresses the JSON `Content-Type` header so Tracy can render debug output more comfortably. This is a local debugging aid and should not be enabled in normal production traffic.
 
 SQL bar panels are rendered after output selection so that database diagnostics survive normal page, JSON, and redirect flows.
 

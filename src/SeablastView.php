@@ -128,9 +128,8 @@ class SeablastView
         if (isset($this->params->status)) {
             throw new \Exception('not status but httpCode is wanted'); // debug deprecated remove >0.2.x
         }
-        if (!$this->model->getConfiguration()->flag->status(SeablastConstant::FLAG_DEBUG_JSON)) {
-            header('Content-Type: application/json; charset=utf-8'); //the flag turns-off this line
-        }
+        // header prevents JSON-as-HTML output
+        header('Content-Type: application/json; charset=utf-8');
         $this->httpResponseCode();
         $result = json_encode($data2json);
         Assert::string($result);

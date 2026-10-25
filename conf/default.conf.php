@@ -16,7 +16,6 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->activate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING)
         ->deactivate(SeablastConstant::ADMIN_MAIL_ENABLED) // default is not sending emails to admin
         ->deactivate(SeablastConstant::USER_MAIL_ENABLED) // default is not sending emails to users
-        //->activate(SeablastConstant::FLAG_DEBUG_JSON) // JSON would be displayed directly with Tracy
     ;
     $SBConfig
         // Environment

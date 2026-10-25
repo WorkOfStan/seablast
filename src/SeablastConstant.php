@@ -79,11 +79,6 @@ class SeablastConstant
      */
     public const FLAG_CLIENT_ERROR_LOGGING = 'SB:client_error:enabled';
     /**
-     * @var string So that Tracy is displayed 1) Output JSON as HTML instead of application/json;
-     * 2) turns off refresh after inserting new row in admin.latte.
-     */
-    public const FLAG_DEBUG_JSON = 'SB:debug:json';
-    /**
      * @var string bool is user authenticated
      */
     public const FLAG_USER_IS_AUTHENTICATED = 'SB:USER_IS_AUTHENTICATED';
