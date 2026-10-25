@@ -33,7 +33,7 @@ class ApiErrorModelTest extends TestCase
         return (new ApiErrorModel($this->configuration, new Superglobals(
             [],
             [],
-            $server + ['REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8']
+            $server + ['HTTP_HOST' => 'example.com', 'REQUEST_METHOD' => 'POST', 'REMOTE_ADDR' => '198.51.100.8']
         )))->knowledge();
     }
 

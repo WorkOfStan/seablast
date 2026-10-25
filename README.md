@@ -29,6 +29,42 @@ The framework takes care of logs, database, multiple languages, user friendly HT
 
 Complete model results and view parameters are not written to debug logs. The view adds model and parameter dumps to Tracy only when `SB_LOGGING_LEVEL >= 5`; these dumps can include CSRF tokens and other sensitive data. SQL query logging and other diagnostics still require appropriate access and retention controls.
 
+### Allowed request hosts
+
+Configure the exact public hostnames or IP addresses that may serve the application:
+
+```php
+$SBConfig->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, [
+    'app.example.com',
+    'localhost',
+    '192.168.1.10',
+    'localhost:8080',
+    '[::1]:8080',
+]);
+```
+
+Use only the entries needed in each environment. This prevents forged Host headers
+from controlling `SB_APP_ROOT_ABSOLUTE_URL` and downstream links. Entries are hosts
+with optional explicit ports, not URLs or CIDRs; wildcards are not supported.
+DNS names are case-insensitive and IPv6 addresses are normalized. IPv6 must use
+brackets. Ports must be 1-65535 without leading zeros and must match explicitly:
+`localhost` does not allow `localhost:8080` or even an explicit `localhost:80`.
+Use ASCII/Punycode DNS names without a trailing dot.
+
+Validation runs before sessions, maintenance output, and Tracy development mode.
+Missing or malformed request Host values and hosts outside a configured nonempty
+list return a generic HTTP 400. Malformed configuration raises a configuration
+exception. The normalized request authority is used for URLs; no canonical-origin
+redirect is introduced. Forwarded host/port headers remain ignored; proxies must
+preserve a permitted public Host. The web server must reject duplicate Host header
+fields before PHP, since its server snapshot may already hide duplicates.
+
+For this transitional rollout, a missing or empty list accepts syntactically valid
+hosts and emits only a static DEBUG reminder to define `SB_ALLOWED_HOSTS`. The
+normal configured logger filters this reminder through `SB_LOGGING_LEVEL` (5 for
+debug). No request Host value is included in the reminder. Fill the list to enable
+Host allow-list protection; retain web-server host restrictions in the meantime.
+
 ### Reverse proxies and session cookies
 
 Direct HTTP/HTTPS deployments need no proxy configuration. Behind a reverse proxy,
@@ -58,8 +94,8 @@ Tracy development mode and maintenance bypass only through an exact match in
 `DEBUG_IP_LIST`. The default empty list denies both, including for localhost.
 An unknown client or an all-trusted chain grants neither.
 Only `X-Forwarded-For` and `X-Forwarded-Proto` are supported; no forwarding-header
-family is automatically detected. Host-based URL authority remains unchanged;
-configure accepted hosts in your web server (SEC-003 remains open in core).
+family is automatically detected. Configure `SB_ALLOWED_HOSTS` as described above
+to restrict the Host authority used for absolute URLs.
 
 When upgrading, direct local development and localhost maintenance bypass now
 require explicit opt-in in the application's local configuration closure:

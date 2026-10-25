@@ -31,10 +31,16 @@ class RequestContextHttpTest extends TestCase
      * @param string[]|null $headers
      * @return array{status: int, headers: string[], body: string}
      */
-    private function request(array $query, ?array $headers = null, string $method = 'GET', string $body = ''): array
-    {
+    private function request(
+        array $query,
+        ?array $headers = null,
+        string $method = 'GET',
+        string $body = '',
+        string $host = 'app.example.com'
+    ): array {
         $headers = $headers ?? ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
-        $headers[] = 'Host: app.example.com';
+        // PHP 7.2 must see Host before X-Forwarded-Host to avoid adding a duplicate Host header.
+        array_unshift($headers, 'Host: ' . $host);
         $headers[] = 'Connection: close';
         $context = stream_context_create(['http' => [
             'method' => $method,
@@ -184,6 +190,25 @@ class RequestContextHttpTest extends TestCase
         }
     }
 
+    public function testAllowedHostsProduceValidatedRootUrls(): void
+    {
+        $hosts = ['APP.EXAMPLE.COM', 'localhost', '192.168.1.10', 'localhost:8080', '[0:0:0:0:0:0:0:1]:8080'];
+        foreach ($hosts as $host) {
+            $response = $this->request([], [
+                'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8',
+                'X-Forwarded-Host: evil.example', 'Forwarded: host=evil.example', 'X-Forwarded-Port: 666',
+            ], 'GET', '', $host);
+            $this->assertSame(200, $response['status'], 'Allowed Host: ' . $host);
+            $body = json_decode($response['body'], true);
+            $this->assertIsArray($body);
+            $authority = $host === '[0:0:0:0:0:0:0:1]:8080' ? '[::1]:8080' : strtolower($host);
+            $this->assertSame('https://' . $authority . '/app', $body['root']);
+            foreach ($this->sessionCookies($response['headers']) as $cookie) {
+                $this->assertStringNotContainsString('domain=', $cookie);
+            }
+        }
+    }
+
     public function testAlreadyActiveSessionIsNotRestarted(): void
     {
         $response = $this->request(['active' => '1']);
@@ -284,6 +309,30 @@ class RequestContextHttpTest extends TestCase
             '{}'
         );
         $this->assertSame(415, $wrongType['status']);
+    }
+
+    public function testHostRejectionsPrecedeSessionsMaintenanceAndDebug(): void
+    {
+        foreach (
+            ['evil.example', 'app.example.com:8080', 'app.example.com.evil', 'user@app.example.com',
+            'app.example.com,evil.example', 'app.example.com.', 'app.example.com:0'] as $host
+        ) {
+            foreach ([[], ['maintenance' => '1']] as $query) {
+                $response = $this->request($query + ['allowDebug' => '1'], [
+                    'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7',
+                ], 'GET', '', $host);
+                $this->assertSame(400, $response['status']);
+                $this->assertSame('Bad Request', $response['body']);
+                $this->assertContains('X-Content-Type-Options: nosniff', $response['headers']);
+                $this->assertSame([], $this->sessionCookies($response['headers']));
+            }
+        }
+        $response = $this->request(['invalidHosts' => '1', 'allowDebug' => '1'], [
+            'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.7',
+        ]);
+        $this->assertSame(500, $response['status']);
+        $this->assertStringNotContainsString('requires exact hosts', $response['body']);
+        $this->assertSame([], $this->sessionCookies($response['headers']));
     }
 
     public function testIndependentPdoExceptionPreservesOriginalFailure(): void
@@ -400,6 +449,30 @@ class RequestContextHttpTest extends TestCase
         $maintenance = $this->request(['maintenance' => '1'], $headers);
         $this->assertSame(200, $maintenance['status'], $maintenance['body']);
         $this->assertSame('maintenance fixture', $maintenance['body']);
+    }
+
+    public function testMissingHostConfigurationOnlyLogsDebugReminder(): void
+    {
+        $message = 'Define SeablastConstant::SB_ALLOWED_HOSTS to restrict Host headers and protect absolute URLs.';
+        foreach (['missingHosts', 'emptyHosts'] as $setting) {
+            $response = $this->request([$setting => '1', 'hostDebugLog' => '1'], null, 'GET', '', 'unlisted.example');
+            $this->assertSame(200, $response['status']);
+            $body = json_decode($response['body'], true);
+            $this->assertIsArray($body);
+            $this->assertSame('https://unlisted.example/app', $body['root']);
+        }
+        $log = '';
+        foreach (glob(self::$app . '/log/seablast*.log') ?: [] as $file) {
+            $content = file_get_contents($file);
+            $this->assertIsString($content);
+            $log .= $content;
+        }
+        $this->assertSame(2, substr_count($log, $message));
+        $this->assertStringContainsString('[debug]', strtolower($log));
+        $this->assertStringNotContainsString('unlisted.example', $log);
+        $response = $this->request(['missingHosts' => '1'], null, 'GET', '', 'user@unlisted.example');
+        $this->assertSame(400, $response['status']);
+        $this->assertSame([], $this->sessionCookies($response['headers']));
     }
 
     public function testNormalAndMaintenanceCookieHeadersAndRegeneration(): void

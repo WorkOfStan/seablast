@@ -203,6 +203,16 @@ Security defaults for app agents:
 
 ### Trusted request context and cookies
 
+Configure `SB_ALLOWED_HOSTS` with `setArrayString()` in each environment, for example
+`['app.example.com']` in production or `['localhost', '192.168.1.10', 'localhost:8080']`
+for development. Entries are exact hosts with optional explicit ports, without
+schemes, paths, wildcards, or trailing dots; IPv6 uses brackets. DNS case and IPv6
+spelling are normalized, but explicit ports must match exactly. This protects
+absolute URLs from forged Host headers before sessions or debug output. A missing
+or empty list currently emits only a DEBUG reminder and does not enforce host
+membership; malformed request hosts still return HTTP 400. No canonical redirect
+is added. See [Allowed request hosts](README.md#allowed-request-hosts).
+
 For direct deployments, keep `SB_TRUSTED_PROXIES` empty. For a proxy deployment,
 configure exact transport-peer IPs and the actual client addresses allowed to debug:
 
@@ -246,8 +256,8 @@ early must apply it before `session_start()`; existing sessions are not restarte
 During upgrades, review prior Domain cookies and subdomain sharing; old Domain
 and new host-only cookies can coexist until expiry. Plan explicit old-cookie
 expiry or a session-name rotation where needed. The optional auth package's
-cookies remain its responsibility. SEC-003 remains open: core still uses the
-incoming Host authority for URLs, so retain web-server host restrictions.
+cookies remain its responsibility. Set `SB_ALLOWED_HOSTS` to enforce the permitted
+URL authorities and keep duplicate-Host rejection in the web server.
 PHP 7.2 support is retained; the `TODO PHP-7.2` note in `SeablastSessionCookie`
 and `AGENTS.md` marks the legacy SameSite path for later removal.
 

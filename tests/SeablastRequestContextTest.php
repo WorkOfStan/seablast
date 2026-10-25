@@ -26,6 +26,7 @@ class SeablastRequestContextTest extends TestCase
         $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1', '198.51.100.7']);
         foreach ([[], ['HTTPS' => 'on'], ['REQUEST_SCHEME' => 'https'], ['SERVER_PORT' => '443']] as $tls) {
             $context = new SeablastRequestContext($configuration, $tls + [
+                'HTTP_HOST' => 'example.com',
                 'REMOTE_ADDR' => '198.51.100.8',
                 'HTTP_X_FORWARDED_FOR' => '127.0.0.1',
                 'HTTP_X_FORWARDED_PROTO' => 'https',
@@ -37,7 +38,10 @@ class SeablastRequestContextTest extends TestCase
             $this->assertFalse($context->isDebugAllowed());
         }
         foreach ([[], ['REMOTE_ADDR' => []], ['REMOTE_ADDR' => 'invalid']] as $server) {
-            $context = new SeablastRequestContext(new SeablastConfiguration(), $server);
+            $context = new SeablastRequestContext(
+                new SeablastConfiguration(),
+                $server + ['HTTP_HOST' => 'example.com']
+            );
             $this->assertNull($context->getClientIp());
             $this->assertFalse($context->isDebugAllowed());
         }
@@ -66,7 +70,7 @@ class SeablastRequestContextTest extends TestCase
             foreach ([[], $forwarding] as $headers) {
                 $configuration = new SeablastConfiguration();
                 $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, []);
-                $server = ['REMOTE_ADDR' => $ip] + $headers;
+                $server = ['HTTP_HOST' => 'example.com', 'REMOTE_ADDR' => $ip] + $headers;
                 $context = new SeablastRequestContext($configuration, $server);
                 $this->assertSame($normalized, $context->getClientIp());
                 $this->assertFalse($context->isDebugAllowed());
@@ -131,6 +135,7 @@ class SeablastRequestContextTest extends TestCase
         ];
         foreach ($cases as $case) {
             $context = new SeablastRequestContext($configuration, [
+                'HTTP_HOST' => 'example.com',
                 'REMOTE_ADDR' => '127.0.0.1',
                 'HTTPS' => 'on',
                 'HTTP_X_FORWARDED_PROTO' => 'http',
@@ -141,6 +146,7 @@ class SeablastRequestContextTest extends TestCase
             $this->assertSame($case[2], $context->isDebugAllowed());
         }
         $context = new SeablastRequestContext($configuration, [
+            'HTTP_HOST' => 'example.com',
             'REMOTE_ADDR' => '2001:0db8:0:0:0:0:0:1',
             'HTTP_X_FORWARDED_PROTO' => ' HTTPS ',
             'HTTP_X_FORWARDED_FOR' => '2001:db8::2',
@@ -155,6 +161,7 @@ class SeablastRequestContextTest extends TestCase
     {
         $configuration = $this->configuration();
         $server = [
+            'HTTP_HOST' => 'example.com',
             'REMOTE_ADDR' => '127.0.0.1',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_FOR' => '198.51.100.7',
@@ -163,7 +170,7 @@ class SeablastRequestContextTest extends TestCase
         $configuration->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1']);
         $this->assertFalse((new SeablastRequestContext($configuration, $server))->isDebugAllowed());
         foreach ([[], ['REMOTE_ADDR' => 'invalid'], ['REMOTE_ADDR' => []]] as $unknown) {
-            $context = new SeablastRequestContext($configuration, $unknown);
+            $context = new SeablastRequestContext($configuration, $unknown + ['HTTP_HOST' => 'example.com']);
             $this->assertNull($context->getClientIp());
             $this->assertFalse($context->isDebugAllowed());
         }
