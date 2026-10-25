@@ -341,7 +341,6 @@ Real HTTP regressions cover header persistence, modes, framing, nonce agreement,
 invalid configuration, sessions, and early rejections; JavaScript regressions
 include admin color initialization under the new markup contract.
 
-
 ## Testing Checklist
 
 Useful app-level tests:
