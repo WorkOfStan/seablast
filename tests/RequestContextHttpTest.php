@@ -212,7 +212,7 @@ class RequestContextHttpTest extends TestCase
                     preg_match('/<style nonce="([A-Za-z0-9+\\/=]+)"/', $response['body'], $matches)
                 );
                 $this->assertStringContainsString(
-                    "'nonce-" . $matches[1] . "'",
+                    "'nonce-" . ($matches[1] ?? '') . "'",
                     implode("\n", $response['headers'])
                 );
                 $this->assertStringNotContainsString('__SEABLAST_CSP_NONCE__', $response['body']);
