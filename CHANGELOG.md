@@ -34,7 +34,7 @@ fix!: fix XSS, introduce Content Security Policy
 - fix(overlay.js): Fix stored XSS in admin color fields with strict six-digit hex validation, escaped rendering, and safe filter option construction.
 - fix(seablast.js): Fix DOM XSS in banner messages by rendering message text and the close-button glyph with textContent.
 - Add configurable browser security headers with enforced same-origin framing and no-store, report-only nonce-based CSP, and CSP-compatible bundled templates (content enforcement remains pending).
-- Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external stylesheet and URL rewriting.
+- Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external style sheet and URL rewriting.
 
 ## [0.2.19] - 2026-10-17
 

@@ -149,7 +149,7 @@ closure. A content policy does not replace escaping or Host validation.
 
 The view supplies a framework-owned `cspNonce`. Application templates should use
 `<script nonce="{$cspNonce}">` and `<style nonce="{$cspNonce}">` for intentional inline
-blocks. Move inline event handlers to listeners and style attributes to stylesheets
+blocks. Move inline event handlers to listeners and style attributes to style sheets
 or validated DOM style properties. Bundled admin colors use validated
 `data-admin-color` attributes. Upgrade overridden admin/layout templates and bump
 your application's `SB_WEB_FORCE_ASSET_VERSION` when deploying changed assets.
