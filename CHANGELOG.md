@@ -38,6 +38,7 @@ fix: fix XSS, introduce Content Security Policy
 - Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external style sheet and URL rewriting.
 - Remove the JSON-as-HTML debugging mode and always send JSON Content-Type, including in Tracy development mode; remove obsolete flag configuration from applications when upgrading.
 - Validate request Host syntax and enforce the SB_ALLOWED_HOSTS arrayString allow-list before sessions and debug output; log only a DEBUG configuration reminder when the list is missing or empty.
+- Add opt-in conditional sessions with `session => auto`, explicit session and CSRF bootstrap helpers, and preserved authentication, preference-cookie, and authorized Tracy behavior; keep token-free browser diagnostics local to reduce unnecessary session allocation (SEC-015, partial mitigation).
 
 ## [0.2.19] - 2026-10-17
 

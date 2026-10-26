@@ -87,6 +87,24 @@ Important route behavior:
 - `id` and `code` mapping keys make the matching GET parameter required
 - optional `?id=` or mixed list/detail behavior must be validated inside the model
 - protected routes need a configured identity manager
+- `session` accepts `required` (default) or `auto`; `auto` allows anonymous GET/HEAD
+  pages to avoid sessions until state is needed, while preserving session-backed
+  authentication, preferences, protected routes, and authorized Tracy debugging
+
+For `auto` routes, audit the complete layout and model for forms and session access.
+`csrfToken` may be null. Call `$configuration->requireSession()` before using state
+or returning a protected form, or use the exported JavaScript
+`getCsrfToken(API_BASE, csrfToken)` inside an interaction handler before an API POST.
+Keep unadapted forms and language selectors on `required` routes. Deploy the updated
+i18n selector with core; it obtains a token before language POSTs and its lookup
+route uses `auto`. Do not bootstrap a token on page load. `ErrorLogger` sends no request without
+a token. Update its `csrfToken` after an interaction if needed.
+
+`SB_SESSION_AUTO_COOKIE_NAMES` defaults to `['sbLanguage', 'sbRememberMe']` and can
+include custom preference/authentication cookies. The actual PHP session cookie
+always triggers startup. These are state triggers, not authentication credentials
+accepted without validation. See [Potentially stateless pages](README.md#potentially-stateless-pages)
+for the full contract, integration requirements, and remaining allocation risks.
 
 ## Models And Responses
 
@@ -105,7 +123,7 @@ public function knowledge(): stdClass
 ```
 
 Return an `stdClass`, not an array.
-Seablast adds `csrfToken` after the model runs.
+Seablast adds `csrfToken` after the model runs: a token for an active session, or null for a session-free response.
 
 Special response properties:
 
@@ -113,6 +131,7 @@ Special response properties:
 - `httpCode`: set the response status
 - `redirectionUrl`: send a redirect and render `redirection.latte`
 - `title`: used by the default `BlueprintWeb.latte` page title
+- `noStore`: when true, force `Cache-Control: no-store` over the global cache policy
 
 REST responses always use `Content-Type: application/json; charset=utf-8`, including
 when Tracy development mode is enabled.

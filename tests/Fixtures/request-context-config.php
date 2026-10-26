@@ -7,6 +7,7 @@ use Seablast\Seablast\SeablastConstant;
 use Seablast\Seablast\Tests\RequestContextHttpModel;
 
 return static function (SeablastConfiguration $configuration): void {
+    $configuration->setInt(SeablastConstant::SB_WEB_FORCE_ASSET_VERSION, 1);
     if (!isset($_GET['missingHosts'])) {
         $configuration->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, isset($_GET['emptyHosts']) ? [] : [
             'app.example.com', 'localhost', '192.168.1.10', 'localhost:8080', '[::1]:8080',
@@ -41,8 +42,32 @@ return static function (SeablastConfiguration $configuration): void {
     }
     $configuration->setArrayArrayString(SeablastConstant::APP_MAPPING, '/probe', [
         'model' => RequestContextHttpModel::class,
+        'session' => isset($_GET['sessionPolicy']) && is_string($_GET['sessionPolicy'])
+            ? $_GET['sessionPolicy'] : 'required',
+        'roleIds' => isset($_GET['protected']) ? '2' : '',
         'template' => 'security-headers',
     ]);
+    if (isset($_GET['fakeIdentity'])) {
+        // Supply an unconnected adapter: this identity fixture never executes database queries.
+        $adapter = (new ReflectionClass(\Seablast\Seablast\SeablastMysqli::class))->newInstanceWithoutConstructor();
+        $property = new ReflectionProperty(SeablastConfiguration::class, 'mysqli');
+        $property->setAccessible(true);
+        $property->setValue($configuration, $adapter);
+        $configuration->setString(
+            SeablastConstant::SB_IDENTITY_MANAGER,
+            \Seablast\Seablast\Tests\RequestContextIdentity::class
+        );
+    }
+    if (isset($_GET['customCookie'])) {
+        $configuration->setArrayString(SeablastConstant::SB_SESSION_AUTO_COOKIE_NAMES, ['customPreference']);
+    }
+    if (isset($_GET['missingRoute'])) {
+        $configuration->setArrayArrayString(SeablastConstant::APP_MAPPING, '/error', [
+            'model' => \Seablast\Seablast\Models\ErrorModel::class,
+            'session' => 'auto',
+            'template' => 'error',
+        ]);
+    }
     // The model selects the repository template path when HTML output is requested.
     if (isset($_GET['maintenance'])) {
         $configuration->flag->deactivate(SeablastConstant::FLAG_WEB_RUNNING);

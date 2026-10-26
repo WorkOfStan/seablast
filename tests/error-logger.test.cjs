@@ -32,6 +32,9 @@ context.BannerManager.prototype.addBanner = () => {
   banners++;
 };
 const logger = new context.ErrorLogger("token", "/app");
+const stateless = new context.ErrorLogger(null, "/app");
+stateless.log("local-only diagnostic");
+assert.equal(requests.length, 0);
 logger.log("normal");
 assert.equal(requests.length, 1);
 assert.equal(JSON.parse(requests[0].data).csrfToken, "token");

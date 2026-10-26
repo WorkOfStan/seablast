@@ -34,6 +34,18 @@ class SuperglobalsTest extends TestCase
         $this->assertSame($session, $superglobals->session);
     }
 
+    public function testCookieSnapshotRetainsOnlyNamesWithUsableValues(): void
+    {
+        $superglobals = new Superglobals([], [], [], [], [
+            'PHPSESSID' => 'secret-session-id',
+            'sbRememberMe' => 'secret-token',
+            'empty' => '',
+            'malformed' => ['nested'],
+        ]);
+        $this->assertSame(['PHPSESSID', 'sbRememberMe'], $superglobals->cookieNames);
+        $this->assertStringNotContainsString('secret-', serialize($superglobals));
+    }
+
     public function testSetSessionUpdatesSession(): void
     {
         $initialSession = ['key1' => 'value1'];

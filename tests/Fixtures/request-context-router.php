@@ -18,6 +18,15 @@ $_SERVER['REQUEST_URI'] = '/app/probe';
 if (isset($_GET['errorApi'])) {
     $_SERVER['REQUEST_URI'] = '/app/api/error';
 }
+if (isset($_GET['csrfApi'])) {
+    $_SERVER['REQUEST_URI'] = '/app/api/csrf';
+}
+if (isset($_GET['missingRoute'])) {
+    $_SERVER['REQUEST_URI'] = '/app/missing';
+}
+if (isset($_GET['sessionName'])) {
+    session_name('fixtureSession');
+}
 $_SERVER['HTTPS'] = isset($_GET['tls']) ? 'on' : 'off';
 $_SERVER['REQUEST_SCHEME'] = isset($_GET['tls']) ? 'https' : 'http';
 $_SERVER['SERVER_PORT'] = isset($_GET['tls']) ? '443' : '80';

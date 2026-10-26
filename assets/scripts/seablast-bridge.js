@@ -5,12 +5,14 @@
 import { BannerManager } from "./seablast.js";
 import { ButtonPanel } from "./button-panel.js";
 import { ErrorLogger } from "./seablast.js";
+import { getCsrfToken } from "./seablast.js";
 import { Overlay } from "./overlay.js";
 
 // Let's make these accessible for non-module scripts
 window.BannerManager = BannerManager;
 window.ButtonPanel = ButtonPanel;
 window.ErrorLogger = ErrorLogger;
+window.getCsrfToken = getCsrfToken;
 window.Overlay = Overlay;
 
 //  const errorLogger = new ErrorLogger(env.csrfToken, env.API_BASE);

@@ -57,8 +57,13 @@ class SeablastModel
             $this->viewParameters = new stdClass();
         }
         // CSRF token to be used by view
-        $csrfTokenManager = new CsrfTokenManager();
-        $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json')->getValue();
+        $this->viewParameters->csrfToken = null;
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            // Also synchronize sessions started explicitly by application models or optional packages.
+            $this->getConfiguration()->requireSession();
+            $csrfTokenManager = new CsrfTokenManager();
+            $this->viewParameters->csrfToken = $csrfTokenManager->getToken('sb_json')->getValue();
+        }
         // todo when invalidate. Certainly during logout!
     }
 

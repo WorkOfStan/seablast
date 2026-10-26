@@ -131,6 +131,77 @@ PHP 7.2 remains supported through an isolated SameSite compatibility path.
 The `TODO PHP-7.2` removal note in `SeablastSessionCookie` and `AGENTS.md` identifies
 the code and legacy tests to simplify when PHP 7.2 support ends.
 
+### Potentially stateless pages
+
+Routes start a session by default (`'session' => 'required'`). Mark a page that can
+render for an anonymous visitor without session state as potentially stateless:
+
+```php
+$SBConfig->setArrayArrayString(SeablastConstant::APP_MAPPING, '/', [
+    'model' => '\App\Models\HomeModel',
+    'template' => 'home',
+    'session' => 'auto',
+]);
+```
+
+On an `auto` route, cookie-free GET/HEAD requests skip session startup, identity
+lookup, and CSRF token generation. The same route still starts or resumes a session
+for protected `roleIds`, other HTTP methods, an active/preset session, or a client
+explicitly allowed Tracy development mode. The current PHP session cookie also
+triggers startup, as do the extra names in `SB_SESSION_AUTO_COOKIE_NAMES` (defaults:
+`sbLanguage` and `sbRememberMe`). Other cookies, such as analytics, do not.
+These cookies request state; normal authentication still validates the identity.
+Remember-me recovery remains the authentication package's responsibility.
+Unknown route session values are configuration errors.
+
+Set `SB_SESSION_AUTO_COOKIE_NAMES` with `setArrayString()` to replace the extra
+names or `addArrayString()` to append application preference/authentication cookies.
+The PHP session cookie is always checked, including custom `session_name()` values.
+The bundled i18n package reads language from its own cookie; the conservative default
+starts a PHP session whenever that cookie is present, including its default-language value.
+
+Models that discover a need for state call `$configuration->requireSession()` before
+accessing session state or producing output. This applies the prepared cookie policy,
+starts the session once, resolves identity, and refreshes `Superglobals->session`.
+The wrapper supplies `csrfToken = null` if the request stays session-free, or the
+usual `sb_json` token if a session is active. Keep form-rendering routes `required`,
+or request the session explicitly before the model returns. A plain login link does
+not require a session, but an embedded protected login form does.
+
+For an interaction initiated from a session-free page, obtain a token when the user
+acts, then include it in the existing protected request:
+
+```javascript
+import { getCsrfToken } from "/vendor/seablast/seablast/assets/scripts/seablast.js";
+
+// Inside the click/submit handler; use the application's base path for imports.
+const token = await getCsrfToken(API_BASE, csrfToken);
+// Submit the existing JSON payload with csrfToken: token.
+```
+
+The bridge also exposes `window.getCsrfToken`. Concurrent token requests share one
+request. The helper calls `GET /api/csrf` with `X-Seablast-CSRF: 1`, same-origin
+credentials, and redirects disabled. The endpoint rejects missing explicit headers
+and cross-site/same-site fetch metadata, returns `405` for other methods, and always
+uses `Cache-Control: no-store`. Do not grant cross-origin access to this endpoint.
+Model responses may set `noStore = true` to force this cache policy over the global
+override. Never cache personalized or token-bearing responses at the proxy/CDN.
+
+Before opting in a route, adapt application forms and language-selector overrides
+to obtain the token on interaction rather than capturing a missing token at page load.
+Deploy the updated i18n selector alongside core: it uses this helper before its
+language POST and declares the `/api/language` mapping `auto`, avoiding session
+creation solely to read the current language. Do not fetch a token on page
+load, which would cancel the saving. `ErrorLogger` keeps messages local when given a
+missing token; update its `csrfToken` after an interaction if server logging is needed.
+Bump the application's asset version when deploying updated scripts.
+
+This is a partial mitigation for SEC-015: unmarked routes (including the default
+error route), maintenance output, deliberate interactions, and forged/stale session
+cookies can still allocate sessions. Opt in a reviewed `/error` override if missing
+routes should also be session-free. Keep reliable storage cleanup and traffic limits.
+Applications starting sessions before Seablast cannot benefit from this optimization.
+
 ### Browser security headers
 
 Dynamic responses default to same-origin framing (`frame-ancestors 'self'` and
@@ -272,6 +343,7 @@ The minimal requirements can be implemented by [SeablastModelInterface](src/Seab
 - If model replies with `rest` property, API response is triggered instead of HTML UI. If the default HTTP code should be changed, set it up in the `httpCode` property.
 - If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302, 303, 307, or 308 by the `httpCode` property.
 - If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
+- Set `noStore = true` to force `Cache-Control: no-store` for a sensitive response.
 
 REST responses always use `Content-Type: application/json; charset=utf-8`, including
 when Tracy development mode is enabled.

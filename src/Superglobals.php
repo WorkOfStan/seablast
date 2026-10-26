@@ -8,6 +8,8 @@ class Superglobals
 {
     use \Nette\SmartObject;
 
+    /** @var string[] Names with nonempty string values; never retain cookie secrets in diagnostic snapshots. */
+    public $cookieNames;
     /** @var mixed[] */
     public $get;
     /** @var mixed[] */
@@ -24,9 +26,21 @@ class Superglobals
      * @param array<mixed> $post
      * @param array<mixed> $server
      * @param array<mixed> $session
+     * @param array<mixed>|null $cookie Null snapshots the current request cookies.
      */
-    public function __construct(array $get = [], array $post = [], array $server = [], array $session = [])
-    {
+    public function __construct(
+        array $get = [],
+        array $post = [],
+        array $server = [],
+        array $session = [],
+        ?array $cookie = null
+    ) {
+        $this->cookieNames = [];
+        foreach ($cookie ?? $_COOKIE as $name => $value) {
+            if (is_string($value) && $value !== '') {
+                $this->cookieNames[] = (string) $name;
+            }
+        }
         $this->get = $get;
         $this->post = $post;
         $this->server = $server;

@@ -42,7 +42,7 @@ Debugger::enable(
     $setup->getConfiguration()->getString(SeablastConstant::SB_LOG_DIRECTORY)
 );
 $controller = new SeablastController($setup->getConfiguration(), $superglobals, $requestContext);
-$superglobals->setSession($_SESSION); // as only now the session started
+$superglobals->setSession($_SESSION ?? []); // as only now the session started
 try {
     new SeablastView(new SeablastModel($controller, $superglobals));
 } catch (\PDOException $e) {

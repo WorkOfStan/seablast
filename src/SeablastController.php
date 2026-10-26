@@ -83,10 +83,15 @@ class SeablastController
                 Debugger::log($message, ILogger::DEBUG);
             }
         }
-        $this->pageUnderConstruction();
-        if (session_status() === PHP_SESSION_NONE) {
-            $this->startSession();
+        // Register logging even when this request never starts a session.
+        if ($this->tracyLogger !== null) {
+            Debugger::setLogger($this->tracyLogger);
         }
+        $this->configuration->setSessionStarter(function (): void {
+            $this->startSession();
+            $this->authenticate();
+        });
+        $this->pageUnderConstruction();
         $this->route();
     }
 
@@ -189,6 +194,44 @@ class SeablastController
         );
     }
 
+    /** Resolve identity only when the request needs session-backed state. */
+    private function authenticate(): void
+    {
+        // Authenticate: is there an identity manager to be used?
+        if ($this->identity === null && $this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
+            $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
+            /** @var IdentityManagerInterface $tempIdentity */
+            $tempIdentity = new $identityManager($this->configuration->mysqli());
+            $this->identity = $tempIdentity;
+            if (method_exists($this->identity, 'setTablePrefix')) {
+                $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
+            }
+            if (method_exists($this->identity, 'setCookiePath')) {
+                Debugger::barDump('Cookie Path injection', 'Controller to Identity');
+                // empty path defaults to the current directory, while the path to the app is required
+                $this->identity->setCookiePath(($this->getAppPath() === '') ? '/' : $this->getAppPath());
+            } else {
+                Debugger::barDump('Cookie Path NOT INJECTED, i.e. remains default', 'Controller to Identity');
+            }
+            Assert::methodExists($this->identity, 'isAuthenticated');
+            if ($this->identity->isAuthenticated()) {
+                $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
+                // Save the current user's role, id and group list into the configuration object
+                Assert::methodExists($this->identity, 'getRoleId');
+                Assert::methodExists($this->identity, 'getUserId');
+                Assert::methodExists($this->identity, 'getGroups');
+                $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
+                $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
+                $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
+                if (!is_null($this->logger)) {
+                    $this->logger->setUser($this->identity->getUserId());
+                }
+                // The mysqli/PDO connection lazy starts (only with an actual query) with this user
+                $this->configuration->setUser($this->identity->getUserId());
+            }
+        }
+    }
+
     /**
      * Returns host name (domain) of the running app.
      *
@@ -248,6 +291,7 @@ class SeablastController
      */
     public function getIdentity(): IdentityManagerInterface
     {
+        $this->configuration->requireSession();
         Assert::notNull(
             $this->identity,
             'SeablastController::getIdentity() called too soon. ' .
@@ -382,6 +426,32 @@ class SeablastController
             ? substr($string, 0, strlen($string) - strlen($suffix)) : $string;
     }
 
+    /** Decide before identity lookup; cookies request state but never prove authentication. */
+    private function requiresSession(): bool
+    {
+        $policy = $this->mapping['session'] ?? 'required';
+        if (!in_array($policy, ['required', 'auto'], true)) {
+            throw new SeablastConfigurationException('Route session must be required or auto.');
+        }
+        if (
+            $policy === 'required' || !empty($this->mapping['roleIds']) ||
+            session_status() === PHP_SESSION_ACTIVE || session_id() !== '' ||
+            $this->requestContext->isDebugAllowed() ||
+            !in_array($this->superglobals->server['REQUEST_METHOD'] ?? '', ['GET', 'HEAD'], true)
+        ) {
+            return true;
+        }
+        $names = $this->configuration->exists(SeablastConstant::SB_SESSION_AUTO_COOKIE_NAMES)
+            ? $this->configuration->getArrayString(SeablastConstant::SB_SESSION_AUTO_COOKIE_NAMES) : [];
+        $names[] = session_name();
+        foreach ($names as $name) {
+            if (in_array($name, $this->superglobals->cookieNames, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Transform URI to model with parameters and RBAC (Role-Based Access Control).
      *
@@ -425,38 +495,8 @@ class SeablastController
             $this->mapping = $mapping[$this->uriPath];
         }
         Debugger::barDump($this->mapping, 'Mapping');
-        // Authenticate: is there an identity manager to be used?
-        if ($this->configuration->exists(SeablastConstant::SB_IDENTITY_MANAGER)) {
-            $identityManager = $this->configuration->getString(SeablastConstant::SB_IDENTITY_MANAGER);
-            /** @var IdentityManagerInterface $tempIdentity */
-            $tempIdentity = new $identityManager($this->configuration->mysqli());
-            $this->identity = $tempIdentity;
-            if (method_exists($this->identity, 'setTablePrefix')) {
-                $this->identity->setTablePrefix($this->configuration->dbmsTablePrefix());
-            }
-            if (method_exists($this->identity, 'setCookiePath')) {
-                Debugger::barDump('Cookie Path injection', 'Controller to Identity');
-                // empty path defaults to the current directory, while the path to the app is required
-                $this->identity->setCookiePath(($this->getAppPath() === '') ? '/' : $this->getAppPath());
-            } else {
-                Debugger::barDump('Cookie Path NOT INJECTED, i.e. remains default', 'Controller to Identity');
-            }
-            Assert::methodExists($this->identity, 'isAuthenticated');
-            if ($this->identity->isAuthenticated()) {
-                $this->configuration->flag->activate(SeablastConstant::FLAG_USER_IS_AUTHENTICATED);
-                // Save the current user's role, id and group list into the configuration object
-                Assert::methodExists($this->identity, 'getRoleId');
-                Assert::methodExists($this->identity, 'getUserId');
-                Assert::methodExists($this->identity, 'getGroups');
-                $this->configuration->setInt(SeablastConstant::USER_ROLE_ID, $this->identity->getRoleId());
-                $this->configuration->setInt(SeablastConstant::USER_ID, $this->identity->getUserId());
-                $this->configuration->setArrayInt(SeablastConstant::USER_GROUPS, $this->identity->getGroups());
-                if (!is_null($this->logger)) {
-                    $this->logger->setUser($this->identity->getUserId());
-                }
-                // The mysqli/PDO connection lazy starts (only with an actual query) with this user
-                $this->configuration->setUser($this->identity->getUserId());
-            }
+        if ($this->requiresSession()) {
+            $this->configuration->requireSession();
         }
         // Authenticate: RBAC (Role-Based Access Control)
         if (isset($this->mapping['roleIds']) && !empty($this->mapping['roleIds'])) {
@@ -552,7 +592,11 @@ class SeablastController
      */
     private function startSession(): void
     {
-        session_start() || error_log('session_start failed');
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            if (headers_sent() || !session_start()) {
+                throw new SeablastConfigurationException('Cannot start the application session before output.');
+            }
+        }
         $this->configuration->securityHeaders()->apply(); // replace PHP's session cache-limiter policy
         if (!is_null($this->tracyLogger)) {
             Debugger::setLogger($this->tracyLogger);
