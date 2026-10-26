@@ -18,11 +18,20 @@ async function main() {
     .readFileSync(path.join(__dirname, "../assets/scripts/seablast.js"), "utf8")
     .replace(/^export\s*\{[^}]*\};?\s*$/gm, "");
   vm.runInContext(source + "\nglobalThis.obtain = getCsrfToken;", context);
-  assert.equal(await context.obtain("/app", "existing-token"), "existing-token");
+  assert.equal(
+    await context.obtain("/app", "existing-token"),
+    "existing-token",
+  );
   assert.equal(requests.length, 0);
-  await assert.rejects(context.obtain("https://evil.test", "existing-token"), /same-origin/);
+  await assert.rejects(
+    context.obtain("https://evil.test", "existing-token"),
+    /same-origin/,
+  );
   assert.equal(requests.length, 0);
-  const tokens = await Promise.all([context.obtain("/app"), context.obtain("/app/")]);
+  const tokens = await Promise.all([
+    context.obtain("/app"),
+    context.obtain("/app/"),
+  ]);
   assert.deepEqual(tokens, ["issued-token", "issued-token"]);
   assert.equal(requests.length, 1);
   assert.equal(requests[0].url, "https://example.test/app/api/csrf");
@@ -40,7 +49,9 @@ async function main() {
   result = { ok: true, json: async () => ({ csrfToken: "retried-token" }) };
   assert.equal(await context.obtain("/retry"), "retried-token");
   assert.equal(requests.length, 4);
-  console.log("On-demand CSRF token, concurrency, origin, and retry tests passed.");
+  console.log(
+    "On-demand CSRF token, concurrency, origin, and retry tests passed.",
+  );
 }
 
 main().catch((error) => {
