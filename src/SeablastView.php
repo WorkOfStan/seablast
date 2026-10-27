@@ -34,6 +34,9 @@ class SeablastView
         $this->params->configuration = $this->model->getConfiguration();
         $securityHeaders = $this->params->configuration->securityHeaders();
         $securityHeaders->apply();
+        if (($this->params->noStore ?? false) === true) {
+            header('Cache-Control: no-store');
+        }
         $this->params->cspNonce = $securityHeaders->getNonce();
         // Dump when severity DEBUG
         if ($this->params->configuration->getInt(SeablastConstant::SB_LOGGING_LEVEL) >= 5) {

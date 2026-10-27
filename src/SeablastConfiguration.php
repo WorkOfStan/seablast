@@ -36,6 +36,8 @@ class SeablastConfiguration
     private $pdo = null;
     /** @var SeablastSecurityHeaders|null One immutable policy and nonce per request. */
     private $securityHeaders = null;
+    /** @var callable|null Framework callback for session startup and identity resolution. */
+    private $sessionStarter = null;
     /** @var string|null for db logging */
     private $user = null;
 
@@ -390,6 +392,16 @@ class SeablastConfiguration
         return $this->pdo instanceof \PDO;
     }
 
+    /** Request session state before output, including on a potentially stateless route. */
+    public function requireSession(): void
+    {
+        if ($this->sessionStarter !== null) {
+            ($this->sessionStarter)();
+        } elseif (session_status() !== PHP_SESSION_ACTIVE) {
+            throw new SeablastConfigurationException('Session startup requires an initialized SeablastController.');
+        }
+    }
+
     /** Finalize configuration before first use; reuse this configuration only within one request. */
     public function securityHeaders(): SeablastSecurityHeaders
     {
@@ -454,6 +466,13 @@ class SeablastConfiguration
     public function setInt(string $property, int $value): self
     {
         $this->optionsInt[$property] = $value;
+        return $this;
+    }
+
+    /** Bootstrap hook; applications request state through requireSession() instead. */
+    public function setSessionStarter(callable $starter): self
+    {
+        $this->sessionStarter = $starter;
         return $this;
     }
 

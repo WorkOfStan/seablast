@@ -48,7 +48,7 @@ The runtime flow is:
 2. `index.php` loads `APP_DIR . '/vendor/autoload.php'`, enables Tracy in production mode, and creates `SeablastSetup`.
 3. `SeablastSetup` builds a single `SeablastConfiguration` instance by loading configuration closures in precedence order.
 4. Bootstrap resolves one `SeablastRequestContext` before selecting Tracy development mode and passes it to `SeablastController`. The controller validates cookie policy, applies environment configuration and cookie settings before session startup (including maintenance responses), derives runtime values, resolves the route, and enforces authentication/authorization.
-5. `SeablastModel` instantiates the mapped application model, calls `knowledge()`, and always injects a CSRF token into the returned parameters.
+5. `SeablastModel` instantiates the mapped application model, calls `knowledge()`, and injects a CSRF token for active sessions or null for session-free responses.
 6. `SeablastView` renders JSON, HTML, or redirect output and then exposes Tracy SQL and HTTP panels.
 
 When maintaining the framework, preserve this order. Session setup, Tracy wiring, runtime-derived configuration, and route resolution are coupled.
@@ -111,6 +111,7 @@ The framework currently consumes these mapping keys:
 - `roleIds`: comma-separated allow-list of numeric role IDs
 - `id`: required GET parameter name, stored as `SB_GET_ARGUMENT_ID`
 - `code`: required GET parameter name, validated and stored as `SB_GET_ARGUMENT_CODE`
+- `session`: `required` (default) or `auto`; unknown values raise a configuration exception
 
 Notes:
 
@@ -135,10 +136,11 @@ Special properties in the returned `stdClass`:
 - `httpCode`: optional HTTP status code
 - `redirectionUrl`: when present, Seablast sends a redirect and renders `redirection.latte`
 - `title`: used by `BlueprintWeb.latte` as page title
+- `noStore`: true forces `Cache-Control: no-store` after the configured header policy
 
 The framework also always adds:
 
-- `csrfToken`
+- `csrfToken`: a string for active sessions, otherwise null
 
 Important consequences:
 
@@ -309,6 +311,54 @@ Todo PHP-7.2: When the minimum PHP version reaches 7.3, remove the legacy
 and its legacy-version coverage in `RequestContextHttpTest`; retain native cookie
 header, maintenance, and regeneration tests. The existing CI PHP matrix exercises
 the real bootstrap and cookie headers on PHP 7.2 and native-option versions.
+
+### Conditional Session Startup
+
+Resolve the route before deciding whether to start a session. Existing routes use
+`required`; an explicitly configured `auto` route may skip startup and identity
+lookup for anonymous GET/HEAD requests. Nonempty `roleIds`, other request methods,
+active/preset sessions, verified debug clients, and the PHP session cookie always
+require state. `SB_SESSION_AUTO_COOKIE_NAMES` supplies additional cookie names
+(default `sbLanguage`, `sbRememberMe`); nonempty string values trigger state, without
+proving authentication. Other cookies do not trigger startup. `Superglobals` snapshots
+only qualifying cookie names in `cookieNames`, never their secret values. Its optional
+fifth constructor argument accepts cookies and defaults to the native cookies.
+
+The controller binds `SeablastConfiguration::setSessionStarter()` for this request.
+Applications call `requireSession()` before output when state becomes necessary.
+The callback starts once, reapplies security headers, dispatches Tracy, synchronizes
+the session snapshot, and resolves identity once. `getIdentity()` requests state too.
+Bind the logger independently of startup so session-free requests retain logging.
+Cookie validation/application still happens before possible session startup.
+Custom bootstraps must tolerate an absent `$_SESSION` and must not reuse configuration
+across requests. An already-active session is neither restarted nor discarded.
+
+The model wrapper never creates a token for a session-free response. If a model
+starts a session, it synchronizes state before generating the normal `sb_json` token.
+Models must use `requireSession()` before reading/writing session state; raw writes to
+`$_SESSION` do not start persistence. Templates and scripts must accept null tokens.
+`GET /api/csrf` is an explicit, same-origin token bootstrap with a required
+`X-Seablast-CSRF: 1` header and Fetch Metadata checks when available. It requires no
+prior token, always returns no-store, and must not receive permissive CORS headers.
+The exported `getCsrfToken()` helper performs this request on interaction, shares
+concurrent requests, rejects cross-origin API bases/redirects, and permits retry after
+failure. `ErrorLogger` keeps token-free diagnostics local rather than allocating state.
+
+Optional auth/i18n integrations retain their own behavior. Cookie triggers preserve
+their opportunity to read state; they do not implement remember-me recovery in core.
+Deploy the updated i18n selector with core: it fetches a token before language POSTs
+and opts its lookup route into `auto`. Adapt application overrides equivalently.
+See the README migration example.
+The default `/error` route uses `auto`, including missing-route fallbacks. Audit
+application error-page overrides for session access and forms; use `required` when
+needed. Unmarked routes and maintenance retain their existing session behavior. This
+partially mitigates SEC-015; hostile requests can still reach stateful paths or send
+invented session cookies. Do not weaken strict mode or CSRF validation to avoid them.
+
+Regression coverage includes repeated cookie-free requests and session-file counts,
+identity/language resumption, protected routes, custom cookies/session names, active
+sessions, explicit startup, verified Tracy clients, CSRF rejection and bootstrap,
+forced no-store, and `node tests/csrf-token.test.cjs` for the browser helper.
 
 ## Authentication and Authorization
 

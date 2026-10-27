@@ -25,6 +25,7 @@ return static function (SeablastConfiguration $SBConfig): void {
         ->setArrayString(SeablastConstant::SB_FRAME_ANCESTORS, ["'self'"])
         ->setString(SeablastConstant::SB_REFERRER_POLICY, 'strict-origin-when-cross-origin')
         ->setInt(SeablastConstant::SB_ERROR_REPORTING, E_ALL & ~E_NOTICE)
+        ->setArrayString(SeablastConstant::SB_SESSION_AUTO_COOKIE_NAMES, ['sbLanguage', 'sbRememberMe'])
         ->setInt(SeablastConstant::SB_SESSION_SET_COOKIE_LIFETIME, 60 * 60 * 24 * 2) // 2 days
         ->setInt(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_LIFETIME, 60 * 60 * 3) // 3 hours
         ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE, 'Lax')
@@ -50,6 +51,15 @@ return static function (SeablastConfiguration $SBConfig): void {
         // Latte templates
         ->setString(SeablastConstant::LATTE_TEMPLATE, 'views')
         ->setString(SeablastConstant::LATTE_CACHE, APP_DIR . '/cache')
+        // Issue CSRF tokens only when a browser explicitly requests a protected interaction.
+        ->setArrayArrayString(
+            SeablastConstant::APP_MAPPING,
+            '/api/csrf',
+            [
+                'model' => '\\Seablast\\Seablast\\Apis\\ApiCsrfTokenModel',
+                'session' => 'auto',
+            ]
+        )
         // Error API is always available (if not overridden)
         ->setArrayArrayString(
             SeablastConstant::APP_MAPPING,
@@ -63,6 +73,7 @@ return static function (SeablastConfiguration $SBConfig): void {
             SeablastConstant::APP_MAPPING,
             '/error', // todo demonstrate in SB-dist
             [
+                'session' => 'auto',
                 'template' => 'error',
                 'model' => '\Seablast\Seablast\Models\ErrorModel',
             ]

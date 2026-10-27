@@ -37,6 +37,10 @@ class ErrorLogger {
   }
 
   sendErrorData(errorData) {
+    // Stateless pages keep diagnostics local until an interaction supplies a CSRF token.
+    if (typeof errorData.csrfToken !== "string" || errorData.csrfToken === "") {
+      return;
+    }
     if (this.disabled || Date.now() < this.retryAfter) {
       return;
     }
@@ -77,6 +81,51 @@ class ErrorLogger {
 }
 // Export the class
 export { ErrorLogger };
+
+const csrfRequests = new Map();
+
+/** Obtain a session-bound token on interaction, sharing concurrent requests within this page. */
+async function getCsrfToken(apiBase, existingToken = null) {
+  const url = new URL(
+    apiBase.replace(/\/$/, "") + "/api/csrf",
+    window.location.href,
+  );
+  if (url.origin !== window.location.origin) {
+    throw new Error("CSRF tokens require a same-origin API base.");
+  }
+  if (typeof existingToken === "string" && existingToken !== "") {
+    return existingToken;
+  }
+  if (!csrfRequests.has(url.href)) {
+    const request = (async () => {
+      const response = await fetch(url.href, {
+        method: "GET",
+        mode: "same-origin",
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "error",
+        headers: { "X-Seablast-CSRF": "1" },
+      });
+      if (!response.ok) {
+        throw new Error("Unable to initialize CSRF protection.");
+      }
+      const data = await response.json();
+      if (
+        !data ||
+        typeof data.csrfToken !== "string" ||
+        data.csrfToken === ""
+      ) {
+        throw new Error("Missing CSRF token.");
+      }
+      return data.csrfToken;
+    })();
+    csrfRequests.set(url.href, request);
+    request.catch(() => csrfRequests.delete(url.href));
+  }
+  return csrfRequests.get(url.href);
+}
+
+export { getCsrfToken };
 
 /**
  * Messages - With this setup, each time addBanner is called, a new banner message is added to the container,

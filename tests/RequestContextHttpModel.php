@@ -26,6 +26,14 @@ class RequestContextHttpModel
 
     public function knowledge(): stdClass
     {
+        if (isset($this->superglobals->get['requireSession'])) {
+            $this->configuration->requireSession();
+            $this->configuration->requireSession(); // Repeated requests for state must be idempotent.
+        }
+        if (isset($this->superglobals->get['loginFixture'])) {
+            $_SESSION['fixtureUser'] = true;
+            $_SESSION['fixtureLanguage'] = 'cs';
+        }
         if (isset($this->superglobals->get['independentPdoFailure'])) {
             $independentPdo = new \PDO('sqlite::memory:');
             $independentPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -53,6 +61,10 @@ class RequestContextHttpModel
             'debug' => !Debugger::$productionMode,
             'path' => $this->configuration->getString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_PATH),
             'sessionId' => session_id(),
+            'sessionActive' => session_status() === PHP_SESSION_ACTIVE,
+            'sessionSnapshot' => $this->superglobals->session,
+            'userId' => $this->configuration->exists(SeablastConstant::USER_ID)
+                ? $this->configuration->getInt(SeablastConstant::USER_ID) : null,
         ];
         if (isset($this->superglobals->get['jsonValue']) && is_string($this->superglobals->get['jsonValue'])) {
             $result->rest['value'] = $this->superglobals->get['jsonValue'];

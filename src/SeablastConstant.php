@@ -186,6 +186,8 @@ class SeablastConstant
     public const SB_PHINX_ENVIRONMENT = 'SB_PHINX_ENVIRONMENT';
     /** @var string Browser referrer policy; defaults to strict-origin-when-cross-origin. */
     public const SB_REFERRER_POLICY = 'SB_REFERRER_POLICY';
+    /** @var string string[]: Extra cookie names that require session state on auto routes. */
+    public const SB_SESSION_AUTO_COOKIE_NAMES = 'SB_SESSION_AUTO_COOKIE_NAMES';
     /**
      * @var string ini_set('session.cokie_lifetime', '2000000');
      */

@@ -21,14 +21,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.20] - TBD
 
-fix: fix XSS, introduce Content Security Policy
+fix: fix XSS, introduce Content Security Policy, conditional sessions
 
 ### Changed
 
 - Clarify that BlueprintWeb.latte exposes only explicitly selected, enabled flag names in its JavaScript flags array.
 - Run all tests/*.test.cjs regressions in the javascript-tests CI job with Node.js 24, PHP 8.4, and Composer dependencies for rendered-template coverage.
-- Read application maintenance pages as HTML and replace the CSP nonce placeholder to support inline styles and scripts.
+- Read the application's optional `APP_DIR/under-construction.html` override as HTML and replace `__SEABLAST_CSP_NONCE__` with the response nonce to support inline styles and scripts.
 - Send Host before X-Forwarded-Host in HTTP tests to prevent PHP 7.2 from adding a duplicate Host header.
+- style: accept README and TODO
+- docs: Explain the template CSP nonce fallback and custom-renderer requirements in the agent starter kit.
+- Use automatic sessions for the default `/error` route so anonymous GET/HEAD error responses can avoid session allocation.
 
 ### Security
 
@@ -38,6 +41,7 @@ fix: fix XSS, introduce Content Security Policy
 - Keep bundled maintenance CSS inline with a response nonce placeholder instead of an external style sheet and URL rewriting.
 - Remove the JSON-as-HTML debugging mode and always send JSON Content-Type, including in Tracy development mode; remove obsolete flag configuration from applications when upgrading.
 - Validate request Host syntax and enforce the SB_ALLOWED_HOSTS arrayString allow-list before sessions and debug output; log only a DEBUG configuration reminder when the list is missing or empty.
+- Add opt-in conditional sessions with `session => auto`, explicit session and CSRF bootstrap helpers, and preserved authentication, preference-cookie, and authorized Tracy behavior; keep token-free browser diagnostics local to reduce unnecessary session allocation.
 
 ## [0.2.19] - 2026-10-17
 

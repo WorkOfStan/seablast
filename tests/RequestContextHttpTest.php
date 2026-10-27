@@ -93,6 +93,7 @@ class RequestContextHttpTest extends TestCase
         file_put_contents(self::$app . '/under-construction.html', 'maintenance fixture');
         file_put_contents(self::$app . '/vendor/autoload.php', '<?php require '
             . var_export($root . '/vendor/autoload.php', true) . '; require_once '
+            . var_export(__DIR__ . '/RequestContextIdentity.php', true) . '; require_once '
             . var_export(__DIR__ . '/RequestContextHttpModel.php', true) . ';');
         $socket = stream_socket_server('tcp://127.0.0.1:0');
         if (!is_resource($socket)) {
@@ -247,6 +248,101 @@ class RequestContextHttpTest extends TestCase
         }
     }
 
+    public function testAutoPolicyAvoidsSessionAllocationAndIdentityLookup(): void
+    {
+        $before = glob(self::$app . '/sessions/sess_*') ?: [];
+        for ($request = 0; $request < 20; $request++) {
+            $response = $this->request(['sessionPolicy' => 'auto', 'fakeIdentity' => '1', 'allowDebug' => '1']);
+            $this->assertSame(200, $response['status']);
+            $this->assertSame([], $this->sessionCookies($response['headers']));
+            $this->assertNotContains('X-Identity-Resolved: 1', $response['headers']);
+            $body = json_decode($response['body'], true);
+            $this->assertIsArray($body);
+            $this->assertSame('', $body['sessionId']);
+            $this->assertFalse($body['sessionActive']);
+            $this->assertSame([], $body['sessionSnapshot']);
+        }
+        $this->assertSame($before, glob(self::$app . '/sessions/sess_*') ?: []);
+        $html = $this->request(['sessionPolicy' => 'auto', 'html' => '1']);
+        $this->assertSame(200, $html['status']);
+        $this->assertStringContainsString('window.csrfFixture = null;', $html['body']);
+        $this->assertSame([], $this->sessionCookies($html['headers']));
+        $head = $this->request(['sessionPolicy' => 'auto'], null, 'HEAD');
+        $this->assertSame(200, $head['status']);
+        $this->assertSame([], $this->sessionCookies($head['headers']));
+        $missing = $this->request(['missingRoute' => '1']);
+        $this->assertSame(404, $missing['status']);
+        $this->assertSame([], $this->sessionCookies($missing['headers']));
+        $this->assertStringContainsString('const csrfToken = null;', $missing['body']);
+        $this->assertSame($before, glob(self::$app . '/sessions/sess_*') ?: []);
+    }
+
+    public function testAutoPolicyRejectsUnknownPolicyAndPreservesProtection(): void
+    {
+        $invalid = $this->request(['sessionPolicy' => 'disabled']);
+        $this->assertSame(500, $invalid['status']);
+        $this->assertSame([], $this->sessionCookies($invalid['headers']));
+        $protected = $this->request(['sessionPolicy' => 'auto', 'fakeIdentity' => '1', 'protected' => '1']);
+        $this->assertSame(401, $protected['status']);
+        $this->assertContains('X-Identity-Resolved: 1', $protected['headers']);
+        $this->assertCount(1, $this->sessionCookies($protected['headers']));
+    }
+
+    public function testAutoPolicyResumesIdentityAndLanguage(): void
+    {
+        $login = $this->request(['loginFixture' => '1']);
+        $this->assertSame(200, $login['status']);
+        $loginBody = json_decode($login['body'], true);
+        $this->assertIsArray($loginBody);
+        $sessionId = $loginBody['sessionId'];
+        $this->assertIsString($sessionId);
+        $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8',
+            'Cookie: PHPSESSID=' . $sessionId];
+        $response = $this->request(['sessionPolicy' => 'auto', 'fakeIdentity' => '1', 'protected' => '1'], $headers);
+        $this->assertSame(200, $response['status']);
+        $body = json_decode($response['body'], true);
+        $this->assertIsArray($body);
+        $this->assertSame($sessionId, $body['sessionId']);
+        $this->assertSame(42, $body['userId']);
+        $this->assertIsArray($body['sessionSnapshot']);
+        $this->assertSame('cs', $body['sessionSnapshot']['fixtureLanguage']);
+        $this->assertSame([], $this->sessionCookies($response['headers']));
+        $public = $this->request(['sessionPolicy' => 'auto', 'fakeIdentity' => '1'], $headers);
+        $publicBody = json_decode($public['body'], true);
+        $this->assertIsArray($publicBody);
+        $this->assertSame(42, $publicBody['userId']);
+    }
+
+    public function testAutoPolicyStartsForStateTriggers(): void
+    {
+        $cases = [
+            [['requireSession' => '1'], 'GET', '', '198.51.100.8'],
+            [[], 'POST', '', '198.51.100.8'],
+            [[], 'GET', 'sbLanguage=cs', '198.51.100.8'],
+            [[], 'GET', 'sbRememberMe=fixture', '198.51.100.8'],
+            [['customCookie' => '1'], 'GET', 'customPreference=1', '198.51.100.8'],
+            [['sessionName' => '1'], 'GET', 'fixtureSession=unknownsessionid', '198.51.100.8'],
+            [['allowDebug' => '1'], 'GET', '', '198.51.100.7'],
+            [['active' => '1'], 'GET', '', '198.51.100.8'],
+        ];
+        foreach ($cases as [$query, $method, $cookie, $client]) {
+            $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: ' . $client];
+            if ($cookie !== '') {
+                $headers[] = 'Cookie: ' . $cookie;
+            }
+            $response = $this->request($query + ['sessionPolicy' => 'auto'], $headers, $method);
+            $this->assertSame(200, $response['status'], json_encode($query) ?: 'state trigger');
+            $body = json_decode($response['body'], true);
+            $this->assertIsArray($body);
+            $this->assertTrue($body['sessionActive']);
+            $this->assertNotSame('', $body['sessionId']);
+        }
+        $unrelated = $this->request(['sessionPolicy' => 'auto'], [
+            'X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8', 'Cookie: analytics=1',
+        ]);
+        $this->assertSame([], $this->sessionCookies($unrelated['headers']));
+    }
+
     public function testBundledMaintenanceUsesResponseNonceForInlineStyles(): void
     {
         $file = self::$app . '/under-construction.html';
@@ -309,6 +405,49 @@ class RequestContextHttpTest extends TestCase
             '{}'
         );
         $this->assertSame(415, $wrongType['status']);
+    }
+
+    public function testExplicitCsrfBootstrapSupportsProtectedInteractions(): void
+    {
+        $before = glob(self::$app . '/sessions/sess_*') ?: [];
+        foreach (['', 'cross-site', 'same-site'] as $site) {
+            $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8'];
+            if ($site !== '') {
+                $headers[] = 'X-Seablast-CSRF: 1';
+                $headers[] = 'Sec-Fetch-Site: ' . $site;
+            }
+            $response = $this->request(['csrfApi' => '1'], $headers);
+            $this->assertSame(403, $response['status']);
+            $this->assertSame([], $this->sessionCookies($response['headers']));
+        }
+        $this->assertSame($before, glob(self::$app . '/sessions/sess_*') ?: []);
+        $headers = ['X-Forwarded-Proto: https', 'X-Forwarded-For: 198.51.100.8',
+            'X-Seablast-CSRF: 1', 'Sec-Fetch-Site: same-origin'];
+        $response = $this->request(['csrfApi' => '1', 'cachePolicy' => 'public, max-age=60'], $headers);
+        $this->assertSame(200, $response['status']);
+        $this->assertContains('Cache-Control: no-store', $response['headers']);
+        $cookies = $this->sessionCookies($response['headers']);
+        $this->assertCount(1, $cookies);
+        $cookieHeaders = array_values(array_filter($response['headers'], static function (string $header): bool {
+            return stripos($header, 'Set-Cookie: PHPSESSID=') === 0;
+        }));
+        $sessionCookie = explode(';', substr($cookieHeaders[0], strlen('Set-Cookie: ')))[0];
+        $tokenBody = json_decode($response['body'], true);
+        $this->assertIsArray($tokenBody);
+        $token = $tokenBody['csrfToken'];
+        $this->assertIsString($token);
+        $this->assertNotSame('', $token);
+        $headers[] = 'Cookie: ' . $sessionCookie;
+        $headers[] = 'Content-Type: application/json';
+        $body = json_encode(['csrfToken' => $token, 'message' => 'lazy session fixture']);
+        $this->assertIsString($body);
+        $accepted = $this->request(['errorApi' => '1'], $headers, 'POST', $body);
+        $this->assertSame(200, $accepted['status']);
+        $rejected = $this->request(['errorApi' => '1'], $headers, 'POST', '{"csrfToken":"invalid"}');
+        $this->assertSame(401, $rejected['status']);
+        $wrongMethod = $this->request(['csrfApi' => '1'], null, 'POST');
+        $this->assertSame(405, $wrongMethod['status']);
+        $this->assertContains('Allow: GET', $wrongMethod['headers']);
     }
 
     public function testHostRejectionsPrecedeSessionsMaintenanceAndDebug(): void
