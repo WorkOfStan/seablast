@@ -349,7 +349,9 @@ their opportunity to read state; they do not implement remember-me recovery in c
 Deploy the updated i18n selector with core: it fetches a token before language POSTs
 and opts its lookup route into `auto`. Adapt application overrides equivalently.
 See the README migration example.
-Unmarked/error routes and maintenance retain their existing session behavior. This
+The default `/error` route uses `auto`, including missing-route fallbacks. Audit
+application error-page overrides for session access and forms; use `required` when
+needed. Unmarked routes and maintenance retain their existing session behavior. This
 partially mitigates SEC-015; hostile requests can still reach stateful paths or send
 invented session cookies. Do not weaken strict mode or CSRF validation to avoid them.
 

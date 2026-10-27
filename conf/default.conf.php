@@ -73,6 +73,7 @@ return static function (SeablastConfiguration $SBConfig): void {
             SeablastConstant::APP_MAPPING,
             '/error', // todo demonstrate in SB-dist
             [
+                'session' => 'auto',
                 'template' => 'error',
                 'model' => '\Seablast\Seablast\Models\ErrorModel',
             ]

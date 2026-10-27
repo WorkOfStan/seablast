@@ -196,10 +196,13 @@ load, which would cancel the saving. `ErrorLogger` keeps messages local when giv
 missing token; update its `csrfToken` after an interaction if server logging is needed.
 Bump the application's asset version when deploying updated scripts.
 
-This is a partial mitigation for SEC-015: unmarked routes (including the default
-error route), maintenance output, deliberate interactions, and forged/stale session
-cookies can still allocate sessions. Opt in a reviewed `/error` override if missing
-routes should also be session-free. Keep reliable storage cleanup and traffic limits.
+The default `/error` route uses `auto`, so missing routes can also avoid sessions
+for anonymous GET/HEAD requests. Audit application error-page overrides for session
+access and forms, and use `required` when needed.
+
+This is a partial mitigation for SEC-015: unmarked routes, maintenance output,
+deliberate interactions, and forged/stale session cookies can still allocate
+sessions. Keep reliable storage cleanup and traffic limits.
 Applications starting sessions before Seablast cannot benefit from this optimization.
 
 ### Browser security headers

@@ -83,7 +83,8 @@ Important route behavior:
 - one route mapping has one `template`
 - trailing slashes are trimmed
 - an empty path becomes `/`
-- missing routes render `/error`
+- missing routes render `/error`; its default `auto` session policy also applies
+  to these fallbacks, so audit error-page overrides for session access and forms
 - `id` and `code` mapping keys make the matching GET parameter required
 - optional `?id=` or mixed list/detail behavior must be validated inside the model
 - protected routes need a configured identity manager
@@ -361,6 +362,23 @@ configure a fixed nonce. Standalone renderers must apply the same configuration'
 policy before output. Custom bootstraps must reapply after session startup. Avoid
 inline event/style attributes; admin colors use validated `data-admin-color` and
 DOM style properties. Bump the application's asset version on deployment.
+
+Bundled templates use this fallback to support both the normal view pipeline and
+direct Latte rendering:
+
+```latte
+nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}"
+```
+
+`SeablastView` always supplies `$cspNonce`, so templates rendered exclusively through
+it can use `nonce="{$cspNonce}"` alone. The fallback is for custom renderers that
+supply `$configuration` but omit `$cspNonce` or set it to null. It is a convenience,
+not an additional security requirement. `securityHeaders()` retains one policy
+object per configuration instance, and `getNonce()` returns its existing nonce;
+repeated calls do not generate new nonces. Using only the configuration expression
+also works wherever that configuration is supplied, but couples the template to
+the policy API. Custom renderers must use the same configuration for the template
+and the applied HTTP headers; retrieving the nonce alone does not send those headers.
 
 Before enforcing CSP, review browser reports for application overrides, optional
 auth/i18n assets, and Tracy (including error pages). Report-only mode deliberately
