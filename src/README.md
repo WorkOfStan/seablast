@@ -3,9 +3,7 @@
 Seablast connects an incoming request to your application's logic and presentation through MVC.
 Your application provides configuration, routes, models, and templates; the framework coordinates the request lifecycle.
 
-`defineAppDir.php` resolves `APP_DIR` from the standard vendor layout (or the library
-root when run directly). `index.php` loads the application autoloader and enables
-Tracy in production mode before constructing the runtime.
+Before constructing the runtime, the bootstrap locates the application, loads its autoloader, and initializes Tracy in production mode.
 
 1. **SeablastSetup — configuration**: Combines framework defaults, optional package settings, and
    your application's and environment configuration into one `SeablastConfiguration`.

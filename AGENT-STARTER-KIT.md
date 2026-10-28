@@ -26,13 +26,6 @@ possible and remove demo code deliberately.
 For existing app migrations, reshape the app into the Seablast structure instead of keeping a
 parallel framework layout alive.
 
-## Bundled Administration Color Fields
-
-Follow the [administration configuration](README.md#administration), including
-role inheritance limits. `ADMIN_COLOR_FIELDS` accepts only `#rrggbb` (uppercase is
-normalized). When overriding `admin.latte`, retain escaped invalid-value display,
-validated background colors, and safe DOM construction of filter options.
-
 ## Bootstrap And Project Shape
 
 Normal web requests should enter through:
@@ -227,6 +220,13 @@ panel only when its own lazy adapter already exists.
 Seablast does not require applications to omit `composer.lock`; follow the
 application's dependency and deployment policy.
 
+## Bundled Administration Color Fields
+
+Follow the [administration configuration](README.md#administration), including
+role inheritance limits. `ADMIN_COLOR_FIELDS` accepts only `#rrggbb` (uppercase is
+normalized). When overriding `admin.latte`, retain escaped invalid-value display,
+validated background colors, and safe DOM construction of filter options.
+
 ## Web Server And Security Checklist
 
 Before deployment, follow the [deployment safeguards](SECURITY.md#deployment-safeguards):
@@ -258,6 +258,35 @@ Domain cookies when upgrading or enabling subdomain sharing.
 See [host validation](SECURITY.md#allowed-request-hosts) and
 [proxy/cookie configuration](SECURITY.md#reverse-proxies-and-session-cookies) before deployment.
 
+## Browser Security Header Contract
+
+By default, dynamic responses enforce same-origin framing, nosniff, referrer protection, and
+no-store. Content restrictions are report-only; review application templates,
+auth/i18n assets, and Tracy before enforcement. Never publicly cache personalized
+or token-bearing responses. See [policy settings](SECURITY.md#browser-security-headers).
+
+The view supplies the request's `cspNonce`. Use `nonce="{$cspNonce}"` on intentional
+inline script/style blocks. Bundled templates also support direct Latte rendering:
+
+```latte
+nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}"
+```
+
+The fallback reuses the configuration's nonce; it does not generate another or send
+headers. Custom renderers must supply that same configuration and apply its policy
+before output, reapplying after session startup. Finish configuration before first
+policy access and never reuse it across requests. Do not configure fixed nonces.
+The fallback is only a convenience for missing/null `$cspNonce`; templates rendered
+exclusively through `SeablastView` need only `nonce="{$cspNonce}"`. Using
+`$configuration->securityHeaders()->getNonce()` directly also reuses the same nonce,
+but couples the template to the policy API.
+
+Replace inline event/style attributes with listeners, style sheets, or validated DOM
+style properties. Preserve SRI and `crossorigin="anonymous"` on CDN scripts. Bump
+`SB_WEB_FORCE_ASSET_VERSION` when deploying changed assets. An application
+`under-construction.html` override can use `nonce="__SEABLAST_CSP_NONCE__"` on inline
+blocks; the controller replaces it with the escaped response nonce.
+
 ## Logging
 
 Use the configured SeablastLogger through Tracy with an explicit severity:
@@ -287,35 +316,6 @@ anonymous visitors, honors rate-limit cooldowns, and stops the instance on disab
 [browser reporting contract](SECURITY.md#browser-error-reporting).
 `BannerManager.addBanner()` and `changeBanner()` display plain text; do not pass
 HTML for formatting.
-
-## Browser Security Header Contract
-
-By default, dynamic responses enforce same-origin framing, nosniff, referrer protection, and
-no-store. Content restrictions are report-only; review application templates,
-auth/i18n assets, and Tracy before enforcement. Never publicly cache personalized
-or token-bearing responses. See [policy settings](SECURITY.md#browser-security-headers).
-
-The view supplies the request's `cspNonce`. Use `nonce="{$cspNonce}"` on intentional
-inline script/style blocks. Bundled templates also support direct Latte rendering:
-
-```latte
-nonce="{$cspNonce ?? $configuration->securityHeaders()->getNonce()}"
-```
-
-The fallback reuses the configuration's nonce; it does not generate another or send
-headers. Custom renderers must supply that same configuration and apply its policy
-before output, reapplying after session startup. Finish configuration before first
-policy access and never reuse it across requests. Do not configure fixed nonces.
-The fallback is only a convenience for missing/null `$cspNonce`; templates rendered
-exclusively through `SeablastView` need only `nonce="{$cspNonce}"`. Using
-`$configuration->securityHeaders()->getNonce()` directly also reuses the same nonce,
-but couples the template to the policy API.
-
-Replace inline event/style attributes with listeners, style sheets, or validated DOM
-style properties. Preserve SRI and `crossorigin="anonymous"` on CDN scripts. Bump
-`SB_WEB_FORCE_ASSET_VERSION` when deploying changed assets. An application
-`under-construction.html` override can use `nonce="__SEABLAST_CSP_NONCE__"` on inline
-blocks; the controller replaces it with the escaped response nonce.
 
 ## Testing Checklist
 
