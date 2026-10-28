@@ -208,7 +208,7 @@ color validation, and limitations. Preserve table and column checks together.
 `AdminHelper` hardcodes roles 1/2: table permissions merge, but admin column lists
 replace editor lists for the same table/access type. Updates require a nonzero
 integer-cast `id` and target a literal `id` column; arbitrary primary keys are unsupported.
-Row listing also indexes results by `id`; the selected column lists must include it.
+Row listing also indices results by `id`; the selected column lists must include it.
 Insert/delete flags do not implement those workflows. Color values and filter
 options must remain safe in both Latte output and DOM construction.
 

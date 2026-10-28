@@ -213,8 +213,8 @@ HTTP methods separately. Multipart and ordinary form models must validate CSRF
 manually; they do not use this JSON parser.
 
 JSON output always uses `application/json; charset=utf-8`, including in Tracy
-development mode. When upgrading, remove the obsolete `FLAG_DEBUG_JSON` / `SB:debug:json`
-configuration: JSON-as-HTML diagnostics have been removed without a compatibility alias.
+development mode.
+When upgrading, remove the obsolete `FLAG_DEBUG_JSON` / `SB:debug:json` configuration: JSON-as-HTML diagnostics have been removed without a compatibility alias.
 
 ## Browser security headers
 

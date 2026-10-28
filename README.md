@@ -200,7 +200,7 @@ access type. Include the full intended columns in such overrides.
 Grant table access and define disjoint read-only (`VIEW`) and editable (`EDIT`)
 column lists. Both lists are displayed; keep each column in only one list to avoid
 duplicates. Table access is required even when column permissions exist.
-Include the literal `id` column, normally in `VIEW`: row listing indexes results by
+Include the literal `id` column, normally in `VIEW`: row listing indices results by
 `id`, and inline updates also require it. The column lists must remain disjoint
 after editor inheritance and admin overrides have been resolved.
 
