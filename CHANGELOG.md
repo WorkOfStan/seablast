@@ -32,6 +32,9 @@ fix: fix XSS, introduce Content Security Policy, conditional sessions
 - style: accept README and TODO
 - docs: Explain the template CSP nonce fallback and custom-renderer requirements in the agent starter kit.
 - Use automatic sessions for the default `/error` route so anonymous GET/HEAD error responses can avoid session allocation.
+- docs: Consolidate public, application-agent, maintainer, and architecture documentation; correct administration limits and inheritance, database defaults, and unsupported runtime claims.
+- docs: Extract shared security configuration and deployment guidance into SECURITY.md, retain README anchor summaries, and link agent guides directly to the canonical sections.
+- docs: Restore documentation anchors and integration details; clarify template lookup, Phinx configuration, admin row requirements, conditional sessions, JSON test overrides, and private-response headers against the implementation.
 
 ### Security
 

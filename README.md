@@ -4,564 +4,266 @@
 [![Latest Stable Version](https://img.shields.io/packagist/v/seablast/seablast.svg)](https://packagist.org/packages/seablast/seablast)
 [![Polish the code](https://github.com/WorkOfStan/seablast/actions/workflows/polish-the-code.yml/badge.svg)](https://github.com/WorkOfStan/seablast/actions/workflows/polish-the-code.yml)
 
-This minimalist MVC framework added by [composer](https://getcomposer.org/) helps you to create a complex, yet easy to maintain, web application by configuration ONLY:
+Seablast is a minimalist PHP MVC runtime installed with Composer. Applications
+provide configuration, exact-path routes, models, and Latte templates. Core supplies
+request handling, database adapters, logging, and error responses; optional
+[auth](https://github.com/WorkOfStan/seablast-auth) and
+[i18n](https://github.com/WorkOfStan/seablast-i18n) packages add identity and language support.
+Database-backed friendly-URL resolution is not implemented.
 
-- you configure routes for controller,
-- add models for the app business functionality,
-- optionally modify view templates.
+- [Application guide](AGENT-STARTER-KIT.md): build or migrate an application.
+- [Architecture](src/README.md): core components and request/response lifecycle.
+- [Security reference](SECURITY.md): trust boundaries, sessions, CSRF, headers, and deployment.
+- [Maintainer guide](AGENTS.md): repository conventions, invariants, and testing.
 
-The framework takes care of logs, database, multiple languages, user friendly HTTP errors, friendly URL.
+## Installation
 
-- See <https://github.com/WorkOfStan/seablast-dist/> for example of how to use it. It's a public template, so you can start creating your app by duplicating that repository.
-- AI agents and application builders should start with [AGENT-STARTER-KIT.md](AGENT-STARTER-KIT.md), which describes the practical app structure, routing, models, templates, CSRF, uploads, downloads, and testing expectations.
+Start from the [seablast-dist template](https://github.com/WorkOfStan/seablast-dist),
+or add the runtime to an existing Composer project:
+
+```sh
+composer require seablast/seablast
+```
+
+Configure the application as below, make `cache/` and `log/` writable by PHP, and
+route web requests to `vendor/seablast/seablast/index.php`. Protect configuration,
+source, logs, and private storage from direct web access; see the
+[deployment safeguards](SECURITY.md#deployment-safeguards).
 
 ## Configuration
 
-- the default environment parameters are set in the [conf/default.conf.php](conf/default.conf.php)
-- if [Seablast Auth](https://github.com/WorkOfStan/seablast-auth) extension is present (i.e. referenced in composer.json), use also its configuration
-- if [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n) extension is present (i.e. referenced in composer.json), use also its configuration
-- everything can be overridden in the web app's `conf/app.conf.php` or even in its local deployment `conf/app.conf.local.php`
-- use `set*()` methods to replace previously configured values; use `addArrayString()` to append strings to an existing array or initialize a missing property
-- use `addArrayArrayString()` to merge more strings into an existing property/key entry without replacing its current values; a missing entry is initialized automatically
-- set the default phinx environment in the phinx configuration: `['environments']['default_environment']` where the database credentials are stored. Then SeablastConfiguration provides access to MySQLi adapter through mysqli() method and PDO adapter through pdo() method.
-- applications may use an independent persistence layer; its PDO exceptions do not initialize Seablast's lazy PDO adapter while diagnostics are rendered
-- the default `log` directory (both for SeablastMysqli/SeablastPdo query.log and Debugger::log()) can be changed as follows `->setString(SeablastConstant::SB_LOG_DIRECTORY, APP_DIR . '/log')`. Anyway, only levels allowed by `SeablastConstant::SB_LOGGING_LEVEL` are logged.
+Existing configuration files run from lowest to highest priority:
 
-Complete model results and view parameters are not written to debug logs. The view adds model and parameter dumps to Tracy only when `SB_LOGGING_LEVEL >= 5`; these dumps can include CSRF tokens and other sensitive data. SQL query logging and other diagnostics still require appropriate access and retention controls.
+1. [conf/default.conf.php](conf/default.conf.php)
+2. `APP_DIR/vendor/seablast/auth/conf/app.conf.php` (optional)
+3. `APP_DIR/vendor/seablast/i18n/conf/app.conf.php` (optional)
+4. `APP_DIR/conf/app.conf.php`
+5. `APP_DIR/conf/app.conf.local.php`
+
+Each returns a callable receiving `SeablastConfiguration`. For example:
+
+```php
+use Seablast\Seablast\SeablastConfiguration;
+use Seablast\Seablast\SeablastConstant;
+
+return static function (SeablastConfiguration $SBConfig): void {
+    $SBConfig
+        ->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, ['app.example.com'])
+        ->setInt(SeablastConstant::SB_WEB_FORCE_ASSET_VERSION, 1)
+        ->setArrayArrayString(SeablastConstant::APP_MAPPING, '/', [
+            'model' => '\App\Models\HomeModel', // class name of the model,
+            'template' => 'home',
+        ]);
+};
+```
+
+`set*()` replaces values; `setArrayArrayString()` replaces one property/key entry.
+`addArrayString()` appends strings and initializes a missing property;
+`addArrayArrayString()` merges strings into a property/key entry, initializing it
+when absent. Reuse existing constants for existing settings.
+
+The lazy `mysqli()` and `pdo()` adapters read `APP_DIR/conf/phinx.local.php`.
+`SB_PHINX_ENVIRONMENT` selects the environment (`development` in defaults); only
+when absent does Phinx's `environments.default_environment` apply. Applications may
+use independent persistence; its PDO failures do not initialize Seablast's adapter
+for diagnostics. `dbms()`/`dbmsStatus()` are deprecated aliases for the MySQLi APIs.
+
+Set `SB_LOG_DIRECTORY` to change the default `APP_DIR . '/log'` location for framework
+and query logs. Use `Tracy\Debugger::log()` with an explicit `Tracy\ILogger` severity;
+the configured SeablastLogger respects `SB_LOGGING_LEVEL`. Never log secrets.
+Complete model results and view parameters are not logged, but level 5 enables
+Tracy dumps containing them. Protect SQL logs and diagnostics with suitable access
+and retention controls.
 
 ### Allowed request hosts
 
-Configure the exact public hostnames or IP addresses that may serve the application:
-
-```php
-$SBConfig->setArrayString(SeablastConstant::SB_ALLOWED_HOSTS, [
-    'app.example.com',
-    'localhost',
-    '192.168.1.10',
-    'localhost:8080',
-    '[::1]:8080',
-]);
-```
-
-Use only the entries needed in each environment. This prevents forged Host headers
-from controlling `SB_APP_ROOT_ABSOLUTE_URL` and downstream links. Entries are hosts
-with optional explicit ports, not URLs or CIDRs; wildcards are not supported.
-DNS names are case-insensitive and IPv6 addresses are normalized. IPv6 must use
-brackets. Ports must be 1-65535 without leading zeros and must match explicitly:
-`localhost` does not allow `localhost:8080` or even an explicit `localhost:80`.
-Use ASCII/Punycode DNS names without a trailing dot.
-
-Validation runs before sessions, maintenance output, and Tracy development mode.
-Missing or malformed request Host values and hosts outside a configured nonempty
-list return a generic HTTP 400. Malformed configuration raises a configuration
-exception. The normalized request authority is used for URLs; no canonical-origin
-redirect is introduced. Forwarded host/port headers remain ignored; proxies must
-preserve a permitted public Host. The web server must reject duplicate Host header
-fields before PHP, since its server snapshot may already hide duplicates.
-
-For this transitional rollout, a missing or empty list accepts syntactically valid
-hosts and emits only a static DEBUG reminder to define `SB_ALLOWED_HOSTS`. The
-normal configured logger filters this reminder through `SB_LOGGING_LEVEL` (5 for
-debug). No request Host value is included in the reminder. Fill the list to enable
-Host allow-list protection; retain web-server host restrictions in the meantime.
+Set `SB_ALLOWED_HOSTS` to exact public hosts, including explicit ports. An empty
+list validates syntax but does not enforce host membership.
+See [host validation and examples](SECURITY.md#allowed-request-hosts).
 
 ### Reverse proxies and session cookies
 
-Direct HTTP/HTTPS deployments need no proxy configuration. Behind a reverse proxy,
-configure its exact IP addresses in the application configuration closure:
-
-```php
-$SBConfig
-    ->setArrayString(SeablastConstant::SB_TRUSTED_PROXIES, ['192.0.2.10', '2001:db8::10'])
-    ->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['198.51.100.7'])
-    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_SAMESITE, 'Lax')
-    ->setString(SeablastConstant::SB_SESSION_SET_COOKIE_PARAMS_DOMAIN, '');
-```
-
-Trusted proxies must overwrite `X-Forwarded-Proto` with one `http` or `https`
-value describing the external connection and sanitize or correctly append
-`X-Forwarded-For`. At the public edge, discard any client-supplied forwarding
-values. For multiple proxies, preserve the verified external scheme and append
-the actual upstream peer to the client IP chain. Keep `REMOTE_ADDR` as the
-transport peer; do not independently rewrite it from headers in the web server.
-List every trusted hop using exact IPv4/IPv6 addresses, without CIDRs or wildcards.
-
-The shared request context ignores forwarding headers from untrusted peers.
-For a trusted peer, missing or malformed required metadata returns HTTP 400
-before creating a session. Client resolution walks the IP chain from right to
-left and stops at the first untrusted address. That verified client controls
-Tracy development mode and maintenance bypass only through an exact match in
-`DEBUG_IP_LIST`. The default empty list denies both, including for localhost.
-An unknown client or an all-trusted chain grants neither.
-Only `X-Forwarded-For` and `X-Forwarded-Proto` are supported; no forwarding-header
-family is automatically detected. Configure `SB_ALLOWED_HOSTS` as described above
-to restrict the Host authority used for absolute URLs.
-
-When upgrading, direct local development and localhost maintenance bypass now
-require explicit opt-in in the application's local configuration closure:
-
-```php
-$SBConfig->setArrayString(SeablastConstant::DEBUG_IP_LIST, ['127.0.0.1', '::1']);
-```
-
-Use these entries only for direct local requests. Behind a proxy, configure the
-actual proxy addresses in `SB_TRUSTED_PROXIES` and the actual developer client
-addresses in `DEBUG_IP_LIST`. Explicitly allowing an unconfigured shared proxy
-address (including localhost) exposes diagnostics and maintenance access to all
-clients using that proxy.
-
-Session cookies default to host-only, HttpOnly, `SameSite=Lax`, and Secure on
-verified HTTPS, including maintenance responses. Explicit `Strict` and `None`
-are supported; `None` on HTTP is a configuration error. For intentional sharing
-across trusted subdomains, configure a parent domain such as `example.com`;
-it must match the request hostname on a domain-label boundary. Existing cookie
-lifetime and logical path settings remain available. Paths containing control
-characters or semicolons are rejected.
-
-When upgrading, review applications that relied on the previous Domain cookie:
-host-only cookies no longer provide subdomain sharing. Existing Domain cookies
-may coexist with new host-only cookies until they expire; arrange an explicit
-old-cookie expiry or session-name rotation if needed by your deployment.
-Cookies created by optional authentication packages have their own policy.
-If your application starts sessions before Seablast, apply this policy before
-`session_start()` yourself; the controller validates configuration but cannot
-retroactively secure an already-issued cookie.
-
-PHP 7.2 remains supported through an isolated SameSite compatibility path.
-The `TODO PHP-7.2` removal note in `SeablastSessionCookie` and `AGENTS.md` identifies
-the code and legacy tests to simplify when PHP 7.2 support ends.
+Trust only explicitly configured proxy IPs. Session cookies default to host-only,
+HttpOnly, SameSite=Lax, and Secure on verified HTTPS. Debug and maintenance bypass
+require an explicit client allow-list, including localhost.
+See [proxy trust, cookie settings, and upgrade requirements](SECURITY.md#reverse-proxies-and-session-cookies).
 
 ### Potentially stateless pages
 
-Routes start a session by default (`'session' => 'required'`). Mark a page that can
-render for an anonymous visitor without session state as potentially stateless:
-
-```php
-$SBConfig->setArrayArrayString(SeablastConstant::APP_MAPPING, '/', [
-    'model' => '\App\Models\HomeModel',
-    'template' => 'home',
-    'session' => 'auto',
-]);
-```
-
-On an `auto` route, cookie-free GET/HEAD requests skip session startup, identity
-lookup, and CSRF token generation. The same route still starts or resumes a session
-for protected `roleIds`, other HTTP methods, an active/preset session, or a client
-explicitly allowed Tracy development mode. The current PHP session cookie also
-triggers startup, as do the extra names in `SB_SESSION_AUTO_COOKIE_NAMES` (defaults:
-`sbLanguage` and `sbRememberMe`). Other cookies, such as analytics, do not.
-These cookies request state; normal authentication still validates the identity.
-Remember-me recovery remains the authentication package's responsibility.
-Unknown route session values are configuration errors.
-
-Set `SB_SESSION_AUTO_COOKIE_NAMES` with `setArrayString()` to replace the extra
-names or `addArrayString()` to append application preference/authentication cookies.
-The PHP session cookie is always checked, including custom `session_name()` values.
-The bundled i18n package reads language from its own cookie; the conservative default
-starts a PHP session whenever that cookie is present, including its default-language value.
-
-Models that discover a need for state call `$configuration->requireSession()` before
-accessing session state or producing output. This applies the prepared cookie policy,
-starts the session once, resolves identity, and refreshes `Superglobals->session`.
-The wrapper supplies `csrfToken = null` if the request stays session-free, or the
-usual `sb_json` token if a session is active. Keep form-rendering routes `required`,
-or request the session explicitly before the model returns. A plain login link does
-not require a session, but an embedded protected login form does.
-
-For an interaction initiated from a session-free page, obtain a token when the user
-acts, then include it in the existing protected request:
-
-```javascript
-import { getCsrfToken } from "/vendor/seablast/seablast/assets/scripts/seablast.js";
-
-// Inside the click/submit handler; use the application's base path for imports.
-const token = await getCsrfToken(API_BASE, csrfToken);
-// Submit the existing JSON payload with csrfToken: token.
-```
-
-The bridge also exposes `window.getCsrfToken`. Concurrent token requests share one
-request. The helper calls `GET /api/csrf` with `X-Seablast-CSRF: 1`, same-origin
-credentials, and redirects disabled. The endpoint rejects missing explicit headers
-and cross-site/same-site fetch metadata, returns `405` for other methods, and always
-uses `Cache-Control: no-store`. Do not grant cross-origin access to this endpoint.
-Model responses may set `noStore = true` to force this cache policy over the global
-override. Never cache personalized or token-bearing responses at the proxy/CDN.
-
-Before opting in a route, adapt application forms and language-selector overrides
-to obtain the token on interaction rather than capturing a missing token at page load.
-Deploy the updated i18n selector alongside core: it uses this helper before its
-language POST and declares the `/api/language` mapping `auto`, avoiding session
-creation solely to read the current language. Do not fetch a token on page
-load, which would cancel the saving. `ErrorLogger` keeps messages local when given a
-missing token; update its `csrfToken` after an interaction if server logging is needed.
-Bump the application's asset version when deploying updated scripts.
-
-The default `/error` route uses `auto`, so missing routes can also avoid sessions
-for anonymous GET/HEAD requests. Audit application error-page overrides for session
-access and forms, and use `required` when needed.
-
-This is a partial mitigation for SEC-015: unmarked routes, maintenance output,
-deliberate interactions, and forged/stale session cookies can still allocate
-sessions. Keep reliable storage cleanup and traffic limits.
-Applications starting sessions before Seablast cannot benefit from this optimization.
+Routes use `session => required` by default. Use `auto` only when the model and
+layout tolerate session-free requests and null CSRF tokens; request state or a
+token before protected interactions.
+See [session triggers and CSRF bootstrap](SECURITY.md#potentially-stateless-pages).
 
 ### Browser security headers
 
-Dynamic responses default to same-origin framing (`frame-ancestors 'self'` and
-`X-Frame-Options: SAMEORIGIN`), `X-Content-Type-Options: nosniff`,
-`Referrer-Policy: strict-origin-when-cross-origin`, and `Cache-Control: no-store`.
-This includes anonymous HTML containing CSRF tokens, JSON, redirects, maintenance,
-and invalid-request responses. Static assets remain under web-server cache policy.
-HSTS remains a deployment choice: enable it only after reviewing HTTPS and subdomains.
-
-Content restrictions start in **report-only** mode; they do not yet block scripts
-or styles. Framing restrictions are always enforced separately. Bundled defaults
-allow same-origin resources, nonce-authorized inline scripts/styles, the exact
-bundled jQuery and WebHotkeys CDN paths, Google Fonts CSS at `/css2`, and fonts from
-`fonts.gstatic.com`. They prohibit objects and limit base URLs to the same origin,
-without `unsafe-inline` or `unsafe-eval`. Font file paths vary with font/browser,
-so that font origin is allowed rather than a fixed file URL.
-
-Configure the policy inside your application's configuration closure:
-
-```php
-$SBConfig
-    ->setString(SeablastConstant::SB_CSP_MODE, 'report-only')
-    ->setArrayString(SeablastConstant::SB_FRAME_ANCESTORS, ["'self'"])
-    ->setString(SeablastConstant::SB_REFERRER_POLICY, 'strict-origin-when-cross-origin')
-    ->setString(SeablastConstant::SB_CACHE_CONTROL, 'no-store')
-    ->setArrayArrayString(SeablastConstant::SB_CSP_DIRECTIVES, 'connect-src', [
-        "'self'", 'https://api.example.com',
-    ])
-    ->setString(SeablastConstant::SB_CSP_REPORT_URI, '');
-```
-
-`SB_CSP_DIRECTIVES` overrides individual default directives with lists of separate
-source tokens; other defaults remain. Nonces are generated automatically for
-`script-src` and `style-src` unless that directive is exactly `["'none'"]`.
-Do not configure fixed nonces. `frame-ancestors` and reporting are managed by their
-separate settings. Invalid modes, control characters, and directive separators
-inside tokens are rejected before headers are applied.
-
-`SB_CSP_MODE` accepts `report-only`, `enforce`, or `off`; `off` only disables content
-restrictions, not framing, MIME, referrer, or cache protection. Framing accepts
-`["'none'"]` to prohibit embedding, `["'self'"]` for same-origin embedding, or an
-explicit list of HTTP/HTTPS origins (optionally including `'self'`). The first two
-also emit `DENY` or `SAMEORIGIN`; explicit external origins omit X-Frame-Options.
-
-Set `SB_CSP_REPORT_URI` to an existing local path such as `/csp-report` or an HTTPS
-URL with a path to collect reports through `report-uri`. No collector is bundled;
-protect and rate-limit your collector and consider sensitive URLs in reports.
-Without a destination, review browser-console violations. Review application
-templates, optional auth/i18n integrations, third-party assets, and Tracy diagnostics
-before switching to `enforce`. Report-only rollout does not constitute full SEC-009
-closure. A content policy does not replace escaping or Host validation.
-
-The view supplies a framework-owned `cspNonce`. Application templates should use
-`<script nonce="{$cspNonce}">` and `<style nonce="{$cspNonce}">` for intentional inline
-blocks. Move inline event handlers to listeners and style attributes to style sheets
-or validated DOM style properties. Bundled admin colors use validated
-`data-admin-color` attributes. Upgrade overridden admin/layout templates and bump
-your application's `SB_WEB_FORCE_ASSET_VERSION` when deploying changed assets.
-
-`SeablastConfiguration::securityHeaders()` lazily creates one immutable
-`SeablastSecurityHeaders` instance per request. Finish configuration before first
-use; do not reuse that configuration across requests in long-running workers.
-Custom bootstraps should call `securityHeaders()->apply()` before request parsing
-and output, and again after any session startup that sets cache headers. The core
-controller and view do this automatically. `getNonce()` supports custom renderers;
-`getHeaders()` exposes the validated header map. Renderers outside `SeablastView`
-must apply the same policy whose nonce they render. The bundled maintenance page
-keeps its CSS inline; the controller replaces `__SEABLAST_CSP_NONCE__` with the
-HTML-escaped response nonce. Application-provided maintenance HTML supports the
-same replacement after reading the HTML file: use `<style nonce="__SEABLAST_CSP_NONCE__">`
-for inline styles or the same nonce attribute on intentional inline scripts.
-
-The framework owns these header names in PHP and preserves unrelated headers and
-cookies. Web-server/proxy CSP headers can coexist as additional restrictions;
-policies are intersected, not relaxed by the application. Coordinate those layers
-instead of expecting an application setting to override a stricter server policy.
-An explicit `SB_CACHE_CONTROL` override affects every dynamic response in that
-configuration: never enable public caching for personalized or token-bearing pages.
-PHP may retain more restrictive session-generated `Expires`/`Pragma` headers.
+Dynamic responses default to same-origin framing, nosniff, referrer protection,
+and no-store. Content restrictions are report-only; review integrations before
+enforcement. Never publicly cache personalized or token-bearing responses.
+See [CSP, nonces, cache policy, and custom renderers](SECURITY.md#browser-security-headers).
 
 ### Browser error reporting
 
-`BannerManager.addBanner(message, type)` and `changeBanner(banner, message, type)`
-display messages as plain text. HTML markup is displayed literally, including
-when a banner shows an error returned by a server.
+`ErrorLogger` sends CSRF-protected diagnostics to `/api/error`; token-free messages
+stay local. Ingestion is enabled by default with field, body, and rate limits.
+See [client usage, limits, storage, and HTTP errors](SECURITY.md#browser-error-reporting).
 
-`ErrorLogger.log(message, severity)` posts browser diagnostics to `/api/error`.
-Reporting remains enabled by default and accepts anonymous visitors with a valid
-session-bound CSRF token. To disable ingestion in your application configuration:
+## Routing
 
-```php
-$SBConfig->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
-```
+Routes in `APP_MAPPING` match exact paths after removing the application base path
+and one trailing slash; an empty path becomes `/`. There is no method-based dispatch:
+use separate paths or branch on `REQUEST_METHOD` in the model.
 
-Messages must be nonempty strings up to 4,096 UTF-8 bytes; optional `page` strings
-are limited to 2,048 bytes. Optional `order` must be an integer from 1 to
-2,147,483,647. Severity is case-insensitive: `DEBUG`, `INFO`, `WARNING`, `ERROR`
-(default), `EXCEPTION`, or `CRITICAL`. Browser-supplied `EXCEPTION` and `CRITICAL`
-are recorded at their matching server severity. Reports are escaped single-line JSON
-records prefixed by `client_error`; do not include secrets in diagnostic messages.
-The request body is limited to 16 KiB and the escaped log record to 8 KiB.
+| Mapping key | Meaning |
+| --- | --- |
+| `model` | Fully qualified application model class; optional for template-only routes |
+| `template` | One Latte template name without `.latte` |
+| `roleIds` | Comma-separated allowed role IDs; requires an identity manager |
+| `id` | Required GET parameter, scalar-cast to `SB_GET_ARGUMENT_ID` (int) |
+| `code` | Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE` |
+| `session` | `required` (default) or `auto`; other values are configuration errors |
 
-Default limits count POST attempts, including invalid input: 20 per client per
-minute, 100 per application per minute, and 1,000 per application per hour.
-Configure positive integer limits with `SB_CLIENT_ERROR_CLIENT_PER_MINUTE`,
-`SB_CLIENT_ERROR_APP_PER_MINUTE`, and `SB_CLIENT_ERROR_APP_PER_HOUR`. Client
-addresses use the framework's trusted request context; changing sessions does not
-reset allowances. Visitors sharing an address share its allowance.
-
-Counters are shared by PHP workers on one server. Fixed time windows can admit a
-burst at a window boundary; multiple servers have independent allowances. The
-bounded state file defaults to the system temporary directory, named using a hash
-of the canonical application directory. Set `SB_CLIENT_ERROR_RATE_LIMIT_FILE`
-to an absolute local file path to override it. Its parent directory must already
-exist, be writable by PHP, and be protected from other users. Keep it outside the
-public web tree; POSIX files must have private permissions, and Windows directories
-must have suitable ACLs. Use a local filesystem and PHP deployment with reliable
-file locking. Do not delete the state file during operation, as this resets limits.
-
-Responses use `200` for accepted reports, `400` for malformed data, `401` for
-invalid CSRF, `403` when disabled, `405` for non-POST methods, `413` for size limits,
-`415` for unsupported content types, `429` with `Retry-After` for rate limiting,
-and `503` when counter storage is unavailable or corrupt. Corrupt files require
-operator repair while ingestion is disabled; they are never silently reset.
-`ErrorLogger` pauses sending until `Retry-After` expires and stops sending from
-that instance after `403`, keeping console diagnostics without repeated banners.
-Reports during that pause are not queued or retried. Other failures retain their
-existing browser handling.
+Missing routes fall back to `/error`, including missing API routes; this does not
+create a JSON error automatically. Missing required parameters also select an error.
+`code` rejects empty values, controls, quotes, backslashes, semicolons, `#`, and SQL
+comment markers. Models must still validate identifiers, optional parameters,
+resource access, and HTTP methods; the `id` cast is not strict numeric validation.
 
 ## Model
 
-SeablastModel uses model field in APP_MAPPING to invoke the model in the App.
-**Model transforms input into knowledge**, therefore the invoked class MUST have a public method `knowledge()` and expect SeablastConfiguration as a constructor argument.
+Application models follow [SeablastModelInterface](src/SeablastModelInterface.php):
+`__construct(SeablastConfiguration $configuration, Superglobals $superglobals)`
+and `knowledge(): stdClass`. Return an object, not an array. The wrapper adds
+`csrfToken` (active session's `sb_json` token, otherwise null).
 
-- SeablastModel also expects Superglobals $superglobals argument (instead of injection like `$model->setSuperglobals($superglobals);` if required by APP_MAPPING), so that the environment variables are always easily available. (Especially important for APIs.)
+| Result property | Behavior |
+| --- | --- |
+| `rest` | Render this object or array as JSON |
+| `httpCode` | Set HTTP status; HTML errors (`>= 400`) select the `error` template |
+| `redirectionUrl` | Send Location and render `redirection.latte`; default 301, allowed 301/302/303/307/308 |
+| `title` | Page title in `BlueprintWeb.latte` |
+| `noStore` | Boolean true forces `Cache-Control: no-store` over global policy |
 
-The minimal requirements can be implemented by [SeablastModelInterface](src/SeablastModelInterface.php).
-
-- If model replies with `rest` property, API response is triggered instead of HTML UI. If the default HTTP code should be changed, set it up in the `httpCode` property.
-- If model replies with `redirectionUrl` property, then redirection is triggered (instead of HTML UI) with HTTP code 301. The HTTP code MAY be set to 301, 302, 303, 307, or 308 by the `httpCode` property.
-- If using the default BlueprintWeb.latte, the `title` property is displayed as the page title.
-- Set `noStore = true` to force `Cache-Control: no-store` for a sensitive response.
-
-REST responses always use `Content-Type: application/json; charset=utf-8`, including
-when Tracy development mode is enabled.
-
-```php
-SeablastConstant::APP_MAPPING = route => [
-    'model' => '\App\Project\ResponseModel', // class name of the model,
-    'roleIds' => '1,2', // comma delimited roleIds permitted to access the route,
-]
-```
+Use one response mode per result. JSON always uses
+`Content-Type: application/json; charset=utf-8`, including Tracy development mode.
+The [application guide](AGENT-STARTER-KIT.md#models-and-responses) covers implementation.
 
 ## View
 
-- Feel free to use the default latte layout `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}` which can be populated by your local `nav.latte` and `footer.latte`.
+With `LATTE_TEMPLATE = 'views'` and the normal vendor working directory, Seablast
+first looks for each template in `APP_DIR/views/`, then in the library's `views/`.
+A different `LATTE_TEMPLATE` changes both lookup paths; it does not automatically
+fall back to the bundled `views/`. Missing files raise `MissingTemplateException`.
+See [the exact relative lookup paths](AGENTS.md#view-and-template-contract) before
+changing the bootstrap location or working directory. The view supplies
+`configuration` and the request's `cspNonce`, overwriting model-provided values.
+
+Extend the bundled layout with `{layout '../vendor/seablast/seablast/views/BlueprintWeb.latte'}`,
+and override `nav.latte`/`footer.latte` as needed. Define `SB_WEB_FORCE_ASSET_VERSION`
+explicitly: the layout requires it and defaults do not set it. See
+[template integration](AGENT-STARTER-KIT.md#templates-and-assets) and the
+[nonce policy](SECURITY.md#browser-security-headers).
+
+The bundled `inherite.latte` include fallback uses Latte `{try}` and can hide a
+compilation error in an application `nav.latte` or `footer.latte` by displaying the
+bundled version. Check the override itself when unexpected default content appears.
 
 ### Administration
 
-- By default the route `/poseidon` displays the app administration.
-  It is available only to the admin=1, editor=2 (their IDs are the same as used in Seablast Auth) with different rights.
-  Note: admin can view/edit everything that editor can, so for admin you need to declare only what they can do on top of it.
+`/poseidon` lists permitted tables and supports filtering, ordering, and inline
+updates through `/api/poseidon`. Default access is for roles 1 (admin) and 2 (editor).
+`AdminHelper` hardcodes these roles: admin table permissions include editor tables,
+but an admin-specific column list replaces the editor list for the same table and
+access type. Include the full intended columns in such overrides.
 
 #### Admin Table Configuration
 
-This section describes how database tables and their columns are configured for **viewing and editing** in the admin interface, based on **user roles**.
+<a id="core-concepts"></a>
+<a id="1-granting-table-access-to-a-role"></a>
+<a id="2-defining-viewable-columns-read-only"></a>
+<a id="3-defining-editable-columns-write"></a>
+<a id="4-important-rule-column-exclusivity"></a>
+<a id="6-configuration-overview"></a>
+<a id="7-typical-workflow-adding-a-new-table"></a>
+<a id="syntax"></a>
+<a id="syntax-1"></a>
+<a id="syntax-2"></a>
+<a id="meaning"></a>
+<a id="meaning-1"></a>
+<a id="meaning-2"></a>
+<a id="example"></a>
+<a id="example-1"></a>
+<a id="example-2"></a>
+<a id="reason"></a>
+<a id="summary"></a>
 
-The configuration is **declarative** and role-driven.
+Grant table access and define disjoint read-only (`VIEW`) and editable (`EDIT`)
+column lists. Both lists are displayed; keep each column in only one list to avoid
+duplicates. Table access is required even when column permissions exist.
+Include the literal `id` column, normally in `VIEW`: row listing indexes results by
+`id`, and inline updates also require it. The column lists must remain disjoint
+after editor inheritance and admin overrides have been resolved.
 
-##### Core Concepts
+| Permission level | Configuration method | Meaning |
+| --- | --- | --- |
+| Role to tables | `setArrayString(ADMIN_TABLE_VIEW . role, tables)` | Tables the role may access |
+| Role to table columns | `setArrayArrayString(ADMIN_TABLE_VIEW . role, table, columns)` | Displayed, read-only columns |
+| Role to table columns | `setArrayArrayString(ADMIN_TABLE_EDIT . role, table, columns)` | Displayed, editable columns |
 
-Admin table access is defined on **three levels**:
-
-1. **Role → Accessible tables** (plus permissions for DELETE_ROW or INSERT_ROW)
-2. **Role → Table → Viewable columns**
-3. **Role → Table → Editable columns**
-
-Each level must be explicitly configured.
-
-##### 1. Granting Table Access to a Role
-
-Before a table can be displayed or edited, it must be **explicitly allowed** for the given role.
-
-##### Syntax
-
-```php
-->setArrayString(
-    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_X,
-    ['table1', 'table2']
-)
-```
-
-##### Meaning
-
-- Defines which tables are visible to a role
-- If a table is not listed here, it will **not appear at all**, even if columns are defined later
-
-##### Example
-
-```php
-->setArrayString(
-    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
-    ['audios', 'translations']
-)
-```
-
-The `EDITOR` role can access the `audios` and `translations` tables.
-
-##### 2. Defining Viewable Columns (READ-ONLY)
-
-Viewable columns are displayed in the admin table but **cannot be edited**.
-
-##### Syntax
-
-```php
-->setArrayArrayString(
-    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_X,
-    'table_name',
-    ['column1', 'column2']
-)
-```
-
-##### Meaning
-
-- Defines which columns are shown in the table
-- Columns listed here are **read-only**
-- Columns must **not** be duplicated in the EDIT section
-
-##### Example
-
-```php
-->setArrayArrayString(
-    SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_ADMIN,
-    'users',
-    ['id', 'email', 'created', 'last_login']
-)
-```
-
-The admin can view these columns but cannot modify them.
-
-##### 3. Defining Editable Columns (WRITE)
-
-Editable columns appear as form fields and can be modified.
-
-##### Syntax
-
-```php
-->setArrayArrayString(
-    SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_X,
-    'table_name',
-    ['editable_column1', 'editable_column2']
-)
-```
-
-##### Meaning
-
-- Defines which columns can be edited
-- Editable columns automatically appear in edit forms
-- Columns must **not** appear in the VIEW section
-
-##### Example
-
-```php
-->setArrayArrayString(
-    SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_ADMIN,
-    'items',
-    ['metadata_text', 'active', 'parent_id', 'order']
-)
-```
-
-The admin can modify these fields.
-
-##### 4. Important Rule: Column Exclusivity
-
-> **A column may appear only once.**
-
-A column must be defined in **either**:
-
-- `VIEW`
-  **or**
-- `EDIT`
-
-Never in both.
-
-##### Reason
-
-- Prevents UI conflicts
-- Avoids ambiguous form behavior
-- Ensures clear permission boundaries
-
-##### 5. Granting Insert/Delete Row Permissions on a Table to a Role
-
-Before a user can insert or delete a row in a table, it must be **explicitly allowed** for the given role.
-Be careful with the `DELETE_ROW` permission: deleting a category may trigger a cascading delete.
-The `INSERT_ROW` permission only makes sense when the user also has the `EDIT` permission.
-
-##### Syntax
-
-```php
-->setArrayString(
-    SeablastConstant::ADMIN_TABLE_DELETE_ROW . SeablastConstant::USER_ROLE_X,
-    ['table1', 'table2']
-)
-->setArrayString(
-    SeablastConstant::ADMIN_TABLE_INSERT_ROW . SeablastConstant::USER_ROLE_X,
-    ['table1', 'table2']
-)
-```
-
-##### 6. Configuration Overview
-
-| Level               | Method                  | Purpose                                  |
-| ------------------- | ----------------------- | ---------------------------------------- |
-| Role → Tables       | `setArrayString()`      | Which tables a role can access           |
-| Role → Tables       | `setArrayString()`      | Which tables a role can insert rows into |
-| Role → Tables       | `setArrayString()`      | Which tables a role can delete rows from |
-| Role → Table → VIEW | `setArrayArrayString()` | Read-only columns                        |
-| Role → Table → EDIT | `setArrayArrayString()` | Editable columns                         |
-
-##### 7. Typical Workflow: Adding a New Table
+These use separate typed configuration stores even though `ADMIN_TABLE_VIEW . role`
+appears in both table and column configuration. When adding a table in a later
+configuration layer, use `addArrayString()` to preserve the existing table list;
+the `setArrayString()` example below replaces that list.
 
 ```php
 // Step 1 – Allow table access
-->setArrayString(
+$SBConfig->setArrayString(
     SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
     ['new_table']
-)
+);
 
 // Step 2 – Define viewable columns
-->setArrayArrayString(
+$SBConfig->setArrayArrayString(
     SeablastConstant::ADMIN_TABLE_VIEW . SeablastConstant::USER_ROLE_EDITOR,
     'new_table',
-    ['id', 'name']
-)
+    ['id']
+);
 
 // Step 3 – Define editable columns
-->setArrayArrayString(
+$SBConfig->setArrayArrayString(
     SeablastConstant::ADMIN_TABLE_EDIT . SeablastConstant::USER_ROLE_EDITOR,
     'new_table',
     ['name', 'active']
-)
+);
 ```
 
-##### Summary
+<a id="5-granting-insertdelete-row-permissions-on-a-table-to-a-role"></a>
+<a id="syntax-3"></a>
 
-- Table access is **role-based**
-- Columns are explicitly split into **VIEW** and **EDIT**
-- A column may exist in **only one section**
-- Tables must be registered **before** defining columns
+`ADMIN_TABLE_INSERT_ROW` and `ADMIN_TABLE_DELETE_ROW` take role-suffixed table lists
+via `setArrayString()`. They expose permission flags; the bundled UI/API does not
+implement insert/delete workflows. Custom implementations must enforce permissions,
+require appropriate edit rights for inserts, and review cascading deletes.
 
-This design guarantees predictable behavior, secure access control, and a clean admin UI.
+The selected table is `?t=table`; filters repeat `condition[]=columnIndex|value`,
+ordering uses `order=a0,d2`, and results are capped at 250 rows without pagination.
+Inline updates use GET parameters `t`, `key`, `id` and JSON fields `csrfToken`, `val`.
+Send `val` as a JSON string, including for numeric columns; non-color values are
+trimmed and checked against supported SQL column types. Color validation occurs
+before trimming, so whitespace around a color is rejected.
+Updates target a literal `id` column using a nonzero integer-cast ID; arbitrary or
+composite primary keys are unsupported. Override opinionated menu links such as
+`/user-pages` and `/user/?logout` if absent in your app; some UI text is Czech.
 
 #### Automatically detected boolean fields
 
-`SeablastConstant::ADMIN_BOOLEAN_FIELDS` exposes a `string[]` of automatically detected boolean-like column names for the selected admin table. Detection checks the SQL column types and verifies that stored values are limited to `0`, `1`, or `NULL`.
+`SeablastConstant::ADMIN_BOOLEAN_FIELDS` exposes a `string[]` of automatically detected boolean-like
+column names for the selected admin table. Detection checks the SQL column types and verifies that
+stored values are limited to `0`, `1`, or `NULL`.
 
-This is runtime metadata for application code and custom templates. Do not configure it manually: `AdminModel` overwrites it with the detection result when a table is selected. The bundled admin template currently does not consume this metadata or automatically render checkboxes.
+This is runtime metadata for application code and custom templates. Do not configure it manually:
+`AdminModel` overwrites it with the detection result when a table is selected. The bundled admin
+template currently does not consume this metadata or automatically render checkboxes.
 
 #### Color editor for selected fields
 
@@ -585,16 +287,34 @@ This feature applies to all fields with the same name across all tables (field n
 
 ## Authentication and authorisation
 
-- Roles are for access.
-- Routes can be restricted to specific roles (allow-list only; no denies).
-- Menu items can be both allowed and denied (e.g. don't show to an authenticated user).
-- Groups are on top of it, e.g. for promotions, subscriptions etc.
-- RBAC (Role-Based Access Control): SB_IDENTITY_MANAGER provided by application MUST have methods prescribed in [IdentityManagerInterface](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php), these populate FLAG_USER_IS_AUTHENTICATED and USER_ROLE_ID and also USER_ID.
+Set `SB_IDENTITY_MANAGER` to an implementation of the installed
+[`IdentityManagerInterface`](https://github.com/WorkOfStan/seablast-interfaces/blob/main/src/IdentityManagerInterface.php).
+Core constructs it with
+`$configuration->mysqli()` and optionally calls `setTablePrefix()` and
+`setCookiePath()`. Authenticated identities populate `FLAG_USER_IS_AUTHENTICATED`,
+`USER_ID`, `USER_ROLE_ID`, and `USER_GROUPS` and propagate user IDs to DB logging.
+Groups are available to application logic; route authorization uses role allow-lists.
+
+For example, add this to a route mapping:
+
+```php
+'roleIds' => '1,2', // comma delimited roleIds permitted to access the route,
+```
+
+Unauthenticated protected requests use the route named by `APP_MAPPING_401`, if
+configured, otherwise a 401 error. Authenticated users with an unlisted role get
+403. Menu visibility is separate and does not enforce route authorization.
 
 ## Security
 
-All JSON calls and form submits MUST contain `csrfToken` handed over to the view layer in the `$csrfToken` string latte variable.
-JSON API calls using `GenericRestApiJsonModel` MUST send a JSON `Content-Type` header and stay within the default 1 MiB request body limit.
+Use [SECURITY.md](SECURITY.md) as the shared security configuration and deployment
+reference. Protected submissions must validate `sb_json` CSRF tokens; ordinary
+forms and multipart endpoints require manual validation. Keep private files out
+of direct web access and validate authorization separately from CSRF.
+
+See [JSON and form requirements](SECURITY.md#forms-json-apis-and-csrf),
+[deployment safeguards](SECURITY.md#deployment-safeguards), and
+[maintenance access](SECURITY.md#maintenance-mode).
 
 ## Stack
 
@@ -604,52 +324,21 @@ JSON API calls using `GenericRestApiJsonModel` MUST send a JSON `Content-Type` h
 - [Tracy](https://github.com/nette/tracy) `^2.9.8 || ^2.10.9 || ^2.11.0`: For debugging.
 - [Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject): A trait that helps enforce strict PHP behavior.
 - [jQuery](https://jquery.com/) 3.7.1: As a JavaScript framework.
-- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): For language switching (used by [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n)).
+- [Universal Language Selector jQuery library](https://github.com/wikimedia/jquery.uls): For
+  language switching (used by [Seablast I18n](https://github.com/WorkOfStan/seablast-i18n)).
 
 ### ULS (Universal Language Selector jQuery library)
 
-- if flag `I18nConstant::FLAG_SHOW_LANGUAGE_SELECTOR` is active (default in Seablast\I18n), then CSS and JS dependencies are already part of the template [BlueprintWeb.latte](views/BlueprintWeb.latte).
-- .eslintignore and .prettierignore to ignore third-party libraries, so that super-linter doesn't fail with JAVASCRIPT_ES and so that prettier doesn't change them or super-linter fails with CSS_PRETTIER, JAVASCRIPT_PRETTIER, JSON_PRETTIER, MARKDOWN_PRETTIER
-- To make the SVG icon in `.uls-trigger` adopt the `font-color` of the surrounding element, the following style was added into `uls/images/language.svg`: `fill="currentColor"`. Also `uls/css/jquery.uls.css` was changed (changed: `.uls-trigger`, added: `.uls-trigger icon` and `.uls-trigger .icon svg`).
-- based on <https://github.com/wikimedia/jquery.uls> Revision: 077c71408284f446b626b656ce206e6ed3af705c Date: 17.07.2025 14:25:10
-  - css\jquery.uls.css
-
-    ```css
-    .uls-trigger {
-      background: url(../images/language.svg) no-repeat left center;
-      padding-left: 24px;
-    }
-    ```
-
-    ... changed to ...
-
-    ```css
-    .uls-trigger {
-      padding-left: 24px;
-    }
-
-    .uls-trigger .icon {
-      vertical-align: middle;
-    }
-
-    .uls-trigger .icon svg {
-      height: 1em; /* přizpůsobí velikost textu */
-    }
-    ```
-
-  - images\language.svg
-
-    ```svg
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-    ```
-
-    ... changed to ...
-
-    ```svg
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-    ```
-
-- See <https://github.com/wikimedia/jquery.uls/compare/077c71408284f446b626b656ce206e6ed3af705c...master> to compare the changes in the latest version
+`BlueprintWeb.latte` includes optional i18n assets when
+`I18nConstant::FLAG_SHOW_LANGUAGE_SELECTOR` is enabled. Core also contains a
+vendored [ULS tree](assets/uls/README.md); exclude third-party assets from automatic
+formatting/linting. Preserve the local icon adaptation when updating that tree:
+`language.svg` uses `fill="currentColor"`; `.uls-trigger` uses 24px left padding,
+its `.icon` aligns vertically, and `.icon svg` uses
+`height: 1em; /* Match text size. */` instead of a background-image icon.
+The documented [upstream comparison
+baseline](https://github.com/wikimedia/jquery.uls/compare/077c71408284f446b626b656ce206e6ed3af705c...master)
+is `077c71408284f446b626b656ce206e6ed3af705c`; verify provenance before replacing assets.
 
 ## Notes
 
@@ -658,22 +347,18 @@ JSON API calls using `GenericRestApiJsonModel` MUST send a JSON `Content-Type` h
 
 ## Framework directory description
 
-| Directory | Description                                                                                                            |
-| --------- | ---------------------------------------------------------------------------------------------------------------------- |
-| .github/  | Automations                                                                                                            |
-| assets/   | Web assets available for browser (such as shared scripts)                                                              |
-| cache/    | Latte cache - this is just for development as production-wise, there will be `cache/` directory in the root of the app |
-| conf/     | Default configuration for a Seablast app and for PHPStan                                                               |
-| log/      | Logs - this one is just for development; as production-wise, there will be `log/` directory in the root of the app     |
-| src/      | Seablast classes                                                                                                       |
-| tests/    | PHPUnit tests                                                                                                          |
-| views/    | Latte templates to be inherited (note: {try}{include file} masks compilation errors by preferring seablast/views)      |
+See the [repository map](AGENTS.md#repository-structure) and
+[architecture overview](src/README.md).
 
 ## Testing
 
-The PHPUnit tests use the database configuration from `./conf/phinx.local.php`, so the library require-dev Phinx, ensuring PHPUnit tests work on GitHub as well.
+PHPUnit database tests require `conf/phinx.local.php`, normally with a `testing`
+environment. Composer development dependencies include PHPUnit and Phinx.
+Commands and focused regression entry points are in the
+[maintainer guide](AGENTS.md#testing-and-local-development).
 
 ## Development notes
 
-`./blast.sh phpstan` runs PHPStan to test the repository.
-It can also be called `./vendor/seablast/seablast/blast.sh` from a Seablast application as a management script for deployment and development. Run `./blast.sh -?` to see all the options.
+Run `./blast.sh -?` in Bash for management-script options; applications can invoke
+`./vendor/seablast/seablast/blast.sh`. On Windows use Git Bash explicitly, as shown
+in the [maintainer commands](AGENTS.md#testing-and-local-development).

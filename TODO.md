@@ -6,6 +6,7 @@ All planned changes to this project are documented in this file.
 
 - 240111, Messages from server and Ajax to user friendly closable banners; how to localize these messages - by some l10n?
 - 240119, APP_MAPPING restrictToGroups (actually roles) 1-admin, 2-editor(contentAdmin), 3-user, other can be added in the app (use constants instead of magic numbers)
+- introduce systematic FriendlyURL support in Seablast I18n - with the blog feature
 
 ## UX
 
