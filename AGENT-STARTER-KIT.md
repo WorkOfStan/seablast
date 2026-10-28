@@ -3,6 +3,7 @@
 This file is for AI agents building or migrating applications that use Seablast for PHP.
 Use it when Seablast is a dependency in another project.
 
+// todo is the next info useful for start-kit?
 For framework maintenance inside `seablast/seablast`, read [AGENTS.md](AGENTS.md). The [architecture
 overview](src/README.md) explains
 the request lifecycle; [README.md](README.md) covers public usage and
@@ -333,6 +334,7 @@ When migrating an existing app, add a test that locks the route map before delet
 
 ## Migration Checklist
 
+// todo why these examples?
 For framework migrations, prefer real moves over compatibility aliases:
 
 - `classes/` to `src/`
