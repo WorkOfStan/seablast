@@ -29,16 +29,16 @@ Instructions for agents maintaining `seablast/seablast`. For application work, u
 
 ## Repository Structure
 
-| Path | Responsibility |
-| --- | --- |
-| `index.php`, `defineAppDir.php` | Bootstrap and application-root resolution |
-| `src/` | MVC runtime, configuration, request policies, database adapters |
-| `src/Apis/`, `src/Admin/` | JSON endpoints and bundled administration |
-| `conf/` | Defaults, analysis/test configuration, Phinx example |
-| `views/`, `assets/` | Bundled Latte templates and browser assets |
-| `tests/` | PHPUnit, real HTTP fixtures, and JavaScript regressions |
-| `.github/`, `blast.sh` | CI and development/deployment helpers |
-| `cache/`, `log/` | Local runtime output; installed apps use their own directories |
+| Path                            | Responsibility                                                  |
+| ------------------------------- | --------------------------------------------------------------- |
+| `index.php`, `defineAppDir.php` | Bootstrap and application-root resolution                       |
+| `src/`                          | MVC runtime, configuration, request policies, database adapters |
+| `src/Apis/`, `src/Admin/`       | JSON endpoints and bundled administration                       |
+| `conf/`                         | Defaults, analysis/test configuration, Phinx example            |
+| `views/`, `assets/`             | Bundled Latte templates and browser assets                      |
+| `tests/`                        | PHPUnit, real HTTP fixtures, and JavaScript regressions         |
+| `.github/`, `blast.sh`          | CI and development/deployment helpers                           |
+| `cache/`, `log/`                | Local runtime output; installed apps use their own directories  |
 
 ## Bootstrap and Request Lifecycle
 

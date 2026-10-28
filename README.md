@@ -114,14 +114,14 @@ Routes in `APP_MAPPING` match exact paths after removing the application base pa
 and one trailing slash; an empty path becomes `/`. There is no method-based dispatch:
 use separate paths or branch on `REQUEST_METHOD` in the model.
 
-| Mapping key | Meaning |
-| --- | --- |
-| `model` | Fully qualified application model class; optional for template-only routes |
-| `template` | One Latte template name without `.latte` |
-| `roleIds` | Comma-separated allowed role IDs; requires an identity manager |
-| `id` | Required GET parameter, scalar-cast to `SB_GET_ARGUMENT_ID` (int) |
-| `code` | Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE` |
-| `session` | `required` (default) or `auto`; other values are configuration errors |
+| Mapping key | Meaning                                                                    |
+| ----------- | -------------------------------------------------------------------------- |
+| `model`     | Fully qualified application model class; optional for template-only routes |
+| `template`  | One Latte template name without `.latte`                                   |
+| `roleIds`   | Comma-separated allowed role IDs; requires an identity manager             |
+| `id`        | Required GET parameter, scalar-cast to `SB_GET_ARGUMENT_ID` (int)          |
+| `code`      | Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE`        |
+| `session`   | `required` (default) or `auto`; other values are configuration errors      |
 
 Missing routes fall back to `/error`, including missing API routes; this does not
 create a JSON error automatically. Missing required parameters also select an error.
@@ -136,13 +136,13 @@ Application models follow [SeablastModelInterface](src/SeablastModelInterface.ph
 and `knowledge(): stdClass`. Return an object, not an array. The wrapper adds
 `csrfToken` (active session's `sb_json` token, otherwise null).
 
-| Result property | Behavior |
-| --- | --- |
-| `rest` | Render this object or array as JSON |
-| `httpCode` | Set HTTP status; HTML errors (`>= 400`) select the `error` template |
+| Result property  | Behavior                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `rest`           | Render this object or array as JSON                                                    |
+| `httpCode`       | Set HTTP status; HTML errors (`>= 400`) select the `error` template                    |
 | `redirectionUrl` | Send Location and render `redirection.latte`; default 301, allowed 301/302/303/307/308 |
-| `title` | Page title in `BlueprintWeb.latte` |
-| `noStore` | Boolean true forces `Cache-Control: no-store` over global policy |
+| `title`          | Page title in `BlueprintWeb.latte`                                                     |
+| `noStore`        | Boolean true forces `Cache-Control: no-store` over global policy                       |
 
 Use one response mode per result. JSON always uses
 `Content-Type: application/json; charset=utf-8`, including Tracy development mode.
@@ -204,11 +204,11 @@ Include the literal `id` column, normally in `VIEW`: row listing indices results
 `id`, and inline updates also require it. The column lists must remain disjoint
 after editor inheritance and admin overrides have been resolved.
 
-| Permission level | Configuration method | Meaning |
-| --- | --- | --- |
-| Role to tables | `setArrayString(ADMIN_TABLE_VIEW . role, tables)` | Tables the role may access |
+| Permission level      | Configuration method                                           | Meaning                      |
+| --------------------- | -------------------------------------------------------------- | ---------------------------- |
+| Role to tables        | `setArrayString(ADMIN_TABLE_VIEW . role, tables)`              | Tables the role may access   |
 | Role to table columns | `setArrayArrayString(ADMIN_TABLE_VIEW . role, table, columns)` | Displayed, read-only columns |
-| Role to table columns | `setArrayArrayString(ADMIN_TABLE_EDIT . role, table, columns)` | Displayed, editable columns |
+| Role to table columns | `setArrayArrayString(ADMIN_TABLE_EDIT . role, table, columns)` | Displayed, editable columns  |
 
 These use separate typed configuration stores even though `ADMIN_TABLE_VIEW . role`
 appears in both table and column configuration. When adding a table in a later
@@ -302,8 +302,7 @@ For example, add this to a route mapping:
 ```
 
 Unauthenticated protected requests use the route named by `APP_MAPPING_401`, if
-configured, otherwise a 401 error. Authenticated users with an unlisted role get
-403. Menu visibility is separate and does not enforce route authorization.
+configured, otherwise a 401 error. Authenticated users with an unlisted role get 403. Menu visibility is separate and does not enforce route authorization.
 
 ## Security
 
