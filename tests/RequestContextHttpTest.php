@@ -671,6 +671,7 @@ class RequestContextHttpTest extends TestCase
             $response = $this->request(['routeId' => '1', 'id' => $id]);
             $this->assertSame(200, $response['status'], $id);
             $data = json_decode($response['body'], true);
+            $this->assertIsArray($data);
             $this->assertSame((int) $id, $data['routeId']);
         }
         foreach ([

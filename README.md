@@ -114,14 +114,14 @@ Routes in `APP_MAPPING` match exact paths after removing the application base pa
 and one trailing slash; an empty path becomes `/`. There is no method-based dispatch:
 use separate paths or branch on `REQUEST_METHOD` in the model.
 
-| Mapping key | Meaning                                                                    |
-| ----------- | -------------------------------------------------------------------------- |
-| `model`     | Fully qualified application model class; optional for template-only routes |
-| `template`  | One Latte template name without `.latte`                                   |
-| `roleIds`   | Comma-separated allowed role IDs; requires an identity manager             |
-| `id`        | Required GET parameter, validated integer in `SB_GET_ARGUMENT_ID`          |
-| `code`      | Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE`        |
-| `session`   | `required` (default) or `auto`; other values are configuration errors      |
+| Mapping key | Meaning                                                                               |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `model`     | (optional) Fully qualified application model class; optional for template-only routes |
+| `template`  | (optional) One Latte template name without `.latte`                                   |
+| `roleIds`   | (optional) Comma-separated allowed role IDs; requires an identity manager             |
+| `id`        | (optional) Required GET parameter, validated integer in `SB_GET_ARGUMENT_ID`          |
+| `code`      | (optional) Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE`        |
+| `session`   | (optional) `required` (default) or `auto`; other values are configuration errors      |
 
 Missing routes fall back to `/error`, including missing API routes; this does not
 create a JSON error automatically. Missing required parameters also select an error.
