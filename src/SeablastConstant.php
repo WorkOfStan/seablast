@@ -151,7 +151,7 @@ class SeablastConstant
     /** @var string Allowed embedding origins; defaults to the single token 'self'. */
     public const SB_FRAME_ANCESTORS = 'SB_FRAME_ANCESTORS';
     /**
-     * @var string stringName of an expected and accepted string GET argument
+     * @var string string Name of an expected and accepted string GET argument
      */
     public const SB_GET_ARGUMENT_CODE = 'SB_GET_ARGUMENT_CODE';
     /**

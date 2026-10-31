@@ -665,6 +665,25 @@ class RequestContextHttpTest extends TestCase
         $this->assertTrue(self::isRunningStatus(['running' => true]));
     }
 
+    public function testRouteIdRequiresAnIntegerWithinPlatformRange(): void
+    {
+        foreach (['0', '123', '-123', '+123', (string) PHP_INT_MIN, (string) PHP_INT_MAX] as $id) {
+            $response = $this->request(['routeId' => '1', 'id' => $id]);
+            $this->assertSame(200, $response['status'], $id);
+            $data = json_decode($response['body'], true);
+            $this->assertSame((int) $id, $data['routeId']);
+        }
+        foreach ([
+            '', 'abc', '123abc', '12.9', '1e2', '0x10', '01', ' 12', '12 ', "12\n", "12\0", '--1',
+            (string) PHP_INT_MAX . '0', (string) PHP_INT_MIN . '0',
+        ] as $id) {
+            $response = $this->request(['routeId' => '1', 'id' => $id]);
+            $this->assertSame(404, $response['status'], $id);
+        }
+        $this->assertSame(404, $this->request(['routeId' => '1'])['status']);
+        $this->assertSame(404, $this->request(['routeId' => '1', 'id[]' => '123'])['status']);
+    }
+
     public function testSecurityHeaderModesOverridesAndNonce(): void
     {
         $previousNonce = '';

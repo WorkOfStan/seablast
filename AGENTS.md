@@ -74,7 +74,9 @@ Do not preseed framework-owned request state: `SB_APP_ROOT_ABSOLUTE_URL`,
 The [public route table](README.md#routing) is authoritative usage documentation.
 Keep exact path matching, base-path removal, trailing-slash normalization, `/error`
 fallback (also for missing API paths), and the default `required` session policy.
-The `id` key casts a scalar to int; it is not strict identifier validation.
+The `id` key accepts signed decimal integers within PHP's integer range, then casts
+to int; malformed values (including whitespace and leading zeros), arrays, and
+overflow select a 404. Models still enforce identifier ranges and resource access.
 The `code` key rejects empty values, controls, quotes, backslashes, semicolons,
 `#`, and SQL comment markers. Models still validate domain-specific values.
 New mapping keys require public documentation, application guidance, and tests.

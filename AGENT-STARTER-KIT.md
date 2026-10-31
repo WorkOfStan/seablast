@@ -3,12 +3,6 @@
 This file is for AI agents building or migrating applications that use Seablast for PHP.
 Use it when Seablast is a dependency in another project.
 
-// todo is the next info useful for start-kit?
-For framework maintenance inside `seablast/seablast`, read [AGENTS.md](AGENTS.md). The [architecture
-overview](src/README.md) explains
-the request lifecycle; [README.md](README.md) covers public usage and
-[SECURITY.md](SECURITY.md) holds shared security configuration and deployment details.
-
 ## What To Build With Seablast
 
 Seablast is a composer-installed MVC runtime for vanilla PHP applications.
@@ -89,8 +83,9 @@ Important route behavior:
 - an empty path becomes `/`
 - missing routes render `/error`; its default `auto` session policy also applies
   to these fallbacks, so audit error-page overrides for session access and forms
-- `id` and `code` make the matching GET parameter required; `id` casts to int,
-  so validate the identifier and resource access in the model
+- `id` and `code` make the matching GET parameter required; `id` validates a signed
+  decimal integer within PHP's range before casting (no whitespace or leading zeros).
+  Invalid values select a 404; validate domain-specific ranges and resource access in the model
 - optional `?id=` or mixed list/detail behavior must be validated inside the model
 - protected routes need a configured identity manager
 - `session` accepts `required` (default) or `auto`; `auto` allows anonymous GET/HEAD
@@ -334,7 +329,12 @@ When migrating an existing app, add a test that locks the route map before delet
 
 ## Migration Checklist
 
-// todo why these examples?
+These examples map common legacy directory names to the application layout used in this guide:
+PHP classes belong in `src/`, configuration in `conf/`, Latte templates in `views/`, and Phinx
+migrations in `conf/db/migrations/`. Apply only the moves relevant to the existing app, updating
+autoloading, configuration paths, template lookup, and Phinx paths together. Real moves leave one
+authoritative location for each responsibility and avoid maintaining duplicate paths or alias layers.
+
 For framework migrations, prefer real moves over compatibility aliases:
 
 - `classes/` to `src/`

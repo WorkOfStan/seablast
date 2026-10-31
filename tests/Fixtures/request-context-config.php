@@ -47,6 +47,13 @@ return static function (SeablastConfiguration $configuration): void {
         'roleIds' => isset($_GET['protected']) ? '2' : '',
         'template' => 'security-headers',
     ]);
+    if (isset($_GET['routeId'])) {
+        $configuration->setArrayArrayString(SeablastConstant::APP_MAPPING, '/probe', [
+            'id' => 'id',
+            'model' => RequestContextHttpModel::class,
+            'session' => 'auto',
+        ]);
+    }
     if (isset($_GET['fakeIdentity'])) {
         // Supply an unconnected adapter: this identity fixture never executes database queries.
         $adapter = (new ReflectionClass(\Seablast\Seablast\SeablastMysqli::class))->newInstanceWithoutConstructor();

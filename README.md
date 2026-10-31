@@ -7,9 +7,8 @@
 Seablast is a minimalist PHP MVC runtime installed with Composer. Applications
 provide configuration, exact-path routes, models, and Latte templates. Core supplies
 request handling, database adapters, logging, and error responses; optional
-[auth](https://github.com/WorkOfStan/seablast-auth) and
-[i18n](https://github.com/WorkOfStan/seablast-i18n) packages add identity and language support.
-Database-backed friendly-URL resolution is not implemented.
+[Auth](https://github.com/WorkOfStan/seablast-auth) and
+[I18n](https://github.com/WorkOfStan/seablast-i18n) packages add identity and language support.
 
 - [Application guide](AGENT-STARTER-KIT.md): build or migrate an application.
 - [Architecture](src/README.md): core components and request/response lifecycle.
@@ -18,7 +17,7 @@ Database-backed friendly-URL resolution is not implemented.
 
 ## Installation
 
-Start from the [seablast-dist template](https://github.com/WorkOfStan/seablast-dist),
+Start from the [Seablast Dist template](https://github.com/WorkOfStan/seablast-dist),
 or add the runtime to an existing Composer project:
 
 ```sh
@@ -35,10 +34,10 @@ source, logs, and private storage from direct web access; see the
 Existing configuration files run from lowest to highest priority:
 
 1. [conf/default.conf.php](conf/default.conf.php)
-2. `APP_DIR/vendor/seablast/auth/conf/app.conf.php` (optional)
-3. `APP_DIR/vendor/seablast/i18n/conf/app.conf.php` (optional)
-4. `APP_DIR/conf/app.conf.php`
-5. `APP_DIR/conf/app.conf.local.php`
+2. `APP_DIR/vendor/seablast/auth/conf/app.conf.php` (if dependency defined)
+3. `APP_DIR/vendor/seablast/i18n/conf/app.conf.php` (if dependency defined)
+4. `APP_DIR/conf/app.conf.php` (optional)
+5. `APP_DIR/conf/app.conf.local.php` (optional)
 
 Each returns a callable receiving `SeablastConfiguration`. For example:
 
@@ -68,7 +67,7 @@ when absent does Phinx's `environments.default_environment` apply. Applications 
 use independent persistence; its PDO failures do not initialize Seablast's adapter
 for diagnostics. `dbms()`/`dbmsStatus()` are deprecated aliases for the MySQLi APIs.
 
-Set `SB_LOG_DIRECTORY` to change the default `APP_DIR . '/log'` location for framework
+Optionally set `SB_LOG_DIRECTORY` to change the default `APP_DIR . '/log'` location for framework
 and query logs. Use `Tracy\Debugger::log()` with an explicit `Tracy\ILogger` severity;
 the configured SeablastLogger respects `SB_LOGGING_LEVEL`. Never log secrets.
 Complete model results and view parameters are not logged, but level 5 enables
@@ -104,7 +103,8 @@ See [CSP, nonces, cache policy, and custom renderers](SECURITY.md#browser-securi
 
 ### Browser error reporting
 
-`ErrorLogger` sends CSRF-protected diagnostics to `/api/error`; token-free messages
+The browser-side JavaScript class `ErrorLogger` sends CSRF-protected diagnostics
+to `/api/error`; token-free messages
 stay local. Ingestion is enabled by default with field, body, and rate limits.
 See [client usage, limits, storage, and HTTP errors](SECURITY.md#browser-error-reporting).
 
@@ -119,7 +119,7 @@ use separate paths or branch on `REQUEST_METHOD` in the model.
 | `model`     | Fully qualified application model class; optional for template-only routes |
 | `template`  | One Latte template name without `.latte`                                   |
 | `roleIds`   | Comma-separated allowed role IDs; requires an identity manager             |
-| `id`        | Required GET parameter, scalar-cast to `SB_GET_ARGUMENT_ID` (int)          |
+| `id`        | Required GET parameter, validated integer in `SB_GET_ARGUMENT_ID`          |
 | `code`      | Required GET parameter, restricted string in `SB_GET_ARGUMENT_CODE`        |
 | `session`   | `required` (default) or `auto`; other values are configuration errors      |
 
@@ -127,7 +127,14 @@ Missing routes fall back to `/error`, including missing API routes; this does no
 create a JSON error automatically. Missing required parameters also select an error.
 `code` rejects empty values, controls, quotes, backslashes, semicolons, `#`, and SQL
 comment markers. Models must still validate identifiers, optional parameters,
-resource access, and HTTP methods; the `id` cast is not strict numeric validation.
+resource access, and HTTP methods.
+The `id` mapping accepts only integers or decimal strings within PHP's integer
+range, with an optional `+` or `-` sign and no leading zeros except for zero itself.
+Missing values, arrays, whitespace, overflow, and malformed values such as
+`123abc`, `abc`, `12.9`, and `01` select a 404 response. Valid values are cast to
+int and stored in `SB_GET_ARGUMENT_ID`. Zero and negative values are allowed;
+models must still enforce domain-specific ranges (such as positive IDs) and
+resource access.
 
 ## Model
 

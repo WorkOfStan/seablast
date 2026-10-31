@@ -540,11 +540,16 @@ class SeablastController
                 $this->page40x('Stránka neexistuje.');
                 return;
             }
-            Assert::scalar($this->superglobals->get[$this->mapping['id']]);
-            $this->configuration->setInt(
-                SeablastConstant::SB_GET_ARGUMENT_ID,
-                (int) $this->superglobals->get[$this->mapping['id']]
-            );
+            $id = $this->superglobals->get[$this->mapping['id']];
+            if (
+                !(is_int($id) || is_string($id))
+                || preg_match('/\A[+-]?(?:0|[1-9][0-9]*)\z/', (string) $id) !== 1
+                || filter_var($id, FILTER_VALIDATE_INT) === false
+            ) {
+                $this->page40x('Invalid integer parameter.', 404);
+                return;
+            }
+            $this->configuration->setInt(SeablastConstant::SB_GET_ARGUMENT_ID, (int) $id);
         }
         // If code:string argument is expected, it is also required
         if (isset($this->mapping['code'])) {

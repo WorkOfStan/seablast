@@ -66,6 +66,9 @@ class RequestContextHttpModel
             'userId' => $this->configuration->exists(SeablastConstant::USER_ID)
                 ? $this->configuration->getInt(SeablastConstant::USER_ID) : null,
         ];
+        if ($this->configuration->exists(SeablastConstant::SB_GET_ARGUMENT_ID)) {
+            $result->rest['routeId'] = $this->configuration->getInt(SeablastConstant::SB_GET_ARGUMENT_ID);
+        }
         if (isset($this->superglobals->get['jsonValue']) && is_string($this->superglobals->get['jsonValue'])) {
             $result->rest['value'] = $this->superglobals->get['jsonValue'];
         }
