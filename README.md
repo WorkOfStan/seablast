@@ -128,13 +128,7 @@ create a JSON error automatically. Missing required parameters also select an er
 `code` rejects empty values, controls, quotes, backslashes, semicolons, `#`, and SQL
 comment markers. Models must still validate identifiers, optional parameters,
 resource access, and HTTP methods.
-The `id` mapping accepts only integers or decimal strings within PHP's integer
-range, with an optional `+` or `-` sign and no leading zeros except for zero itself.
-Missing values, arrays, whitespace, overflow, and malformed values such as
-`123abc`, `abc`, `12.9`, and `01` select a 404 response. Valid values are cast to
-int and stored in `SB_GET_ARGUMENT_ID`. Zero and negative values are allowed;
-models must still enforce domain-specific ranges (such as positive IDs) and
-resource access.
+The `id` mapping accepts only integers. Valid values are cast to int and stored in `SB_GET_ARGUMENT_ID`; models must still enforce domain-specific ranges (such as positive IDs) and resource access.
 
 ## Model
 
