@@ -674,10 +674,12 @@ class RequestContextHttpTest extends TestCase
             $this->assertIsArray($data);
             $this->assertSame((int) $id, $data['routeId']);
         }
-        foreach ([
+        foreach (
+            [
             '', 'abc', '123abc', '12.9', '1e2', '0x10', '01', ' 12', '12 ', "12\n", "12\0", '--1',
             (string) PHP_INT_MAX . '0', (string) PHP_INT_MIN . '0',
-        ] as $id) {
+            ] as $id
+        ) {
             $response = $this->request(['routeId' => '1', 'id' => $id]);
             $this->assertSame(404, $response['status'], $id);
         }
