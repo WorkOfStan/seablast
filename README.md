@@ -243,7 +243,7 @@ $SBConfig->setArrayArrayString(
 
 `ADMIN_TABLE_INSERT_ROW` and `ADMIN_TABLE_DELETE_ROW` take role-suffixed table lists
 via `setArrayString()`. They expose permission flags; the bundled UI/API does not
-implement insert/delete workflows. Custom implementations must enforce permissions,
+implement insert/delete workflows (TODO update admin pages). Custom implementations must enforce permissions,
 require appropriate edit rights for inserts, and review cascading deletes.
 
 The selected table is `?t=table`; filters repeat `condition[]=columnIndex|value`,
@@ -254,7 +254,7 @@ trimmed and checked against supported SQL column types. Color validation occurs
 before trimming, so whitespace around a color is rejected.
 Updates target a literal `id` column using a nonzero integer-cast ID; arbitrary or
 composite primary keys are unsupported. Override opinionated menu links such as
-`/user-pages` and `/user/?logout` if absent in your app; some UI text is Czech.
+`/user-pages` and `/user/?logout` if absent in your app; some UI text is Czech (TODO localization).
 
 #### Automatically detected boolean fields
 

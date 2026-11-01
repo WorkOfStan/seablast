@@ -16,7 +16,7 @@ It works best when the app keeps business code simple and explicit:
 - runtime write directories such as `cache/` and `log/`
 - private app storage in a non-public directory such as `var/`
 
-For new projects, start from [seablast-dist](https://github.com/WorkOfStan/seablast-dist) when
+For new projects, start from [Seablast Dist](https://github.com/WorkOfStan/seablast-dist) when
 possible and remove demo code deliberately.
 For existing app migrations, reshape the app into the Seablast structure instead of keeping a
 parallel framework layout alive.
@@ -309,7 +309,7 @@ errorLogger.log("Unable to process the request.", "error");
 The jQuery client sends to `/api/error`, requires a session-bound token even for
 anonymous visitors, honors rate-limit cooldowns, and stops the instance on disabled
 403 responses. Configure limits, storage, and enablement using the
-[browser reporting contract](SECURITY.md#browser-error-reporting).
+[browser reporting contract](SECURITY.md#enablement-rate-limits-and-storage).
 `BannerManager.addBanner()` and `changeBanner()` display plain text; do not pass
 HTML for formatting.
 

@@ -19,7 +19,7 @@ Instructions for agents maintaining `seablast/seablast`. For application work, u
 - Sort PHP imports, properties, and methods alphabetically, ignoring case. Keep PHP
   lines within 120 characters. PHPCS runs in CI; no local PHPCS run is required.
 - Preserve supported PHP/Latte versions in [composer.json](composer.json); PHP 7.2
-  compatibility is still required. Leave Python `main()` at the bottom.
+  compatibility is still required.
 - Reuse `SeablastConstant`, `AuthConstant`, and `I18nConstant` for existing settings.
   New application configuration keys must not use the framework's `SB` prefix.
 - Keep unrelated worktree changes. Review changes for security implications.
@@ -57,7 +57,7 @@ Follow the [architecture overview](src/README.md). Preserve ordering in
 
 ## Configuration Layering
 
-[SeablastSetup](src/SeablastSetup.php) applies defaults, optional auth, optional i18n,
+[SeablastSetup](src/SeablastSetup.php) applies defaults, optional Auth, optional I18n,
 application config, then local config. Files that exist must return callables.
 Preserve this precedence and the replacement/append semantics documented in
 [Configuration](README.md#configuration). Configuration and its cached security
@@ -257,7 +257,7 @@ limits, not general traffic or session-allocation protection.
 
 ## Current Realities and Non-Goals
 
-Friendly-URL database resolution and redirector logic are unfinished in the
+TODO: Friendly-URL database resolution and redirector logic are unfinished in the
 controller. Bundled templates are defaults, with some Czech strings and opinionated
 navigation; do not describe them as a complete application or admin CRUD system.
 
@@ -281,9 +281,6 @@ the canonical public contract and the architecture overview when behavior change
   `& "C:\Program Files\Git\bin\bash.exe" -lc "./blast.sh phpstan-remove"` for cleanup.
 - Run affected `node tests/*.test.cjs` scripts individually; rendered-template
   regressions also require PHP and Composer dependencies. CI runs all scripts.
-- For Python tests use `python -m pytest -q -p no:cacheprovider --basetemp=.tmp/pytest`.
-  Do not inspect/lint/recurse into `.tmp`, `.pytest-tmp`, `.pytest_cache`, `.venv`, or
-  build artifacts. If temp cleanup fails, remove only `.tmp/pytest` and rerun serially.
 - For documentation-only edits, inspect the diff, check links/anchors, and run
   `git diff --check`. State exactly which checks ran and any blockers.
 

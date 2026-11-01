@@ -305,12 +305,8 @@ when a banner shows an error returned by a server.
 `ErrorLogger` is exported by `assets/scripts/seablast.js`. Create it with
 `new ErrorLogger(csrfToken, apiBase)`; `log(message, severity)` posts browser
 diagnostics to `/api/error` through jQuery Ajax (default severity: `error`).
-Reporting remains enabled by default and accepts anonymous visitors with a valid
-session-bound CSRF token. To disable ingestion in your application configuration:
 
-```php
-$SBConfig->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
-```
+### Report format
 
 Messages must be nonempty strings up to 4,096 UTF-8 bytes; optional `page` strings
 are limited to 2,048 bytes. Optional `order` must be an integer from 1 to
@@ -319,6 +315,15 @@ are limited to 2,048 bytes. Optional `order` must be an integer from 1 to
 are recorded at their matching server severity. Reports are escaped single-line JSON
 records prefixed by `client_error`; do not include secrets in diagnostic messages.
 The request body is limited to 16 KiB and the escaped log record to 8 KiB.
+
+### Enablement, rate limits, and storage
+
+Reporting remains enabled by default and accepts anonymous visitors with a valid
+session-bound CSRF token. To disable ingestion in your application configuration:
+
+```php
+$SBConfig->flag->deactivate(SeablastConstant::FLAG_CLIENT_ERROR_LOGGING);
+```
 
 Default limits count POST attempts, including invalid input: 20 per client per
 minute, 100 per application per minute, and 1,000 per application per hour.
@@ -336,6 +341,8 @@ exist, be writable by PHP, and be protected from other users. Keep it outside th
 public web tree; POSIX files must have private permissions, and Windows directories
 must have suitable ACLs. Use a local filesystem and PHP deployment with reliable
 file locking. Do not delete the state file during operation, as this resets limits.
+
+### Responses and client behavior
 
 Responses use `200` for accepted reports, `400` for malformed data, `401` for
 invalid CSRF, `403` when disabled, `405` for non-POST methods, `413` for size limits,
